@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Login — Crown Trade Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="api.js"></script>
+  <style>
+    :root {
+      --nude-light: #F9F6F2;
+      --nude-medium: #E8DFD6;
+      --nude-dark: #D4C8BC;
+      --gold: #C8A97E;
+      --gold-dark: #B89463;
+      --charcoal: #3A3A3A;
+      --text-light: #7A7A7A;
+      --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--nude-light);
+      color: var(--charcoal);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    h1,h2,h3 { font-family: 'Cormorant Garamond', serif; font-weight: 600; }
+
+    /* Header */
+    .premium-header {
+      background: rgba(249,246,242,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(212,200,188,0.3);
+      padding: 1.2rem 2rem;
+    }
+    .premium-nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
+    .logo { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--charcoal); text-decoration: none; }
+
+    /* Main */
+    .main-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem;
+      background: linear-gradient(135deg, var(--nude-light) 0%, var(--nude-medium) 100%);
+    }
+    .login-wrapper { width: 100%; max-width: 460px; }
+
+    /* Tabs */
+    .tab-group {
+      display: flex;
+      border: 1px solid var(--nude-medium);
+      margin-bottom: 0;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 0.9rem;
+      background: var(--nude-medium);
+      border: none;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      color: var(--text-light);
+      transition: var(--transition);
+    }
+    .tab-btn.active { background: var(--gold); color: var(--nude-light); }
+
+    /* Card */
+    .login-card {
+      background: var(--nude-light);
+      border: 1px solid var(--nude-medium);
+      border-top: none;
+      padding: 2.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+      position: relative;
+    }
+    .login-card::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 100%; height: 3px; background: var(--gold);
+    }
+    .card-title { font-size: 1.8rem; margin-bottom: 0.4rem; }
+    .card-subtitle { color: var(--text-light); font-size: 0.9rem; margin-bottom: 2rem; }
+
+    .form-group { margin-bottom: 1.4rem; }
+    .form-label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.5px; }
+    .form-control {
+      width: 100%; padding: 0.9rem 1rem;
+      border: 1px solid var(--nude-medium);
+      background: var(--nude-light);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.95rem;
+      color: var(--charcoal);
+      transition: var(--transition);
+    }
+    .form-control:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 2px rgba(200,169,126,0.2); }
+
+    .input-wrapper { position: relative; }
+    .toggle-pw {
+      position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--text-light);
+    }
+
+    .btn-primary {
+      width: 100%; padding: 1rem;
+      background: var(--gold); color: var(--nude-light);
+      border: 1px solid var(--gold);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.95rem; font-weight: 500;
+      letter-spacing: 1px; cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-primary:hover { background: transparent; color: var(--gold); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .alert {
+      padding: 0.9rem 1rem; margin-bottom: 1.2rem;
+      font-size: 0.9rem; border-left: 3px solid;
+    }
+    .alert-error { background: #fdf0f0; border-color: #e74c3c; color: #c0392b; }
+    .alert-success { background: #f0fdf4; border-color: #2ecc71; color: #27ae60; }
+
+    .divider { text-align: center; margin: 1.5rem 0; color: var(--text-light); font-size: 0.85rem; position: relative; }
+    .divider::before, .divider::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: var(--nude-medium); }
+    .divider::before { left: 0; } .divider::after { right: 0; }
+
+    .link-row { text-align: center; margin-top: 1.2rem; font-size: 0.88rem; color: var(--text-light); }
+    .link-row a { color: var(--gold); text-decoration: none; font-weight: 500; }
+    .link-row a:hover { text-decoration: underline; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Referral notice */
+    .referral-notice {
+      background: var(--nude-medium);
+      border-left: 3px solid var(--gold);
+      padding: 0.8rem 1rem;
+      margin-bottom: 1.4rem;
+      font-size: 0.88rem;
+      color: var(--charcoal);
+    }
+
+    footer { background: var(--charcoal); text-align: center; padding: 1.5rem; color: var(--nude-dark); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <header class="premium-header">
+    <nav class="premium-nav">
+      <a href="index.html" class="logo">Crown Trade Academy</a>
+      <a href="index.html" style="color:var(--text-light);text-decoration:none;font-size:0.9rem;">← Back to Home</a>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <div class="login-wrapper">
+
+      <!-- Tabs -->
+      <div class="tab-group">
+        <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+        <button class="tab-btn" onclick="switchTab('register')">Create Account</button>
+      </div>
+
+      <div class="login-card">
+
+        <!-- ── LOGIN PANEL ── -->
+        <div id="panel-login" class="tab-panel active">
+          <h2 class="card-title">Welcome Back</h2>
+          <p class="card-subtitle">Sign in to your Crown Trade account</p>
+
+          <div id="login-alert" style="display:none;" class="alert"></div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="login-email" class="form-control" placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-wrapper">
+              <input type="password" id="login-password" class="form-control" placeholder="Enter your password">
+              <button class="toggle-pw" type="button" onclick="togglePw('login-password', this)">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-primary" id="login-btn" onclick="doLogin()">
+            <i class="fas fa-sign-in-alt"></i>&nbsp; Sign In
+          </button>
+
+          <div class="divider">or</div>
+          <div class="link-row">Don't have an account? <a href="#" onclick="switchTab('register')">Create one</a></div>
+          <div class="link-row" style="margin-top:0.6rem;">
+            Referral agent? <a href="referral-login.html">Login here</a>
+          </div>
+        </div>
+
+        <!-- ── REGISTER PANEL ── -->
+        <div id="panel-register" class="tab-panel">
+          <h2 class="card-title">Join Crown Trade</h2>
+          <p class="card-subtitle">Create your client account</p>
+
+          <div id="reg-referral-notice" style="display:none;" class="referral-notice">
+            <i class="fas fa-gift"></i> You were referred by <strong id="reg-referrer-name"></strong>
+          </div>
+          <div id="register-alert" style="display:none;" class="alert"></div>
+
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="reg-name" class="form-control" placeholder="Your full name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="reg-email" class="form-control" placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" id="reg-phone" class="form-control" placeholder="+254 7XX XXX XXX">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-wrapper">
+              <input type="password" id="reg-password" class="form-control" placeholder="Min. 6 characters">
+              <button class="toggle-pw" type="button" onclick="togglePw('reg-password', this)">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Referral Code (optional)</label>
+            <input type="text" id="reg-referral" class="form-control" placeholder="Enter referral code">
+          </div>
+
+          <button class="btn-primary" id="register-btn" onclick="doRegister()">
+            <i class="fas fa-user-plus"></i>&nbsp; Create Account
+          </button>
+          <div class="link-row" style="margin-top:1rem;">Already have an account? <a href="#" onclick="switchTab('login')">Sign in</a></div>
+        </div>
+
+      </div><!-- /.login-card -->
+    </div><!-- /.login-wrapper -->
+  </main>
+
+  <footer>&copy; 2025 Crown Trade Academy. All rights reserved.</footer>
+
+  <script>
+    // Handle referral code in URL (?ref=CODE)
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get('ref');
+      if (ref) {
+        document.getElementById('reg-referral').value = ref;
+        switchTab('register');
+        API.checkReferralCode(ref).then(data => {
+          if (data.valid) {
+            document.getElementById('reg-referral-notice').style.display = 'block';
+            document.getElementById('reg-referrer-name').textContent = data.referrer_name;
+          }
+        }).catch(() => {});
+      }
+
+      // Redirect if already logged in
+      const token = getToken();
+      if (token) {
+        const user = getUser();
+        if (user) redirectByRole(user.role);
+      }
+    });
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach((b, i) => {
+        b.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
+      });
+      document.getElementById('panel-login').classList.toggle('active', tab === 'login');
+      document.getElementById('panel-register').classList.toggle('active', tab === 'register');
+    }
+
+    function showAlert(id, msg, type = 'error') {
+      const el = document.getElementById(id);
+      el.className = `alert alert-${type}`;
+      el.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${msg}`;
+      el.style.display = 'block';
+    }
+
+    async function doLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const btn = document.getElementById('login-btn');
+
+      if (!email || !password) { showAlert('login-alert', 'Please fill in all fields'); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+      document.getElementById('login-alert').style.display = 'none';
+
+      try {
+        const data = await API.login(email, password);
+        setToken(data.token);
+        setUser(data.user);
+        showAlert('login-alert', 'Login successful! Redirecting...', 'success');
+        setTimeout(() => redirectByRole(data.user.role), 800);
+      } catch (err) {
+        showAlert('login-alert', err.message || 'Login failed');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i>&nbsp; Sign In';
+      }
+    }
+
+    async function doRegister() {
+      const full_name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const referred_by = document.getElementById('reg-referral').value.trim();
+      const btn = document.getElementById('register-btn');
+
+      if (!full_name || !email || !phone || !password) { showAlert('register-alert', 'Please fill in all required fields'); return; }
+      if (password.length < 6) { showAlert('register-alert', 'Password must be at least 6 characters'); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+      document.getElementById('register-alert').style.display = 'none';
+
+      try {
+        const data = await API.register({ full_name, email, phone, password, referred_by: referred_by || undefined });
+        setToken(data.token);
+        setUser(data.user);
+        showAlert('register-alert', 'Account created! Redirecting...', 'success');
+        setTimeout(() => redirectByRole(data.user.role), 800);
+      } catch (err) {
+        showAlert('register-alert', err.message || 'Registration failed');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus"></i>&nbsp; Create Account';
+      }
+    }
+
+    function redirectByRole(role) {
+      const map = {
+        admin: 'admin-dashboard.html',
+        mentor: 'mentor-dashboard.html',
+        referral: 'referral-dashboard.html',
+        client: 'client-dashboard.html'
+      };
+      window.location.href = map[role] || 'client-dashboard.html';
+    }
+
+    function togglePw(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const isText = input.type === 'text';
+      input.type = isText ? 'password' : 'text';
+      btn.innerHTML = `<i class="fas fa-eye${isText ? '' : '-slash'}"></i>`;
+    }
+
+    // Allow Enter key to submit
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const activePanel = document.querySelector('.tab-panel.active').id;
+        if (activePanel === 'panel-login') doLogin();
+        else doRegister();
+      }
+    });
+  </script>
+</body>
+</html>

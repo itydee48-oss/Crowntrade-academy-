@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Referral Dashboard — Crown Trade Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="api.js"></script>
+<style>
+:root{--nude-light:#F9F6F2;--nude-med:#E8DFD6;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#2e2e2e;--muted:#7A7A7A;--success:#10B981;--danger:#EF4444;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Montserrat',sans-serif;background:linear-gradient(135deg,var(--nude-light),#fff);color:var(--charcoal);min-height:100vh;}
+.app{display:grid;grid-template-columns:250px 1fr;gap:22px;padding:22px;min-height:100vh;max-width:1500px;margin:0 auto;}
+.sidebar{background:#fff;border:1px solid rgba(212,200,188,0.6);border-radius:18px;padding:26px 16px;height:fit-content;position:sticky;top:22px;box-shadow:0 6px 28px rgba(0,0,0,0.07);}
+.brand{font-family:'Cormorant Garamond',serif;color:var(--gold-dark);font-size:1.8rem;text-align:center;font-weight:700;margin-bottom:4px;}
+.brand-sub{color:var(--muted);font-size:0.82rem;text-align:center;margin-bottom:22px;}
+.user-info{display:flex;align-items:center;gap:10px;padding:13px;background:var(--nude-light);border-radius:10px;margin-bottom:22px;border:1px solid rgba(212,200,188,0.3);}
+.user-avatar{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;flex-shrink:0;}
+.user-name{font-weight:700;font-size:0.9rem;}
+.user-role{color:var(--muted);font-size:0.78rem;}
+.nav{display:flex;flex-direction:column;gap:5px;margin-bottom:22px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid transparent;border-radius:9px;cursor:pointer;font-weight:600;font-size:0.88rem;color:var(--charcoal);text-decoration:none;transition:all 0.3s;}
+.nav-item:hover{background:var(--nude-light);border-color:rgba(212,200,188,0.3);}
+.nav-item.active{background:var(--gold);color:#fff;border-color:var(--gold);}
+.nav-item i{width:16px;text-align:center;}
+.logout-btn{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--danger);color:#fff;border:none;border-radius:9px;cursor:pointer;font-weight:600;font-size:0.88rem;width:100%;transition:all 0.3s;font-family:'Montserrat',sans-serif;}
+.logout-btn:hover{background:#DC2626;}
+.main{background:#fff;border-radius:18px;padding:26px;border:1px solid rgba(212,200,188,0.6);box-shadow:0 6px 28px rgba(0,0,0,0.07);}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;padding-bottom:16px;border-bottom:2px solid var(--nude-med);}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--gold-dark);font-weight:700;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:24px;}
+.stat{text-align:center;padding:18px 12px;background:linear-gradient(135deg,var(--nude-light),#fff);border-radius:12px;border:1px solid rgba(212,200,188,0.3);transition:all 0.3s;}
+.stat:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.06);}
+.stat-icon{font-size:1.6rem;color:var(--gold);margin-bottom:7px;}
+.stat-value{font-size:1.7rem;font-weight:700;color:var(--gold-dark);margin-bottom:4px;}
+.stat-label{color:var(--muted);font-size:0.8rem;font-weight:600;}
+.card{background:#fff;padding:22px;border-radius:12px;margin-bottom:18px;box-shadow:0 3px 12px rgba(0,0,0,0.04);border:1px solid rgba(212,200,188,0.3);}
+.card-title{font-family:'Cormorant Garamond',serif;color:var(--gold-dark);font-size:1.4rem;margin-bottom:16px;}
+/* Referral link box */
+.link-box{background:var(--nude-light);border:2px dashed var(--gold);border-radius:10px;padding:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.link-box code{flex:1;font-size:0.88rem;color:var(--charcoal);word-break:break-all;font-family:monospace;background:#fff;padding:8px 12px;border-radius:6px;border:1px solid rgba(212,200,188,0.4);}
+.btn{background:var(--gold);color:#fff;border:none;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.85rem;display:inline-flex;align-items:center;gap:6px;transition:all 0.3s;font-family:'Montserrat',sans-serif;}
+.btn:hover{background:var(--gold-dark);transform:translateY(-1px);}
+.btn.ghost{background:transparent;border:1px solid var(--gold);color:var(--gold);}
+.btn.ghost:hover{background:var(--gold);color:#fff;}
+/* Earnings table */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:0.88rem;}
+th{background:var(--nude-light);padding:10px 14px;text-align:left;font-weight:700;color:var(--charcoal);border-bottom:2px solid var(--nude-med);}
+td{padding:12px 14px;border-bottom:1px solid rgba(212,200,188,0.3);color:var(--charcoal);}
+tr:hover td{background:var(--nude-light);}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.76rem;font-weight:700;}
+.badge-pending{background:#FEF3C7;color:#92400E;}
+.badge-paid{background:#D1FAE5;color:#065F46;}
+.badge-approved{background:#D1FAE5;color:#065F46;}
+.badge-rejected{background:#FEE2E2;color:#991B1B;}
+/* Tab */
+.tab-content{display:none;}
+.tab-content.active{display:block;animation:fadeIn 0.4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+/* Info box */
+.info-box{background:var(--nude-light);border-left:4px solid var(--gold);padding:14px 16px;border-radius:0 8px 8px 0;margin-bottom:16px;font-size:0.88rem;}
+.spinner-wrap{text-align:center;padding:40px;color:var(--muted);}
+.spin{display:inline-block;width:24px;height:24px;border:3px solid var(--nude-med);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+/* Toast */
+.toast{position:fixed;top:18px;right:18px;padding:12px 18px;border-radius:9px;color:#fff;font-weight:600;font-size:0.88rem;z-index:9999;display:flex;align-items:center;gap:8px;animation:slideIn 0.4s ease;box-shadow:0 6px 20px rgba(0,0,0,0.13);}
+.toast-success{background:var(--success);}
+.toast-error{background:var(--danger);}
+.toast-info{background:var(--gold);}
+@keyframes slideIn{from{transform:translateX(120%);}to{transform:translateX(0);}}
+@media(max-width:800px){.app{grid-template-columns:1fr;}.sidebar{position:static;}.stats{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:450px){.stats{grid-template-columns:1fr;}.app{padding:12px;gap:12px;}.main{padding:14px;}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">Crown Trade</div>
+    <div class="brand-sub">Referral Portal</div>
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar">R</div>
+      <div>
+        <div class="user-name" id="userName">Loading…</div>
+        <div class="user-role">Referral Agent</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="#" class="nav-item active" data-tab="overview"><i class="fas fa-chart-pie"></i> Overview</a>
+      <a href="#" class="nav-item" data-tab="mylink"><i class="fas fa-link"></i> My Referral Link</a>
+      <a href="#" class="nav-item" data-tab="earnings"><i class="fas fa-coins"></i> Earnings</a>
+      <a href="#" class="nav-item" data-tab="howto"><i class="fas fa-question-circle"></i> How It Works</a>
+    </nav>
+    <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </aside>
+
+  <main class="main">
+
+    <!-- ── OVERVIEW TAB ── -->
+    <div id="overview" class="tab-content active">
+      <div class="page-header">
+        <h1 class="page-title">Referral Overview</h1>
+        <span id="accountBadge" class="badge badge-pending">Loading…</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value" id="totalReferrals">0</div><div class="stat-label">Total Referrals</div></div>
+        <div class="stat"><div class="stat-icon"><i class="fas fa-coins"></i></div><div class="stat-value" id="totalEarnings">KES 0</div><div class="stat-label">Total Earned</div></div>
+        <div class="stat"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-value" id="pendingEarnings">KES 0</div><div class="stat-label">Pending Payout</div></div>
+        <div class="stat"><div class="stat-icon"><i class="fas fa-check-double"></i></div><div class="stat-value" id="paidEarnings">KES 0</div><div class="stat-label">Paid Out</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Quick Share</div>
+        <p style="color:var(--muted);font-size:0.88rem;margin-bottom:12px;">Share your referral link and earn KES 200 for every approved sign-up.</p>
+        <div class="link-box">
+          <code id="quickRefLink">Loading…</code>
+          <button class="btn" onclick="copyLink()"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+      </div>
+      <div class="card" id="recentEarningsCard">
+        <div class="card-title">Recent Activity</div>
+        <div id="recentEarnings"><div class="spinner-wrap"><div class="spin"></div></div></div>
+      </div>
+    </div>
+
+    <!-- ── MY LINK TAB ── -->
+    <div id="mylink" class="tab-content">
+      <div class="page-header"><h1 class="page-title">My Referral Link</h1></div>
+      <div class="card">
+        <div class="card-title">Your Unique Code</div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;">
+          <div style="flex:1;min-width:180px;background:var(--nude-light);padding:18px;border-radius:10px;text-align:center;">
+            <div style="color:var(--muted);font-size:0.82rem;margin-bottom:6px;font-weight:600;">REFERRAL CODE</div>
+            <div id="myCode" style="font-size:1.6rem;font-weight:700;color:var(--gold-dark);letter-spacing:2px;">—</div>
+          </div>
+          <div style="flex:3;min-width:220px;background:var(--nude-light);padding:18px;border-radius:10px;">
+            <div style="color:var(--muted);font-size:0.82rem;margin-bottom:8px;font-weight:600;">FULL REFERRAL LINK</div>
+            <code id="fullLink" style="font-size:0.84rem;color:var(--charcoal);word-break:break-all;display:block;margin-bottom:10px;"></code>
+            <button class="btn" onclick="copyLink()"><i class="fas fa-copy"></i> Copy Link</button>
+          </div>
+        </div>
+        <div class="info-box"><i class="fas fa-lightbulb"></i> When someone registers via your link and gets approved, you automatically earn KES 200. Earnings are paid out every Monday.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+          <button class="btn" onclick="shareWhatsApp()"><i class="fab fa-whatsapp"></i> Share on WhatsApp</button>
+          <button class="btn ghost" onclick="copyLink()"><i class="fas fa-link"></i> Copy Link</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EARNINGS TAB ── -->
+    <div id="earnings" class="tab-content">
+      <div class="page-header"><h1 class="page-title">Earnings History</h1></div>
+      <div class="stats">
+        <div class="stat"><div class="stat-icon"><i class="fas fa-coins"></i></div><div class="stat-value" id="earn-total">KES 0</div><div class="stat-label">Total Earned</div></div>
+        <div class="stat"><div class="stat-icon"><i class="fas fa-hourglass-half"></i></div><div class="stat-value" id="earn-pending">KES 0</div><div class="stat-label">Pending</div></div>
+        <div class="stat"><div class="stat-icon"><i class="fas fa-check"></i></div><div class="stat-value" id="earn-paid">KES 0</div><div class="stat-label">Paid</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">All Transactions</div>
+        <div class="table-wrap"><div id="earningsTable"><div class="spinner-wrap"><div class="spin"></div></div></div></div>
+      </div>
+    </div>
+
+    <!-- ── HOW IT WORKS TAB ── -->
+    <div id="howto" class="tab-content">
+      <div class="page-header"><h1 class="page-title">How It Works</h1></div>
+      <div class="card">
+        <div class="card-title">Your Earning Guide</div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:flex;gap:14px;align-items:flex-start;padding:16px;background:var(--nude-light);border-radius:10px;">
+            <div style="width:36px;height:36px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;flex-shrink:0;">1</div>
+            <div><strong>Share Your Link</strong><br><span style="color:var(--muted);font-size:0.88rem;">Send your unique referral link to people interested in trading mentorship.</span></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start;padding:16px;background:var(--nude-light);border-radius:10px;">
+            <div style="width:36px;height:36px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;flex-shrink:0;">2</div>
+            <div><strong>They Register</strong><br><span style="color:var(--muted);font-size:0.88rem;">Your contact applies through your link and submits their application + payment (KES 500).</span></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start;padding:16px;background:var(--nude-light);border-radius:10px;">
+            <div style="width:36px;height:36px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;flex-shrink:0;">3</div>
+            <div><strong>Admin Approves</strong><br><span style="color:var(--muted);font-size:0.88rem;">Once admin verifies the payment and approves their application, the earning is credited to you.</span></div>
+          </div>
+          <div style="display:flex;gap:14px;align-items:flex-start;padding:16px;background:var(--nude-light);border-radius:10px;">
+            <div style="width:36px;height:36px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;flex-shrink:0;">4</div>
+            <div><strong>You Get Paid</strong><br><span style="color:var(--muted);font-size:0.88rem;"><strong style="color:var(--gold-dark);">KES 200 per approved referral</strong>. Payouts sent every Monday via M-Pesa.</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Need Help?</div>
+        <p style="color:var(--muted);margin-bottom:14px;font-size:0.9rem;">Contact the Crown Trade team for any questions about your account or earnings.</p>
+        <a href="mailto:crowntradeacademy@gmail.com" class="btn"><i class="fas fa-envelope"></i> Email Us</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let agentData = null;
+let earningsData = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth('referral-login.html')) return;
+  const user = getUser();
+  if (!user || user.role !== 'referral') {
+    window.location.href = 'referral-login.html';
+    return;
+  }
+
+  document.getElementById('userName').textContent = user.full_name || user.email;
+  document.getElementById('userAvatar').textContent = (user.full_name || user.email).charAt(0).toUpperCase();
+
+  await loadDashboard();
+
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(item.dataset.tab).classList.add('active');
+    });
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    logout();
+    window.location.href = 'referral-login.html';
+  });
+});
+
+async function loadDashboard() {
+  try {
+    const data = await API.getReferralDashboard();
+    agentData = data.agent;
+    earningsData = data.earnings || [];
+    renderDashboard();
+  } catch (err) {
+    showToast('Failed to load dashboard: ' + err.message, 'error');
+  }
+}
+
+function renderDashboard() {
+  const a = agentData;
+  // Stats
+  document.getElementById('totalReferrals').textContent = a.total_referrals || 0;
+  document.getElementById('totalEarnings').textContent = `KES ${(a.total_earnings||0).toLocaleString()}`;
+  document.getElementById('pendingEarnings').textContent = `KES ${(a.pending_earnings||0).toLocaleString()}`;
+  document.getElementById('paidEarnings').textContent = `KES ${((a.total_earnings||0) - (a.pending_earnings||0)).toLocaleString()}`;
+  document.getElementById('earn-total').textContent = `KES ${(a.total_earnings||0).toLocaleString()}`;
+  document.getElementById('earn-pending').textContent = `KES ${(a.pending_earnings||0).toLocaleString()}`;
+  document.getElementById('earn-paid').textContent = `KES ${((a.total_earnings||0)-(a.pending_earnings||0)).toLocaleString()}`;
+
+  // Account status badge
+  const badgeEl = document.getElementById('accountBadge');
+  const badgeMap = { approved:'badge-approved', pending:'badge-pending', rejected:'badge-rejected' };
+  badgeEl.className = `badge ${badgeMap[a.status]||'badge-pending'}`;
+  badgeEl.textContent = cap(a.status);
+
+  // Referral links
+  const link = a.referral_link || `${window.location.origin}/referral-register.html?ref=${a.referral_code}`;
+  document.getElementById('quickRefLink').textContent = link;
+  document.getElementById('fullLink').textContent = link;
+  document.getElementById('myCode').textContent = a.referral_code;
+
+  // Recent earnings
+  renderRecentEarnings();
+  renderEarningsTable();
+}
+
+function renderRecentEarnings() {
+  const container = document.getElementById('recentEarnings');
+  if (!earningsData.length) {
+    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No referral activity yet. Share your link to start earning!</p>';
+    return;
+  }
+  container.innerHTML = earningsData.slice(0, 5).map(e => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(212,200,188,0.3);">
+      <div>
+        <div style="font-weight:600;font-size:0.9rem;">${e.referred_email}</div>
+        <div style="color:var(--muted);font-size:0.8rem;">${new Date(e.created_at).toLocaleDateString()}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-weight:700;color:var(--gold-dark);">KES ${e.amount}</div>
+        <span class="badge badge-${e.status}">${cap(e.status)}</span>
+      </div>
+    </div>`).join('');
+}
+
+function renderEarningsTable() {
+  const container = document.getElementById('earningsTable');
+  if (!earningsData.length) {
+    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:30px;">No earnings yet. Your referrals will appear here once they are approved.</p>';
+    return;
+  }
+  container.innerHTML = `
+    <table>
+      <thead><tr><th>#</th><th>Referred Email</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>
+        ${earningsData.map((e, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${e.referred_email}</td>
+            <td style="font-weight:700;color:var(--gold-dark);">KES ${e.amount}</td>
+            <td><span class="badge badge-${e.status}">${cap(e.status)}</span></td>
+            <td>${new Date(e.created_at).toLocaleDateString()}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function copyLink() {
+  const link = agentData?.referral_link || document.getElementById('quickRefLink').textContent;
+  navigator.clipboard.writeText(link).then(() => showToast('Referral link copied!', 'success'));
+}
+
+function shareWhatsApp() {
+  const link = agentData?.referral_link || document.getElementById('quickRefLink').textContent;
+  const msg = encodeURIComponent(`Join Crown Trade Academy – the premier trading mentorship program in Kenya! Register here: ${link}`);
+  window.open(`https://wa.me/?text=${msg}`, '_blank');
+}
+
+function cap(str) {
+  return str ? str.charAt(0).toUpperCase() + str.slice(1) : '—';
+}
+
+function showToast(msg, type = 'info') {
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i> ${msg}`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+</script>
+</body>
+</html>

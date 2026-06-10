@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentor Dashboard — Crown Trade Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="api.js"></script>
+<style>
+:root{--nude-light:#F9F6F2;--nude-med:#E8DFD6;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#2e2e2e;--muted:#7A7A7A;--success:#10B981;--danger:#EF4444;--info:#3B82F6;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Montserrat',sans-serif;background:linear-gradient(135deg,var(--nude-light),#fff);color:var(--charcoal);min-height:100vh;}
+.app{display:grid;grid-template-columns:240px 1fr;gap:20px;padding:20px;min-height:100vh;max-width:1400px;margin:0 auto;}
+.sidebar{background:#fff;border:1px solid rgba(212,200,188,0.6);border-radius:16px;padding:24px 16px;height:fit-content;position:sticky;top:20px;box-shadow:0 4px 20px rgba(0,0,0,0.06);}
+.brand{font-family:'Cormorant Garamond',serif;color:var(--gold-dark);font-size:1.7rem;text-align:center;font-weight:700;margin-bottom:4px;}
+.brand-sub{color:var(--muted);font-size:0.8rem;text-align:center;margin-bottom:20px;}
+.user-info{display:flex;align-items:center;gap:10px;padding:12px;background:var(--nude-light);border-radius:10px;margin-bottom:20px;border:1px solid rgba(212,200,188,0.3);}
+.user-avatar{width:40px;height:40px;background:linear-gradient(135deg,#1C2B3A,#2d3a4a);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:1rem;flex-shrink:0;}
+.user-name{font-weight:700;font-size:0.9rem;}
+.user-role{color:var(--muted);font-size:0.78rem;}
+.nav{display:flex;flex-direction:column;gap:5px;margin-bottom:20px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid transparent;border-radius:9px;cursor:pointer;font-weight:600;font-size:0.87rem;color:var(--charcoal);text-decoration:none;transition:all 0.3s;}
+.nav-item:hover{background:var(--nude-light);border-color:rgba(212,200,188,0.3);}
+.nav-item.active{background:linear-gradient(135deg,#1C2B3A,#2d3a4a);color:var(--gold);}
+.nav-item i{width:16px;text-align:center;}
+.logout-btn{display:flex;align-items:center;gap:9px;padding:11px 13px;background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);border-radius:9px;cursor:pointer;font-weight:600;font-size:0.87rem;width:100%;font-family:'Montserrat',sans-serif;transition:all 0.3s;}
+.logout-btn:hover{background:var(--danger);color:#fff;}
+.main{background:#fff;border-radius:16px;padding:24px;border:1px solid rgba(212,200,188,0.6);box-shadow:0 4px 20px rgba(0,0,0,0.06);}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:14px;border-bottom:2px solid var(--nude-med);}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--gold-dark);font-weight:700;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:22px;}
+.stat{text-align:center;padding:18px 12px;background:linear-gradient(135deg,var(--nude-light),#fff);border-radius:12px;border:1px solid rgba(212,200,188,0.3);transition:all 0.3s;}
+.stat:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.06);}
+.stat-icon{font-size:1.6rem;color:var(--gold);margin-bottom:6px;}
+.stat-value{font-size:1.7rem;font-weight:700;color:var(--gold-dark);margin-bottom:4px;}
+.stat-label{color:var(--muted);font-size:0.78rem;font-weight:600;}
+.card{background:#fff;padding:20px;border-radius:12px;margin-bottom:18px;box-shadow:0 2px 10px rgba(0,0,0,0.04);border:1px solid rgba(212,200,188,0.3);}
+.card-title{font-family:'Cormorant Garamond',serif;color:var(--gold-dark);font-size:1.35rem;margin-bottom:14px;}
+.tab-content{display:none;}
+.tab-content.active{display:block;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+th{background:var(--nude-light);padding:10px 12px;text-align:left;font-weight:700;font-size:0.76rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--nude-med);}
+td{padding:12px;border-bottom:1px solid rgba(212,200,188,0.25);vertical-align:top;}
+tr:hover td{background:#FDFAF7;}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.74rem;font-weight:700;}
+.badge-approved{background:#D1FAE5;color:#065F46;}
+.badge-pending{background:#FEF3C7;color:#92400E;}
+.badge-verified{background:#DBEAFE;color:#1E40AF;}
+.student-card{background:var(--nude-light);border-radius:10px;padding:16px;border:1px solid rgba(212,200,188,0.4);margin-bottom:12px;display:flex;gap:14px;align-items:flex-start;transition:all 0.2s;}
+.student-card:hover{border-color:var(--gold);transform:translateX(3px);}
+.student-avatar{width:44px;height:44px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;}
+.student-name{font-weight:700;margin-bottom:3px;}
+.student-meta{color:var(--muted);font-size:0.82rem;}
+.info-box{background:var(--nude-light);border-left:4px solid var(--gold);padding:13px 15px;border-radius:0 8px 8px 0;margin-bottom:14px;font-size:0.87rem;}
+.spinner-wrap{text-align:center;padding:40px;color:var(--muted);}
+.spin{display:inline-block;width:24px;height:24px;border:3px solid var(--nude-med);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.toast{position:fixed;bottom:20px;right:20px;padding:12px 16px;border-radius:9px;color:#fff;font-weight:600;font-size:0.87rem;z-index:9999;display:flex;align-items:center;gap:7px;animation:slideUp 0.3s ease;box-shadow:0 6px 20px rgba(0,0,0,0.13);}
+.toast-success{background:var(--success);}
+.toast-error{background:var(--danger);}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+@media(max-width:800px){.app{grid-template-columns:1fr;}.sidebar{position:static;}.stats{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">Crown Trade</div>
+    <div class="brand-sub">Mentor Portal</div>
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar">M</div>
+      <div>
+        <div class="user-name" id="userName">Loading…</div>
+        <div class="user-role">Mentor</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="#" class="nav-item active" data-tab="overview"><i class="fas fa-tachometer-alt"></i> Overview</a>
+      <a href="#" class="nav-item" data-tab="students"><i class="fas fa-users"></i> My Students</a>
+      <a href="#" class="nav-item" data-tab="schedule"><i class="fas fa-calendar-alt"></i> Schedule</a>
+      <a href="#" class="nav-item" data-tab="resources"><i class="fas fa-book-open"></i> Resources</a>
+    </nav>
+    <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </aside>
+
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <div id="overview" class="tab-content active">
+      <div class="page-header">
+        <h1 class="page-title">Mentor Overview</h1>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value" id="totalStudents">0</div><div class="stat-label">Total Students</div></div>
+        <div class="stat"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-value" id="activeStudents">0</div><div class="stat-label">Active</div></div>
+        <div class="stat"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-value" id="pendingStudents">0</div><div class="stat-label">Pending</div></div>
+        <div class="stat"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div><div class="stat-value">24/7</div><div class="stat-label">Support</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Recent Students</div>
+        <div id="recentStudents"><div class="spinner-wrap"><div class="spin"></div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Quick Actions</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="mailto:crowntradeacademy@gmail.com" style="display:inline-flex;align-items:center;gap:7px;padding:10px 18px;background:var(--gold);color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:0.88rem;">
+            <i class="fas fa-envelope"></i> Contact Admin
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUDENTS -->
+    <div id="students" class="tab-content">
+      <div class="page-header">
+        <h1 class="page-title">My Students</h1>
+      </div>
+      <div class="info-box"><i class="fas fa-info-circle"></i> These are approved mentorship applicants assigned to you by the admin. Contact them via the email addresses shown below.</div>
+      <div id="studentsList"><div class="spinner-wrap"><div class="spin"></div></div></div>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div id="schedule" class="tab-content">
+      <div class="page-header"><h1 class="page-title">Session Schedule</h1></div>
+      <div class="card">
+        <div class="card-title">Upcoming Sessions</div>
+        <div class="info-box"><i class="fas fa-calendar"></i> Session scheduling is managed by the admin. Contact <strong>crowntradeacademy@gmail.com</strong> to coordinate sessions with your students.</div>
+        <div style="background:var(--nude-light);border-radius:10px;padding:30px;text-align:center;">
+          <div style="font-size:3rem;color:var(--gold);margin-bottom:12px;"><i class="fas fa-calendar-alt"></i></div>
+          <p style="color:var(--muted);">No sessions scheduled yet. The admin will assign sessions shortly.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESOURCES -->
+    <div id="resources" class="tab-content">
+      <div class="page-header"><h1 class="page-title">Teaching Resources</h1></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+        <div class="card" style="text-align:center;padding:24px 14px;">
+          <div style="font-size:2.2rem;color:var(--gold);margin-bottom:10px;"><i class="fas fa-chart-bar"></i></div>
+          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:6px;">Technical Analysis</h3>
+          <p style="color:var(--muted);font-size:0.82rem;">Chart patterns & indicators</p>
+        </div>
+        <div class="card" style="text-align:center;padding:24px 14px;">
+          <div style="font-size:2.2rem;color:var(--gold);margin-bottom:10px;"><i class="fas fa-shield-alt"></i></div>
+          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:6px;">Risk Management</h3>
+          <p style="color:var(--muted);font-size:0.82rem;">Position sizing & stop losses</p>
+        </div>
+        <div class="card" style="text-align:center;padding:24px 14px;">
+          <div style="font-size:2.2rem;color:var(--gold);margin-bottom:10px;"><i class="fas fa-brain"></i></div>
+          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:6px;">Psychology</h3>
+          <p style="color:var(--muted);font-size:0.82rem;">Mindset & discipline</p>
+        </div>
+        <div class="card" style="text-align:center;padding:24px 14px;">
+          <div style="font-size:2.2rem;color:var(--gold);margin-bottom:10px;"><i class="fas fa-book"></i></div>
+          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:6px;">Curriculum</h3>
+          <p style="color:var(--muted);font-size:0.82rem;">12-week program outline</p>
+        </div>
+      </div>
+      <div class="info-box" style="margin-top:16px;"><i class="fas fa-lock"></i> Full resource library coming soon. Contact admin for teaching materials.</div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth('mentor-login.html')) return;
+  const user = getUser();
+  if (!user || user.role !== 'mentor') {
+    window.location.href = 'mentor-login.html';
+    return;
+  }
+
+  document.getElementById('userName').textContent = user.full_name || user.email;
+  document.getElementById('userAvatar').textContent = (user.full_name || user.email).charAt(0).toUpperCase();
+
+  await loadStudents();
+
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(item.dataset.tab).classList.add('active');
+    });
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    logout();
+    window.location.href = 'mentor-login.html';
+  });
+});
+
+async function loadStudents() {
+  try {
+    // Mentors see approved mentorship applications
+    const data = await fetch('/api/admin/mentorship?status=approved', {
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    }).then(r => r.json());
+
+    const students = data.applications || [];
+    const approved = students.filter(s => s.status === 'approved');
+    const pending = students.filter(s => s.status === 'pending');
+
+    document.getElementById('totalStudents').textContent = students.length;
+    document.getElementById('activeStudents').textContent = approved.length;
+    document.getElementById('pendingStudents').textContent = pending.length;
+
+    renderRecentStudents(students.slice(0, 4));
+    renderStudentsList(students);
+  } catch (err) {
+    document.getElementById('recentStudents').innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No student data available yet.</p>';
+    document.getElementById('studentsList').innerHTML = '<p style="color:var(--muted);text-align:center;padding:30px;">No students assigned yet. The admin will assign students to you.</p>';
+  }
+}
+
+function renderRecentStudents(students) {
+  const container = document.getElementById('recentStudents');
+  if (!students.length) {
+    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No students yet.</p>';
+    return;
+  }
+  container.innerHTML = students.map(s => `
+    <div class="student-card">
+      <div class="student-avatar">${s.full_name.charAt(0).toUpperCase()}</div>
+      <div style="flex:1;">
+        <div class="student-name">${s.full_name}</div>
+        <div class="student-meta">${s.email} · ${cap(s.experience_level)} · ${s.time_commitment} hrs/week</div>
+        <div style="margin-top:6px;display:flex;gap:6px;">
+          <span class="badge badge-${s.status}">${cap(s.status)}</span>
+          <span class="badge badge-${s.payment_status||'pending'}">${cap(s.payment_status||'pending')}</span>
+        </div>
+      </div>
+      <a href="mailto:${s.email}" style="color:var(--gold);font-size:1.2rem;padding:4px;"><i class="fas fa-envelope"></i></a>
+    </div>`).join('');
+}
+
+function renderStudentsList(students) {
+  const container = document.getElementById('studentsList');
+  if (!students.length) {
+    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:30px;">No students assigned yet.</p>';
+    return;
+  }
+  container.innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Experience</th><th>Markets</th><th>Time/Week</th><th>Status</th><th>Payment</th><th>Applied</th></tr></thead>
+        <tbody>${students.map(s => `
+          <tr>
+            <td><strong>${s.full_name}</strong></td>
+            <td><a href="mailto:${s.email}" style="color:var(--gold);">${s.email}</a></td>
+            <td>${s.phone}</td>
+            <td>${cap(s.experience_level)}</td>
+            <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.preferred_markets||'—'}</td>
+            <td>${s.time_commitment} hrs</td>
+            <td><span class="badge badge-${s.status}">${cap(s.status)}</span></td>
+            <td><span class="badge badge-${s.payment_status||'pending'}">${cap(s.payment_status||'pending')}</span></td>
+            <td>${fmt(s.submitted_at)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function cap(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : '—'; }
+function fmt(d) { return d ? new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '—'; }
+
+function showToast(msg, type='info') {
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':'info-circle'}"></i> ${msg}`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+</script>
+</body>
+</html>

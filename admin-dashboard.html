@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Crown Trade Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="api.js"></script>
+<style>
+:root{--nude-light:#F9F6F2;--nude-med:#E8DFD6;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#2e2e2e;--muted:#7A7A7A;--success:#10B981;--danger:#EF4444;--info:#3B82F6;--warning:#F59E0B;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Montserrat',sans-serif;background:#F0EDE8;color:var(--charcoal);min-height:100vh;}
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh;}
+/* Sidebar */
+.sidebar{background:#1C1C1E;color:#E0D8CF;display:flex;flex-direction:column;padding:0;}
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.sidebar-logo .brand{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold);font-weight:700;}
+.sidebar-logo .brand-sub{font-size:0.78rem;color:#7A7A7A;margin-top:2px;}
+.sidebar-nav{flex:1;padding:16px 10px;display:flex;flex-direction:column;gap:3px;}
+.sidebar-item{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:9px;cursor:pointer;font-weight:500;font-size:0.88rem;color:#A8A8A8;border:1px solid transparent;text-decoration:none;transition:all 0.2s;}
+.sidebar-item:hover{background:rgba(255,255,255,0.06);color:#E0D8CF;}
+.sidebar-item.active{background:var(--gold);color:#fff;font-weight:700;}
+.sidebar-item i{width:17px;text-align:center;font-size:0.95rem;}
+.sidebar-section{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#555;padding:14px 13px 5px;}
+.sidebar-footer{padding:16px 10px;border-top:1px solid rgba(255,255,255,0.08);}
+.logout-btn{display:flex;align-items:center;gap:10px;padding:11px 13px;background:rgba(239,68,68,0.15);color:#EF4444;border:1px solid rgba(239,68,68,0.2);border-radius:9px;cursor:pointer;font-weight:600;font-size:0.88rem;width:100%;transition:all 0.2s;font-family:'Montserrat',sans-serif;}
+.logout-btn:hover{background:var(--danger);color:#fff;}
+/* Main */
+.main{display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:#fff;border-bottom:1px solid rgba(212,200,188,0.4);padding:16px 28px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold-dark);font-weight:700;}
+.admin-info{display:flex;align-items:center;gap:10px;}
+.admin-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.9rem;}
+.admin-name{font-size:0.88rem;font-weight:600;color:var(--charcoal);}
+.admin-role{font-size:0.76rem;color:var(--muted);}
+/* Content */
+.content{flex:1;padding:26px 28px;overflow-y:auto;}
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+.stat-card{background:#fff;border-radius:12px;padding:20px 16px;text-align:center;border:1px solid rgba(212,200,188,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:all 0.3s;}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.07);}
+.stat-card-icon{font-size:1.6rem;margin-bottom:8px;}
+.stat-card-value{font-size:2rem;font-weight:700;margin-bottom:4px;}
+.stat-card-label{color:var(--muted);font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+.stat-gold{color:var(--gold-dark);}
+.stat-green{color:var(--success);}
+.stat-blue{color:var(--info);}
+.stat-red{color:var(--danger);}
+/* Panels */
+.panel{background:#fff;border-radius:14px;padding:22px;margin-bottom:20px;border:1px solid rgba(212,200,188,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--nude-med);}
+.panel-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--gold-dark);}
+/* Table */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+th{background:var(--nude-light);padding:10px 12px;text-align:left;font-weight:700;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.5px;color:var(--charcoal);border-bottom:2px solid var(--nude-med);}
+td{padding:12px;border-bottom:1px solid rgba(212,200,188,0.25);vertical-align:top;}
+tr:hover td{background:#FDFAF7;}
+/* Badges */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.74rem;font-weight:700;white-space:nowrap;}
+.badge-pending{background:#FEF3C7;color:#92400E;}
+.badge-approved{background:#D1FAE5;color:#065F46;}
+.badge-rejected{background:#FEE2E2;color:#991B1B;}
+.badge-verified{background:#DBEAFE;color:#1E40AF;}
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:7px;cursor:pointer;font-weight:600;font-size:0.8rem;border:1px solid transparent;transition:all 0.2s;font-family:'Montserrat',sans-serif;}
+.btn-approve{background:#D1FAE5;color:#065F46;border-color:#A7F3D0;}
+.btn-approve:hover{background:#065F46;color:#fff;}
+.btn-reject{background:#FEE2E2;color:#991B1B;border-color:#FECACA;}
+.btn-reject:hover{background:var(--danger);color:#fff;}
+.btn-verify{background:#DBEAFE;color:#1E40AF;border-color:#BFDBFE;}
+.btn-verify:hover{background:var(--info);color:#fff;}
+.btn-pay{background:#D1FAE5;color:#065F46;border-color:#A7F3D0;}
+.btn-pay:hover{background:var(--success);color:#fff;}
+.btn-view{background:var(--nude-light);color:var(--charcoal);border-color:var(--nude-med);}
+.btn-view:hover{background:var(--nude-med);}
+.btn-primary{background:var(--gold);color:#fff;border-color:var(--gold);}
+.btn-primary:hover{background:var(--gold-dark);}
+/* Tab panels */
+.tab-content{display:none;}
+.tab-content.active{display:block;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+/* Filter bar */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.filter-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--nude-med);background:#fff;cursor:pointer;font-size:0.82rem;font-weight:600;color:var(--muted);transition:all 0.2s;font-family:'Montserrat',sans-serif;}
+.filter-btn.active,.filter-btn:hover{background:var(--gold);color:#fff;border-color:var(--gold);}
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:16px;padding:30px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold-dark);margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--nude-med);}
+.modal-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(212,200,188,0.25);font-size:0.88rem;}
+.modal-row:last-child{border-bottom:none;}
+.modal-label{color:var(--muted);font-weight:600;}
+.modal-value{font-weight:600;max-width:280px;text-align:right;word-break:break-word;}
+.modal-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:1px solid var(--nude-med);}
+.modal-notes{margin-top:14px;}
+.modal-notes label{display:block;font-weight:600;font-size:0.85rem;margin-bottom:6px;}
+.modal-notes textarea{width:100%;padding:10px;border:1px solid var(--nude-med);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:0.88rem;resize:vertical;min-height:80px;}
+.modal-notes textarea:focus{outline:none;border-color:var(--gold);}
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;padding:13px 18px;border-radius:10px;color:#fff;font-weight:600;font-size:0.88rem;z-index:9999;display:flex;align-items:center;gap:8px;animation:slideUp 0.4s ease;box-shadow:0 8px 24px rgba(0,0,0,0.15);}
+.toast-success{background:var(--success);}
+.toast-error{background:var(--danger);}
+.toast-info{background:var(--gold);}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+/* Spinner */
+.spinner-wrap{text-align:center;padding:40px;color:var(--muted);}
+.spin{display:inline-block;width:26px;height:26px;border:3px solid var(--nude-med);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+/* Responsive */
+@media(max-width:900px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.content{padding:16px;}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand"><i class="fas fa-crown" style="margin-right:6px;"></i>Crown Trade</div>
+      <div class="brand-sub">Admin Dashboard</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Main</div>
+      <a href="#" class="sidebar-item active" data-tab="overview"><i class="fas fa-tachometer-alt"></i> Overview</a>
+      <div class="sidebar-section">Applications</div>
+      <a href="#" class="sidebar-item" data-tab="mentorship"><i class="fas fa-graduation-cap"></i> Mentorship</a>
+      <a href="#" class="sidebar-item" data-tab="referral"><i class="fas fa-users"></i> Referral Agents</a>
+      <div class="sidebar-section">Finance</div>
+      <a href="#" class="sidebar-item" data-tab="earnings"><i class="fas fa-coins"></i> Earnings Payouts</a>
+      <div class="sidebar-section">System</div>
+      <a href="#" class="sidebar-item" data-tab="users"><i class="fas fa-user"></i> Users</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div style="color:#555;font-size:0.8rem;margin-bottom:10px;padding:0 3px;">
+        <span id="adminName" style="color:#A8A8A8;font-weight:600;"></span>
+      </div>
+      <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">Overview</div>
+      <div class="admin-info">
+        <div class="admin-avatar" id="adminAvatar">A</div>
+        <div>
+          <div class="admin-name" id="adminNameTop">Admin</div>
+          <div class="admin-role">Administrator</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── OVERVIEW TAB ── -->
+      <div id="overview" class="tab-content active">
+        <div class="stats-grid" id="statsGrid"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Recent Mentorship Applications</div>
+            <a href="#" class="btn btn-primary" onclick="switchTab('mentorship')"><i class="fas fa-eye"></i> View All</a>
+          </div>
+          <div class="table-wrap" id="recentMentorshipTable"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Recent Referral Applications</div>
+            <a href="#" class="btn btn-primary" onclick="switchTab('referral')"><i class="fas fa-eye"></i> View All</a>
+          </div>
+          <div class="table-wrap" id="recentReferralTable"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── MENTORSHIP TAB ── -->
+      <div id="mentorship" class="tab-content">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Mentorship Applications</div>
+            <button class="btn btn-primary" onclick="loadMentorship()"><i class="fas fa-sync"></i> Refresh</button>
+          </div>
+          <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterMentorship('')">All</button>
+            <button class="filter-btn" onclick="filterMentorship('pending')">Pending</button>
+            <button class="filter-btn" onclick="filterMentorship('approved')">Approved</button>
+            <button class="filter-btn" onclick="filterMentorship('rejected')">Rejected</button>
+          </div>
+          <div class="table-wrap" id="mentorshipTable"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── REFERRAL TAB ── -->
+      <div id="referral" class="tab-content">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Referral Agent Applications</div>
+            <button class="btn btn-primary" onclick="loadReferral()"><i class="fas fa-sync"></i> Refresh</button>
+          </div>
+          <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterReferral('')">All</button>
+            <button class="filter-btn" onclick="filterReferral('pending')">Pending</button>
+            <button class="filter-btn" onclick="filterReferral('approved')">Approved</button>
+            <button class="filter-btn" onclick="filterReferral('rejected')">Rejected</button>
+          </div>
+          <div class="table-wrap" id="referralTable"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── EARNINGS TAB ── -->
+      <div id="earnings" class="tab-content">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Pending Referral Payouts</div>
+            <button class="btn btn-primary" onclick="loadEarnings()"><i class="fas fa-sync"></i> Refresh</button>
+          </div>
+          <div class="table-wrap" id="earningsTable"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── USERS TAB ── -->
+      <div id="users" class="tab-content">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Registered Users</div>
+            <button class="btn btn-primary" onclick="loadUsers()"><i class="fas fa-sync"></i> Refresh</button>
+          </div>
+          <div class="table-wrap" id="usersTable"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        </div>
+      </div>
+
+    </div><!-- /.content -->
+  </div><!-- /.main -->
+</div><!-- /.layout -->
+
+<!-- Review Modal -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Application Details</div>
+    <div id="modalBody"></div>
+    <div class="modal-notes">
+      <label>Admin Notes</label>
+      <textarea id="adminNotes" placeholder="Optional notes about this decision…"></textarea>
+    </div>
+    <div class="modal-actions" id="modalActions"></div>
+    <div style="margin-top:10px;">
+      <button class="btn btn-view" onclick="closeModal()"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let mentorshipData = [];
+let referralData = [];
+let currentFilter = { mentorship: '', referral: '' };
+let modalContext = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAdminAuth()) return;
+
+  const user = getUser();
+  const name = user?.username || 'Admin';
+  document.getElementById('adminName').textContent = name;
+  document.getElementById('adminNameTop').textContent = name;
+  document.getElementById('adminAvatar').textContent = name.charAt(0).toUpperCase();
+
+  // Nav
+  document.querySelectorAll('.sidebar-item').forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      switchTab(item.dataset.tab);
+    });
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    logout();
+    window.location.href = 'admin-login.html';
+  });
+
+  // Close modal on overlay click
+  document.getElementById('reviewModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('reviewModal')) closeModal();
+  });
+
+  await loadOverview();
+});
+
+function switchTab(tab) {
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  const item = document.querySelector(`[data-tab="${tab}"]`);
+  if (item) item.classList.add('active');
+  document.getElementById(tab).classList.add('active');
+  document.getElementById('pageTitle').textContent = { overview:'Overview', mentorship:'Mentorship Applications', referral:'Referral Agents', earnings:'Earnings Payouts', users:'Users' }[tab] || tab;
+
+  if (tab === 'mentorship') loadMentorship();
+  else if (tab === 'referral') loadReferral();
+  else if (tab === 'earnings') loadEarnings();
+  else if (tab === 'users') loadUsers();
+}
+
+// ─── OVERVIEW ────────────────────────────────────────────────────────────────
+async function loadOverview() {
+  try {
+    const [statsData, mentData, refData] = await Promise.all([
+      API.getAdminStats(),
+      API.getMentorshipApplications('', 1),
+      API.getReferralApplications('', 1)
+    ]);
+    renderStats(statsData.stats);
+    renderMiniTable('recentMentorshipTable', mentData.applications.slice(0, 5), 'mentorship');
+    renderMiniTable('recentReferralTable', refData.applications.slice(0, 5), 'referral');
+  } catch (err) {
+    showToast('Failed to load overview: ' + err.message, 'error');
+  }
+}
+
+function renderStats(s) {
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-card-icon">📋</div><div class="stat-card-value stat-gold">${s.mentorship.total}</div><div class="stat-card-label">Total Applications</div></div>
+    <div class="stat-card"><div class="stat-card-icon">⏳</div><div class="stat-card-value stat-gold">${s.mentorship.pending}</div><div class="stat-card-label">Pending Review</div></div>
+    <div class="stat-card"><div class="stat-card-icon">✅</div><div class="stat-card-value stat-green">${s.mentorship.approved}</div><div class="stat-card-label">Approved</div></div>
+    <div class="stat-card"><div class="stat-card-icon">👥</div><div class="stat-card-value stat-blue">${s.referral.total}</div><div class="stat-card-label">Referral Agents</div></div>
+    <div class="stat-card"><div class="stat-card-icon">👤</div><div class="stat-card-value stat-blue">${s.users.total}</div><div class="stat-card-label">Registered Users</div></div>
+    <div class="stat-card"><div class="stat-card-icon">💰</div><div class="stat-card-value stat-gold">KES ${(s.earnings.total_pending||0).toLocaleString()}</div><div class="stat-card-label">Pending Payouts</div></div>
+  `;
+}
+
+function renderMiniTable(containerId, apps, type) {
+  const container = document.getElementById(containerId);
+  if (!apps.length) { container.innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No applications yet.</p>'; return; }
+  container.innerHTML = `
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+      <tbody>${apps.map(a => `
+        <tr>
+          <td><strong>${a.full_name}</strong></td>
+          <td>${a.email}</td>
+          <td>${a.phone}</td>
+          <td><span class="badge badge-${a.status}">${cap(a.status)}</span></td>
+          <td>${fmt(a.submitted_at)}</td>
+          <td><button class="btn btn-view" onclick="openModal(${JSON.stringify(a).replace(/"/g,"'")}, '${type}')"><i class="fas fa-eye"></i> Review</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ─── MENTORSHIP ───────────────────────────────────────────────────────────────
+async function loadMentorship(status = currentFilter.mentorship) {
+  currentFilter.mentorship = status;
+  document.getElementById('mentorshipTable').innerHTML = '<div class="spinner-wrap"><div class="spin"></div></div>';
+  try {
+    const data = await API.getMentorshipApplications(status);
+    mentorshipData = data.applications;
+    renderMentorshipTable();
+  } catch (err) { showToast('Failed to load: ' + err.message, 'error'); }
+}
+
+function filterMentorship(status) {
+  document.querySelectorAll('#mentorship .filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  loadMentorship(status);
+}
+
+function renderMentorshipTable() {
+  const container = document.getElementById('mentorshipTable');
+  if (!mentorshipData.length) { container.innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No applications found.</p>'; return; }
+  container.innerHTML = `
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Experience</th><th>Markets</th><th>Status</th><th>Payment</th><th>Date</th><th>Action</th></tr></thead>
+      <tbody>${mentorshipData.map(a => `
+        <tr>
+          <td><strong>${a.full_name}</strong></td>
+          <td>${a.email}</td>
+          <td>${a.phone}</td>
+          <td>${cap(a.experience_level)}</td>
+          <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${a.preferred_markets||''}">${a.preferred_markets||'—'}</td>
+          <td><span class="badge badge-${a.status}">${cap(a.status)}</span></td>
+          <td><span class="badge badge-${a.payment_status||'pending'}">${cap(a.payment_status||'pending')}</span></td>
+          <td>${fmt(a.submitted_at)}</td>
+          <td><button class="btn btn-view" onclick="openModal(${JSON.stringify(a).replace(/"/g,"'")}, 'mentorship')"><i class="fas fa-edit"></i> Review</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ─── REFERRAL ─────────────────────────────────────────────────────────────────
+async function loadReferral(status = currentFilter.referral) {
+  currentFilter.referral = status;
+  document.getElementById('referralTable').innerHTML = '<div class="spinner-wrap"><div class="spin"></div></div>';
+  try {
+    const data = await API.getReferralApplications(status);
+    referralData = data.applications;
+    renderReferralTable();
+  } catch (err) { showToast('Failed to load: ' + err.message, 'error'); }
+}
+
+function filterReferral(status) {
+  document.querySelectorAll('#referral .filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  loadReferral(status);
+}
+
+function renderReferralTable() {
+  const container = document.getElementById('referralTable');
+  if (!referralData.length) { container.innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No applications found.</p>'; return; }
+  container.innerHTML = `
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Ref Code</th><th>Referred By</th><th>Payment</th><th>Status</th><th>Date</th><th>Proof</th><th>Action</th></tr></thead>
+      <tbody>${referralData.map(a => `
+        <tr>
+          <td><strong>${a.full_name}</strong></td>
+          <td>${a.email}</td>
+          <td>${a.phone}</td>
+          <td><code style="background:var(--nude-light);padding:2px 6px;border-radius:4px;font-size:0.78rem;">${a.referral_code||'pending'}</code></td>
+          <td>${a.referred_by_code||'—'}</td>
+          <td><span class="badge badge-${a.payment_status||'pending'}">${cap(a.payment_status||'pending')}</span></td>
+          <td><span class="badge badge-${a.status}">${cap(a.status)}</span></td>
+          <td>${fmt(a.submitted_at)}</td>
+          <td>${a.payment_proof ? `<a href="${a.payment_proof.startsWith('http')||a.payment_proof.startsWith('/uploads') ? a.payment_proof : '#'}" target="_blank" class="btn btn-view" style="font-size:0.75rem;padding:4px 8px;"><i class="fas fa-image"></i> View</a>` : '<span style="color:var(--muted);">—</span>'}</td>
+          <td><button class="btn btn-view" onclick="openModal(${JSON.stringify(a).replace(/"/g,"'")}, 'referral')"><i class="fas fa-edit"></i> Review</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+// ─── EARNINGS ─────────────────────────────────────────────────────────────────
+async function loadEarnings() {
+  document.getElementById('earningsTable').innerHTML = '<div class="spinner-wrap"><div class="spin"></div></div>';
+  try {
+    const data = await API.getReferralApplications('approved');
+    const agents = data.applications;
+    if (!agents.length) { document.getElementById('earningsTable').innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No approved referral agents.</p>'; return; }
+    // Load each agent's details to get earnings
+    const details = await Promise.all(agents.slice(0, 20).map(a =>
+      fetch(`/api/admin/referral/${a.id}`, { headers: { Authorization: `Bearer ${getToken()}` } }).then(r => r.json())
+    ));
+    const allEarnings = details.flatMap(d => (d.earnings || []).map(e => ({
+      ...e, agent_name: d.application?.full_name || '—'
+    })));
+    const pending = allEarnings.filter(e => e.status === 'pending');
+    if (!pending.length) { document.getElementById('earningsTable').innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No pending payouts.</p>'; return; }
+    document.getElementById('earningsTable').innerHTML = `
+      <table>
+        <thead><tr><th>Agent</th><th>Referred Email</th><th>Amount</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody>${pending.map(e => `
+          <tr>
+            <td><strong>${e.agent_name}</strong></td>
+            <td>${e.referred_email}</td>
+            <td style="font-weight:700;color:var(--gold-dark);">KES ${e.amount}</td>
+            <td><span class="badge badge-pending">Pending</span></td>
+            <td>${fmt(e.created_at)}</td>
+            <td><button class="btn btn-pay" onclick="markPaid(${e.id}, this)"><i class="fas fa-check"></i> Mark Paid</button></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch (err) { showToast('Failed to load earnings: ' + err.message, 'error'); }
+}
+
+async function markPaid(id, btn) {
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  try {
+    await API.markEarningPaid(id);
+    showToast('Earning marked as paid!', 'success');
+    loadEarnings();
+  } catch (err) { showToast('Failed: ' + err.message, 'error'); btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> Mark Paid'; }
+}
+
+// ─── USERS ────────────────────────────────────────────────────────────────────
+async function loadUsers() {
+  document.getElementById('usersTable').innerHTML = '<div class="spinner-wrap"><div class="spin"></div></div>';
+  try {
+    const data = await API.getUsers();
+    const users = data.users;
+    if (!users.length) { document.getElementById('usersTable').innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No users yet.</p>'; return; }
+    document.getElementById('usersTable').innerHTML = `
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Status</th><th>Joined</th><th>Action</th></tr></thead>
+        <tbody>${users.map(u => `
+          <tr>
+            <td><strong>${u.full_name}</strong></td>
+            <td>${u.email}</td>
+            <td>${u.phone||'—'}</td>
+            <td><span class="badge badge-${u.role==='admin'?'approved':'verified'}">${cap(u.role)}</span></td>
+            <td><span class="badge badge-${u.status==='active'?'approved':'rejected'}">${cap(u.status)}</span></td>
+            <td>${fmt(u.created_at)}</td>
+            <td>
+              ${u.role !== 'admin' ? `
+                <button class="btn ${u.status==='active'?'btn-reject':'btn-approve'}" onclick="toggleUserStatus(${u.id}, '${u.status}', this)">
+                  <i class="fas fa-${u.status==='active'?'ban':'check'}"></i> ${u.status==='active'?'Suspend':'Activate'}
+                </button>` : '<span style="color:var(--muted);">—</span>'}
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch (err) { showToast('Failed to load users: ' + err.message, 'error'); }
+}
+
+async function toggleUserStatus(id, currentStatus, btn) {
+  const newStatus = currentStatus === 'active' ? 'suspended' : 'active';
+  btn.disabled = true;
+  try {
+    await API.getUsers(); // just to verify auth
+    await fetch(`/api/admin/users/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+      body: JSON.stringify({ status: newStatus })
+    });
+    showToast(`User ${newStatus}`, 'success');
+    loadUsers();
+  } catch (err) { showToast('Failed: ' + err.message, 'error'); btn.disabled = false; }
+}
+
+// ─── MODAL ────────────────────────────────────────────────────────────────────
+function openModal(app, type) {
+  modalContext = { app, type };
+  document.getElementById('adminNotes').value = app.admin_notes || '';
+  document.getElementById('modalTitle').textContent = type === 'mentorship' ? 'Mentorship Application' : 'Referral Application';
+
+  const fields = type === 'mentorship'
+    ? [['Full Name', app.full_name], ['Email', app.email], ['Phone', app.phone], ['Experience', cap(app.experience_level)], ['Time Commitment', `${app.time_commitment} hrs/week`], ['Markets', app.preferred_markets||'—'], ['Status', `<span class="badge badge-${app.status}">${cap(app.status)}</span>`], ['Payment', `<span class="badge badge-${app.payment_status||'pending'}">${cap(app.payment_status||'pending')}</span>`], ['Submitted', fmt(app.submitted_at)]]
+    : [['Full Name', app.full_name], ['Email', app.email], ['Phone', app.phone], ['Referral Code', app.referral_code||'pending'], ['Referred By', app.referred_by_code||'—'], ['Status', `<span class="badge badge-${app.status}">${cap(app.status)}</span>`], ['Payment', `<span class="badge badge-${app.payment_status||'pending'}">${cap(app.payment_status||'pending')}</span>`], ['Submitted', fmt(app.submitted_at)]];
+
+  document.getElementById('modalBody').innerHTML = fields.map(([l, v]) =>
+    `<div class="modal-row"><span class="modal-label">${l}</span><span class="modal-value">${v}</span></div>`
+  ).join('') + (type === 'mentorship' && app.trading_goals ? `<div style="margin-top:12px;padding:12px;background:var(--nude-light);border-radius:8px;font-size:0.87rem;"><strong>Trading Goals:</strong><br>${app.trading_goals}</div>` : '');
+
+  document.getElementById('modalActions').innerHTML = `
+    ${app.status !== 'approved' ? `<button class="btn btn-approve" onclick="updateApp('approved')"><i class="fas fa-check"></i> Approve</button>` : ''}
+    ${app.status !== 'rejected' ? `<button class="btn btn-reject" onclick="updateApp('rejected')"><i class="fas fa-times"></i> Reject</button>` : ''}
+    ${app.payment_status !== 'verified' ? `<button class="btn btn-verify" onclick="updatePayment('verified')"><i class="fas fa-credit-card"></i> Verify Payment</button>` : ''}
+    ${app.payment_status !== 'rejected' ? `<button class="btn btn-reject" onclick="updatePayment('rejected')"><i class="fas fa-times"></i> Reject Payment</button>` : ''}
+  `;
+
+  document.getElementById('reviewModal').classList.add('show');
+}
+
+async function updateApp(status) {
+  const notes = document.getElementById('adminNotes').value;
+  const { app, type } = modalContext;
+  try {
+    if (type === 'mentorship') await API.updateMentorshipApp(app.id, { status, admin_notes: notes });
+    else await API.updateReferralApp(app.id, { status, admin_notes: notes });
+    showToast(`Application ${status}!`, status === 'approved' ? 'success' : 'error');
+    closeModal();
+    if (type === 'mentorship') loadMentorship();
+    else loadReferral();
+  } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+}
+
+async function updatePayment(payment_status) {
+  const notes = document.getElementById('adminNotes').value;
+  const { app, type } = modalContext;
+  try {
+    if (type === 'mentorship') await API.updateMentorshipApp(app.id, { payment_status, admin_notes: notes });
+    else await API.updateReferralApp(app.id, { payment_status, admin_notes: notes });
+    showToast(`Payment ${payment_status}!`, payment_status === 'verified' ? 'success' : 'error');
+    closeModal();
+    if (type === 'mentorship') loadMentorship();
+    else loadReferral();
+  } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+}
+
+function closeModal() {
+  document.getElementById('reviewModal').classList.remove('show');
+  modalContext = null;
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function fmt(dateStr) { return dateStr ? new Date(dateStr).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '—'; }
+function cap(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : '—'; }
+
+function showToast(msg, type = 'info') {
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':type==='error'?'times-circle':'info-circle'}"></i> ${msg}`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+</script>
+</body>
+</html>

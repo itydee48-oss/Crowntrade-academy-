@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Submitted — Crown Trade Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="api.js"></script>
+<style>
+:root{--nude-light:#F9F6F2;--nude-medium:#E8DFD6;--nude-dark:#D4C8BC;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#3A3A3A;--text-light:#7A7A7A;--success:#4CAF50;--danger:#EF4444;--transition:all 0.4s cubic-bezier(0.165,0.84,0.44,1);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Montserrat',sans-serif;background-color:var(--nude-light);color:var(--charcoal);line-height:1.6;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column;}
+h1,h2,h3,h4,h5{font-family:'Cormorant Garamond',serif;font-weight:600;line-height:1.3;}
+.premium-header{background-color:rgba(249,246,242,0.95);backdrop-filter:blur(10px);position:fixed;width:100%;z-index:1000;border-bottom:1px solid rgba(212,200,188,0.3);transition:var(--transition);}
+.premium-nav{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;padding:1.2rem 2rem;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--charcoal);text-decoration:none;letter-spacing:1px;}
+.nav-links{display:flex;list-style:none;gap:2.5rem;}
+.nav-links a{text-decoration:none;color:var(--charcoal);font-weight:500;font-size:0.9rem;transition:var(--transition);}
+.nav-links a:hover{color:var(--gold);}
+/* Page */
+.approval-page{flex:1;padding:10rem 2rem 4rem;background:linear-gradient(135deg,rgba(249,246,242,0.9) 0%,rgba(232,223,214,0.8) 100%);}
+.approval-container{max-width:700px;margin:0 auto;background:var(--nude-light);box-shadow:0 20px 40px rgba(0,0,0,0.08);border:1px solid var(--nude-medium);padding:4rem;text-align:center;position:relative;}
+.approval-container::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-dark));}
+/* Process dots */
+.process-dots{display:flex;justify-content:center;gap:12px;margin-bottom:2.5rem;}
+.process-dot{width:14px;height:14px;border-radius:50%;background:var(--nude-dark);}
+.process-dot.completed{background:var(--gold);}
+.process-dot.active{background:var(--gold);box-shadow:0 0 0 4px rgba(200,169,126,0.25);}
+/* States */
+.state{display:none;}
+.state.active{display:block;}
+.state-icon{font-size:5rem;margin-bottom:1.5rem;}
+.icon-pending{color:var(--gold);}
+.icon-approved{color:var(--success);}
+.icon-rejected{color:var(--danger);}
+.state-title{font-size:2.5rem;margin-bottom:1rem;}
+.state-message{color:var(--text-light);font-size:1rem;max-width:500px;margin:0 auto 1.5rem;}
+/* Reference */
+.reference-box{background:rgba(200,169,126,0.1);border:1px solid var(--gold);padding:14px 20px;display:inline-block;margin-bottom:2rem;}
+.ref-label{font-size:0.8rem;text-transform:uppercase;letter-spacing:2px;color:var(--text-light);margin-bottom:4px;}
+.ref-number{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--gold);letter-spacing:3px;}
+/* Progress bar (for pending state) */
+.progress-bar{width:100%;height:4px;background:var(--nude-medium);margin:1.5rem 0;position:relative;overflow:hidden;border-radius:2px;}
+.progress-fill{position:absolute;top:0;left:-100%;height:100%;width:100%;background:var(--gold);animation:scan 2s ease-in-out infinite;}
+@keyframes scan{0%{left:-100%;}100%{left:100%;}}
+/* Status info rows */
+.status-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--nude-medium);text-align:left;}
+.status-row:last-child{border-bottom:none;}
+.status-label{color:var(--text-light);font-size:0.88rem;font-weight:600;}
+.status-val{font-weight:600;font-size:0.9rem;}
+/* Buttons */
+.btn{display:inline-block;padding:1rem 2.5rem;font-weight:500;text-decoration:none;letter-spacing:1px;transition:var(--transition);border:1px solid;cursor:pointer;font-size:0.9rem;font-family:'Montserrat',sans-serif;}
+.btn-gold{background:var(--gold);color:var(--nude-light);border-color:var(--gold);}
+.btn-gold:hover{background:transparent;color:var(--gold);}
+.btn-outline{background:transparent;color:var(--charcoal);border-color:var(--charcoal);}
+.btn-outline:hover{background:var(--charcoal);color:var(--nude-light);}
+/* Check again link */
+.check-again{margin-top:16px;font-size:0.85rem;color:var(--text-light);}
+.check-again a{color:var(--gold);text-decoration:none;font-weight:600;}
+/* Footer */
+footer{background:var(--charcoal);padding:2rem;color:var(--nude-dark);text-align:center;font-size:0.88rem;}
+@keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.05);}100%{transform:scale(1);}}
+.pulse{animation:pulse 2s ease infinite;}
+@media(max-width:600px){.approval-container{padding:2.5rem 1.5rem;}.state-title{font-size:2rem;}}
+</style>
+</head>
+<body>
+<header class="premium-header">
+  <nav class="premium-nav">
+    <a href="index.html" class="logo">Crown Trade Academy</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="login.html">Client Login</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="approval-page">
+  <div class="approval-container">
+
+    <!-- Pending State -->
+    <div id="state-pending" class="state active">
+      <div class="process-dots">
+        <div class="process-dot completed"></div>
+        <div class="process-dot completed"></div>
+        <div class="process-dot active"></div>
+        <div class="process-dot"></div>
+        <div class="process-dot"></div>
+      </div>
+      <div class="state-icon icon-pending pulse"><i class="fas fa-clock"></i></div>
+      <h2 class="state-title">Payment Submitted!</h2>
+      <p class="state-message">Your payment proof has been received. Our team will review and verify it shortly.</p>
+      <div class="reference-box">
+        <div class="ref-label">Your Reference Number</div>
+        <div class="ref-number" id="refNumber">—</div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill"></div></div>
+      <div style="background:var(--nude-medium);padding:16px;border-radius:6px;margin-bottom:1.5rem;">
+        <div class="status-row"><span class="status-label">Status</span><span class="status-val" style="color:var(--gold);">⏳ Pending Review</span></div>
+        <div class="status-row"><span class="status-label">Estimated Time</span><span class="status-val">5–24 hours</span></div>
+        <div class="status-row"><span class="status-label">Email</span><span class="status-val" id="submittedEmail">—</span></div>
+        <div class="status-row"><span class="status-label">Amount</span><span class="status-val">KES 3,500</span></div>
+      </div>
+      <p style="color:var(--text-light);font-size:0.9rem;margin-bottom:1.5rem;"><i class="fas fa-envelope" style="color:var(--gold);margin-right:6px;"></i>We'll contact you at the email above once approved.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="index.html" class="btn btn-gold">Back to Home</a>
+        <a href="login.html" class="btn btn-outline">Sign In to Dashboard</a>
+      </div>
+      <div class="check-again">Have an account? <a href="client-dashboard.html">Check your status in the dashboard →</a></div>
+    </div>
+
+    <!-- Approved State -->
+    <div id="state-approved" class="state">
+      <div class="process-dots">
+        <div class="process-dot completed"></div>
+        <div class="process-dot completed"></div>
+        <div class="process-dot completed"></div>
+        <div class="process-dot completed"></div>
+        <div class="process-dot active"></div>
+      </div>
+      <div class="state-icon icon-approved"><i class="fas fa-check-circle"></i></div>
+      <h2 class="state-title">Payment Approved!</h2>
+      <p class="state-message">Your payment has been verified. Welcome to Crown Trade Academy! Your mentorship journey starts now.</p>
+      <div style="background:rgba(76,175,80,0.08);border:1px solid rgba(76,175,80,0.3);padding:16px;border-radius:6px;margin-bottom:1.5rem;">
+        <p style="color:var(--success);font-weight:700;"><i class="fas fa-star" style="margin-right:6px;"></i>You are now an active member</p>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="client-dashboard.html" class="btn btn-gold"><i class="fas fa-chart-line"></i> Go to Dashboard</a>
+        <a href="index.html" class="btn btn-outline">Home</a>
+      </div>
+    </div>
+
+    <!-- Rejected State -->
+    <div id="state-rejected" class="state">
+      <div class="process-dots">
+        <div class="process-dot completed"></div>
+        <div class="process-dot completed"></div>
+        <div class="process-dot completed"></div>
+        <div class="process-dot" style="background:var(--danger);"></div>
+        <div class="process-dot"></div>
+      </div>
+      <div class="state-icon icon-rejected"><i class="fas fa-times-circle"></i></div>
+      <h2 class="state-title">Payment Not Verified</h2>
+      <p class="state-message">Unfortunately, we could not verify your payment. Please contact us or resubmit with a clearer screenshot.</p>
+      <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);padding:16px;border-radius:6px;margin-bottom:1.5rem;font-size:0.9rem;">
+        <strong>What to do:</strong><br>
+        <ul style="margin-top:8px;padding-left:18px;color:var(--text-light);">
+          <li>Ensure your M-Pesa screenshot is clear and readable</li>
+          <li>Contact us at <a href="mailto:crowntradeacademy@gmail.com" style="color:var(--gold);">crowntradeacademy@gmail.com</a></li>
+          <li>Include your reference number in the email</li>
+        </ul>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="payment-instructions.html" class="btn btn-gold">Try Again</a>
+        <a href="index.html" class="btn btn-outline">Home</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>&copy; 2025 Crown Trade Academy. All rights reserved.</footer>
+
+<script>
+window.addEventListener('scroll', () => {
+  const h = document.querySelector('.premium-header');
+  h.style.backgroundColor = window.scrollY > 50 ? 'rgba(249,246,242,0.98)' : 'rgba(249,246,242,0.95)';
+  h.style.boxShadow = window.scrollY > 50 ? '0 5px 20px rgba(0,0,0,0.05)' : 'none';
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Generate a real reference number based on timestamp
+  const now = new Date();
+  const ref = `CTA-${now.getFullYear().toString().slice(-2)}${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getTime()).slice(-4)}`;
+  document.getElementById('refNumber').textContent = ref;
+
+  // Show email from sessionStorage
+  const email = sessionStorage.getItem('proof_email') || getUser()?.email || 'your registered email';
+  document.getElementById('submittedEmail').textContent = email;
+
+  // If logged in, poll for status changes every 30 seconds
+  const user = getUser();
+  if (user?.email) {
+    pollStatus(user.email);
+    setInterval(() => pollStatus(user.email), 30000);
+  }
+});
+
+async function pollStatus(email) {
+  try {
+    const data = await API.getMentorshipStatus(email);
+    const app = data.application;
+    if (!app) return;
+
+    if (app.payment_status === 'verified' || app.status === 'approved') {
+      showState('approved');
+    } else if (app.payment_status === 'rejected') {
+      showState('rejected');
+    }
+    // else stays on pending
+  } catch {
+    // Silently fail — user may not be logged in
+  }
+}
+
+function showState(state) {
+  document.querySelectorAll('.state').forEach(s => s.classList.remove('active'));
+  document.getElementById(`state-${state}`).classList.add('active');
+}
+</script>
+</body>
+</html>

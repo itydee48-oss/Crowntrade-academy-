@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crown Trade Academy — Client Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="api.js"></script>
+<style>
+:root{--nude-light:#F9F6F2;--nude-med:#E8DFD6;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#2e2e2e;--muted:#7A7A7A;--success:#10B981;--danger:#EF4444;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Montserrat',sans-serif;background:linear-gradient(135deg,var(--nude-light) 0%,#fff 100%);color:var(--charcoal);min-height:100vh;line-height:1.6;}
+.app{display:grid;grid-template-columns:260px 1fr;gap:24px;padding:24px;min-height:100vh;max-width:1600px;margin:0 auto;}
+/* Sidebar */
+.sidebar{background:rgba(255,255,255,0.95);border:1px solid rgba(212,200,188,0.6);border-radius:20px;padding:28px 18px;height:fit-content;position:sticky;top:24px;box-shadow:0 8px 32px rgba(0,0,0,0.08);}
+.brand{font-family:'Cormorant Garamond',serif;color:var(--gold-dark);font-size:2rem;margin-bottom:6px;text-align:center;font-weight:700;}
+.brand-sub{color:var(--muted);font-size:0.85rem;text-align:center;margin-bottom:24px;}
+.user-info{display:flex;align-items:center;gap:12px;padding:14px;background:var(--nude-light);border-radius:12px;margin-bottom:24px;border:1px solid rgba(212,200,188,0.3);}
+.user-avatar{width:44px;height:44px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;}
+.user-name{font-weight:700;font-size:0.95rem;}
+.user-role{color:var(--muted);font-size:0.8rem;}
+.nav{display:flex;flex-direction:column;gap:6px;margin-bottom:24px;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid transparent;border-radius:10px;cursor:pointer;font-weight:600;font-size:0.9rem;color:var(--charcoal);text-decoration:none;transition:all 0.3s;}
+.nav-item:hover{background:var(--nude-light);border-color:rgba(212,200,188,0.3);transform:translateX(4px);}
+.nav-item.active{background:var(--gold);color:#fff;border-color:var(--gold);}
+.nav-item i{width:18px;text-align:center;}
+.logout-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--danger);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:0.9rem;width:100%;transition:all 0.3s;}
+.logout-btn:hover{background:#DC2626;transform:translateY(-1px);}
+/* Main */
+.main{background:rgba(255,255,255,0.95);border-radius:20px;padding:28px;border:1px solid rgba(212,200,188,0.6);box-shadow:0 8px 32px rgba(0,0,0,0.08);}
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;padding-bottom:18px;border-bottom:2px solid var(--nude-med);}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold-dark);font-weight:700;}
+.btn{background:var(--gold);color:#fff;border:none;padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:600;font-size:0.88rem;display:inline-flex;align-items:center;gap:7px;transition:all 0.3s;font-family:'Montserrat',sans-serif;}
+.btn:hover{background:var(--gold-dark);transform:translateY(-1px);}
+.btn.ghost{background:transparent;border:1px solid var(--gold);color:var(--gold);}
+.btn.ghost:hover{background:var(--gold);color:#fff;}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px;}
+.stat{text-align:center;padding:20px 14px;background:linear-gradient(135deg,var(--nude-light),#fff);border-radius:14px;border:1px solid rgba(212,200,188,0.3);transition:all 0.3s;}
+.stat:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,0.07);}
+.stat-icon{font-size:1.8rem;color:var(--gold);margin-bottom:8px;}
+.stat-value{font-size:1.9rem;font-weight:700;color:var(--gold-dark);margin-bottom:5px;}
+.stat-label{color:var(--muted);font-size:0.82rem;font-weight:600;}
+/* Card */
+.card{background:#fff;padding:24px;border-radius:14px;margin-bottom:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);border:1px solid rgba(212,200,188,0.3);}
+.card-title{font-family:'Cormorant Garamond',serif;color:var(--gold-dark);font-size:1.5rem;margin-bottom:18px;}
+/* Status badges */
+.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:600;}
+.badge-pending{background:#FEF3C7;color:#92400E;}
+.badge-approved{background:#D1FAE5;color:#065F46;}
+.badge-rejected{background:#FEE2E2;color:#991B1B;}
+.badge-verified{background:#DBEAFE;color:#1E40AF;}
+/* Application status block */
+.app-status{background:var(--nude-light);border-radius:12px;padding:24px;border:1px solid rgba(212,200,188,0.4);}
+.app-status-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(212,200,188,0.3);}
+.app-status-row:last-child{border-bottom:none;}
+.app-status-label{color:var(--muted);font-size:0.88rem;font-weight:600;}
+.app-status-value{font-weight:600;color:var(--charcoal);}
+/* Tab panels */
+.tab-content{display:none;}
+.tab-content.active{display:block;animation:fadeIn 0.4s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+/* Info box */
+.info-box{background:var(--nude-light);border-left:4px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin-bottom:20px;font-size:0.9rem;color:var(--charcoal);}
+/* Loading spinner */
+.spinner-wrap{text-align:center;padding:40px;color:var(--muted);}
+.spin{display:inline-block;width:28px;height:28px;border:3px solid var(--nude-med);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+/* Toast */
+.toast{position:fixed;top:20px;right:20px;padding:14px 20px;border-radius:10px;color:#fff;font-weight:600;font-size:0.9rem;z-index:9999;display:flex;align-items:center;gap:8px;animation:slideIn 0.4s ease;box-shadow:0 8px 24px rgba(0,0,0,0.15);}
+.toast-success{background:var(--success);}
+.toast-error{background:var(--danger);}
+.toast-info{background:var(--gold);}
+@keyframes slideIn{from{transform:translateX(120%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+/* Responsive */
+@media(max-width:900px){.app{grid-template-columns:1fr;}.sidebar{position:static;display:grid;grid-template-columns:1fr 1fr;gap:12px;}.brand,.brand-sub,.user-info{grid-column:1/-1;}.nav{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;}.logout-btn{grid-column:1/-1;}}
+@media(max-width:480px){.app{padding:12px;gap:12px;}.main{padding:16px;}.stats{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">Crown Trade</div>
+    <div class="brand-sub">Client Portal</div>
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar">C</div>
+      <div>
+        <div class="user-name" id="userName">Loading…</div>
+        <div class="user-role">Trading Student</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="#" class="nav-item active" data-tab="dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
+      <a href="#" class="nav-item" data-tab="application"><i class="fas fa-file-alt"></i> My Application</a>
+      <a href="#" class="nav-item" data-tab="resources"><i class="fas fa-book-open"></i> Resources</a>
+      <a href="#" class="nav-item" data-tab="contact"><i class="fas fa-envelope"></i> Contact Mentor</a>
+    </nav>
+    <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <!-- ── DASHBOARD TAB ── -->
+    <div id="dashboard" class="tab-content active">
+      <div class="page-header">
+        <h1 class="page-title">Welcome Back</h1>
+        <a href="mentorship-form.html" class="btn"><i class="fas fa-plus"></i> Apply for Mentorship</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-icon"><i class="fas fa-file-alt"></i></div><div class="stat-value" id="appStatus">—</div><div class="stat-label">Application Status</div></div>
+        <div class="stat"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-value" id="payStatus">—</div><div class="stat-label">Payment Status</div></div>
+        <div class="stat"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div><div class="stat-value">24/7</div><div class="stat-label">Support Available</div></div>
+        <div class="stat"><div class="stat-icon"><i class="fas fa-graduation-cap"></i></div><div class="stat-value">KES 3,500</div><div class="stat-label">Program Fee</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Your Mentorship Application</div>
+        <div id="dashAppSummary"><div class="spinner-wrap"><div class="spin"></div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Next Steps</div>
+        <div class="info-box"><i class="fas fa-info-circle"></i> After submitting your application, our team will review it and contact you via email within 24 hours.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--nude-light);border-radius:10px;">
+            <div style="width:32px;height:32px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;">1</div>
+            <div><strong>Submit Application</strong> — Fill out the mentorship form</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--nude-light);border-radius:10px;">
+            <div style="width:32px;height:32px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;">2</div>
+            <div><strong>Payment Verification</strong> — Pay KES 3,500 and confirm with our team</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--nude-light);border-radius:10px;">
+            <div style="width:32px;height:32px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;">3</div>
+            <div><strong>Onboarding Call</strong> — Meet your mentor and start your journey</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── APPLICATION TAB ── -->
+    <div id="application" class="tab-content">
+      <div class="page-header">
+        <h1 class="page-title">My Application</h1>
+        <a href="mentorship-form.html" class="btn ghost"><i class="fas fa-edit"></i> New Application</a>
+      </div>
+      <div id="appDetailCard"><div class="spinner-wrap"><div class="spin"></div></div></div>
+    </div>
+
+    <!-- ── RESOURCES TAB ── -->
+    <div id="resources" class="tab-content">
+      <div class="page-header"><h1 class="page-title">Learning Resources</h1></div>
+      <div class="info-box"><i class="fas fa-lock"></i> Full resources unlock after your application is approved and payment is verified.</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+        <div class="card" style="text-align:center;padding:28px 16px;">
+          <div style="font-size:2.5rem;color:var(--gold);margin-bottom:12px;"><i class="fas fa-chart-bar"></i></div>
+          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:8px;">Technical Analysis</h3>
+          <p style="color:var(--muted);font-size:0.88rem;">Master chart reading and indicators</p>
+          <div style="margin-top:14px;"><span class="badge badge-pending">Coming Soon</span></div>
+        </div>
+        <div class="card" style="text-align:center;padding:28px 16px;">
+          <div style="font-size:2.5rem;color:var(--gold);margin-bottom:12px;"><i class="fas fa-shield-alt"></i></div>
+          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:8px;">Risk Management</h3>
+          <p style="color:var(--muted);font-size:0.88rem;">Protect your capital strategically</p>
+          <div style="margin-top:14px;"><span class="badge badge-pending">Coming Soon</span></div>
+        </div>
+        <div class="card" style="text-align:center;padding:28px 16px;">
+          <div style="font-size:2.5rem;color:var(--gold);margin-bottom:12px;"><i class="fas fa-brain"></i></div>
+          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:8px;">Trading Psychology</h3>
+          <p style="color:var(--muted);font-size:0.88rem;">Master your emotions and mindset</p>
+          <div style="margin-top:14px;"><span class="badge badge-pending">Coming Soon</span></div>
+        </div>
+        <div class="card" style="text-align:center;padding:28px 16px;">
+          <div style="font-size:2.5rem;color:var(--gold);margin-bottom:12px;"><i class="fas fa-video"></i></div>
+          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:8px;">Live Sessions</h3>
+          <p style="color:var(--muted);font-size:0.88rem;">1-on-1 with your mentor</p>
+          <div style="margin-top:14px;"><span class="badge badge-pending">Coming Soon</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CONTACT TAB ── -->
+    <div id="contact" class="tab-content">
+      <div class="page-header"><h1 class="page-title">Contact Your Mentor</h1></div>
+      <div class="card">
+        <div class="card-title">Reach Out</div>
+        <div class="info-box"><i class="fas fa-envelope"></i> Direct communication is available via email. A live chat system will be available once your mentorship is active.</div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <a href="mailto:crowntradeacademy@gmail.com" class="btn" style="width:fit-content;"><i class="fas fa-envelope"></i> Email the Team</a>
+          <div style="background:var(--nude-light);padding:16px;border-radius:10px;font-size:0.9rem;">
+            <strong>Email:</strong> crowntradeacademy@gmail.com<br>
+            <strong>Response Time:</strong> Within 24 hours<br>
+            <strong>Support Hours:</strong> Mon–Sat, 8AM–8PM EAT
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth('login.html')) return;
+  const user = getUser();
+  if (user) {
+    document.getElementById('userName').textContent = user.full_name || user.email;
+    document.getElementById('userAvatar').textContent = (user.full_name || user.email).charAt(0).toUpperCase();
+  }
+
+  // Load application data
+  await loadApplicationData();
+
+  // Nav tabs
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(item.dataset.tab).classList.add('active');
+    });
+  });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    logout();
+    window.location.href = 'login.html';
+  });
+});
+
+async function loadApplicationData() {
+  try {
+    const user = getUser();
+    const data = await API.getMentorshipStatus(user.email);
+    renderApplicationData(data.application);
+  } catch {
+    renderNoApplication();
+  }
+}
+
+function renderApplicationData(app) {
+  if (!app) { renderNoApplication(); return; }
+
+  const statusBadge = badge(app.status);
+  const payBadge = badge(app.payment_status);
+
+  document.getElementById('appStatus').textContent = cap(app.status);
+  document.getElementById('payStatus').textContent = cap(app.payment_status);
+
+  const summary = `
+    <div class="app-status">
+      <div class="app-status-row"><span class="app-status-label">Full Name</span><span class="app-status-value">${app.full_name}</span></div>
+      <div class="app-status-row"><span class="app-status-label">Email</span><span class="app-status-value">${app.email}</span></div>
+      <div class="app-status-row"><span class="app-status-label">Application Status</span><span class="app-status-value">${statusBadge}</span></div>
+      <div class="app-status-row"><span class="app-status-label">Payment Status</span><span class="app-status-value">${payBadge}</span></div>
+      <div class="app-status-row"><span class="app-status-label">Submitted</span><span class="app-status-value">${new Date(app.submitted_at).toLocaleDateString()}</span></div>
+    </div>`;
+  document.getElementById('dashAppSummary').innerHTML = summary;
+
+  const detail = `
+    <div class="card">
+      <div class="card-title">Application Details</div>
+      <div class="app-status">
+        <div class="app-status-row"><span class="app-status-label">Full Name</span><span class="app-status-value">${app.full_name}</span></div>
+        <div class="app-status-row"><span class="app-status-label">Phone</span><span class="app-status-value">${app.phone}</span></div>
+        <div class="app-status-row"><span class="app-status-label">Experience Level</span><span class="app-status-value">${cap(app.experience_level)}</span></div>
+        <div class="app-status-row"><span class="app-status-label">Time Commitment</span><span class="app-status-value">${app.time_commitment} hrs/week</span></div>
+        <div class="app-status-row"><span class="app-status-label">Markets</span><span class="app-status-value">${app.preferred_markets || 'Not specified'}</span></div>
+        <div class="app-status-row"><span class="app-status-label">Application Status</span><span class="app-status-value">${statusBadge}</span></div>
+        <div class="app-status-row"><span class="app-status-label">Payment Status</span><span class="app-status-value">${payBadge}</span></div>
+        <div class="app-status-row"><span class="app-status-label">Submitted</span><span class="app-status-value">${new Date(app.submitted_at).toLocaleDateString()}</span></div>
+        ${app.admin_notes ? `<div class="app-status-row"><span class="app-status-label">Admin Notes</span><span class="app-status-value">${app.admin_notes}</span></div>` : ''}
+      </div>
+      <div style="margin-top:18px;padding:16px;background:var(--nude-light);border-radius:10px;">
+        <strong>Trading Goals:</strong><br><span style="color:var(--muted);">${app.trading_goals}</span>
+      </div>
+    </div>`;
+  document.getElementById('appDetailCard').innerHTML = detail;
+}
+
+function renderNoApplication() {
+  document.getElementById('appStatus').textContent = 'None';
+  document.getElementById('payStatus').textContent = 'None';
+  const msg = `<div class="info-box"><i class="fas fa-info-circle"></i> You haven't submitted a mentorship application yet. <a href="mentorship-form.html" style="color:var(--gold-dark);font-weight:700;">Apply now →</a></div>`;
+  document.getElementById('dashAppSummary').innerHTML = msg;
+  document.getElementById('appDetailCard').innerHTML = msg;
+}
+
+function badge(status) {
+  const map = { pending:'badge-pending', approved:'badge-approved', rejected:'badge-rejected', verified:'badge-verified' };
+  return `<span class="badge ${map[status]||'badge-pending'}">${cap(status)}</span>`;
+}
+
+function cap(str) {
+  return str ? str.charAt(0).toUpperCase() + str.slice(1) : '—';
+}
+</script>
+</body>
+</html>

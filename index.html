@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crown Trade Academy - Elite Trading Mentorship</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --nude-light: #F9F6F2;
+  --nude-medium: #E8DFD6;
+  --nude-dark: #D4C8BC;
+  --nude-accent: #C4B5A3;
+  --gold: #C8A97E;
+  --gold-dark: #B89463;
+  --charcoal: #3A3A3A;
+  --text-light: #7A7A7A;
+  --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Montserrat', sans-serif; background-color: var(--nude-light); color: var(--charcoal); line-height: 1.6; overflow-x: hidden; }
+h1,h2,h3,h4,h5 { font-family: 'Cormorant Garamond', serif; font-weight: 600; line-height: 1.3; }
+
+/* Header */
+.premium-header { background-color: rgba(249,246,242,0.95); backdrop-filter: blur(10px); position: fixed; width: 100%; z-index: 1000; border-bottom: 1px solid rgba(212,200,188,0.3); transition: var(--transition); }
+.premium-nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 1.2rem 2rem; }
+.logo { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--charcoal); text-decoration: none; letter-spacing: 1px; position: relative; }
+.logo::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 30px; height: 2px; background-color: var(--gold); transition: var(--transition); }
+.logo:hover::after { width: 100%; }
+.nav-links { display: flex; list-style: none; gap: 2.5rem; }
+.nav-links a { text-decoration: none; color: var(--charcoal); font-weight: 500; font-size: 0.9rem; letter-spacing: 0.5px; position: relative; transition: var(--transition); }
+.nav-links a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px; background-color: var(--gold); transition: var(--transition); }
+.nav-links a:hover { color: var(--gold); }
+.nav-links a:hover::after { width: 100%; }
+
+/* Mobile hamburger */
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+.hamburger span { display: block; width: 24px; height: 2px; background: var(--charcoal); transition: var(--transition); }
+.hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+
+/* Hero */
+.hero { background: linear-gradient(135deg,rgba(249,246,242,0.9) 0%,rgba(232,223,214,0.8) 100%), url('https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80'); background-size: cover; background-position: center; color: var(--charcoal); padding: 12rem 2rem 8rem; text-align: center; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom,rgba(249,246,242,0.6),rgba(232,223,214,0.4)); z-index: 1; }
+.hero-content { position: relative; z-index: 2; max-width: 800px; margin: 0 auto; }
+.hero h1 { font-size: 3.5rem; margin-bottom: 1.5rem; font-weight: 600; letter-spacing: 1px; opacity: 0; animation: fadeInUp 1s ease forwards; }
+.hero p { font-size: 1.3rem; margin-bottom: 2.5rem; color: var(--text-light); opacity: 0; animation: fadeInUp 1s ease 0.3s forwards; }
+.btn-primary { display: inline-block; background: var(--gold); color: var(--nude-light); padding: 1rem 2.5rem; font-weight: 500; text-decoration: none; letter-spacing: 1px; transition: var(--transition); opacity: 0; animation: fadeInUp 1s ease 0.6s forwards; border: 1px solid var(--gold); position: relative; overflow: hidden; }
+.btn-primary:hover { background: transparent; color: var(--gold); }
+
+/* Features */
+.premium-container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+.features-section { padding: 6rem 0; background-color: var(--nude-light); }
+.section-title { text-align: center; margin-bottom: 4rem; }
+.section-title h2 { font-size: 2.5rem; color: var(--charcoal); display: inline-block; position: relative; }
+.section-title h2::after { content: ''; position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); width: 60px; height: 2px; background-color: var(--gold); }
+.features { display: grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 2.5rem; }
+.feature-card { background: var(--nude-light); padding: 3rem 2rem; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: var(--transition); border: 1px solid var(--nude-medium); position: relative; overflow: hidden; }
+.feature-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: var(--transition); }
+.feature-card:hover::before { transform: scaleX(1); }
+.feature-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+.feature-icon { font-size: 2.5rem; color: var(--gold); margin-bottom: 1.5rem; display: inline-block; height: 80px; width: 80px; line-height: 80px; border: 1px solid var(--nude-medium); transition: var(--transition); }
+.feature-card:hover .feature-icon { background-color: var(--gold); color: var(--nude-light); border-color: var(--gold); }
+.feature-card h3 { margin-bottom: 1.2rem; color: var(--charcoal); font-size: 1.5rem; }
+.feature-card p { color: var(--text-light); line-height: 1.7; }
+
+/* Stats */
+.stats-section { background: var(--nude-medium); padding: 5rem 0; text-align: center; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 3rem; max-width: 900px; margin: 0 auto; }
+.stat-item { padding: 2rem 1rem; }
+.stat-number { font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; font-weight: 600; color: var(--gold); margin-bottom: 0.5rem; line-height: 1; }
+.stat-label { color: var(--charcoal); font-size: 0.9rem; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; }
+
+/* Testimonials */
+.testimonials-section { background: var(--nude-light); padding: 6rem 0; }
+.testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 2.5rem; margin-top: 3rem; }
+.testimonial-card { background: var(--nude-light); border: 1px solid var(--nude-medium); padding: 2.5rem; position: relative; transition: var(--transition); }
+.testimonial-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }
+.testimonial-card::before { content: '"'; position: absolute; top: 1rem; left: 2rem; font-family: 'Cormorant Garamond',serif; font-size: 4rem; color: var(--gold); opacity: 0.3; line-height: 1; }
+.testimonial-content { position: relative; z-index: 2; margin-bottom: 2rem; }
+.testimonial-content p { font-style: italic; color: var(--text-light); line-height: 1.7; }
+.testimonial-author { border-top: 1px solid var(--nude-medium); padding-top: 1.5rem; }
+.author-name { font-weight: 600; color: var(--charcoal); margin-bottom: 0.3rem; }
+.author-role { font-size: 0.9rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; }
+
+/* Process */
+.process-section { background: linear-gradient(135deg,var(--nude-light) 0%,var(--nude-medium) 100%); padding: 6rem 0; }
+.process-steps { max-width: 800px; margin: 0 auto; }
+.process-step { display: flex; align-items: flex-start; margin-bottom: 3rem; padding: 2rem; background: var(--nude-light); border: 1px solid var(--nude-medium); transition: var(--transition); position: relative; }
+.process-step:hover { transform: translateX(10px); border-color: var(--gold); }
+.step-number { font-family: 'Cormorant Garamond',serif; font-size: 3rem; font-weight: 600; color: var(--gold); margin-right: 2rem; line-height: 1; min-width: 60px; }
+.step-content h3 { margin-bottom: 0.8rem; color: var(--charcoal); font-size: 1.4rem; }
+.step-content p { color: var(--text-light); line-height: 1.7; }
+
+/* CTA */
+.cta-section { background: linear-gradient(135deg,var(--nude-medium) 0%,var(--nude-dark) 100%); color: var(--charcoal); text-align: center; padding: 6rem 2rem; position: relative; overflow: hidden; }
+.cta-section::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80'); background-size: cover; opacity: 0.1; }
+.cta-content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
+.cta-section h2 { font-size: 2.8rem; margin-bottom: 1.5rem; font-weight: 600; }
+.cta-section p { font-size: 1.2rem; opacity: 0.85; margin-bottom: 2.5rem; color: var(--text-light); }
+.btn-secondary { display: inline-block; background: transparent; color: var(--charcoal); padding: 1rem 2.5rem; font-weight: 500; text-decoration: none; letter-spacing: 1px; transition: var(--transition); border: 1px solid var(--charcoal); }
+.btn-secondary:hover { background: var(--charcoal); color: var(--nude-light); }
+
+/* Footer */
+footer { background: var(--charcoal); text-align: center; padding: 3rem 1rem; color: var(--nude-medium); border-top: 1px solid rgba(212,200,188,0.2); }
+.footer-content { max-width: 1200px; margin: 0 auto; }
+.footer-logo { font-family: 'Cormorant Garamond',serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--nude-light); }
+.footer-links { display: flex; justify-content: center; list-style: none; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; }
+.footer-links a { text-decoration: none; color: var(--nude-medium); font-size: 0.9rem; transition: var(--transition); }
+.footer-links a:hover { color: var(--gold); }
+.copyright { font-size: 0.9rem; color: var(--nude-dark); }
+
+@keyframes fadeInUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hamburger { display: flex; }
+  .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; width: 100%; background: rgba(249,246,242,0.98); padding: 1.5rem 2rem; gap: 1.2rem; border-bottom: 1px solid var(--nude-medium); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+  .nav-links.open { display: flex; }
+  .premium-nav { position: relative; }
+  .hero { padding: 10rem 1.5rem 6rem; }
+  .hero h1 { font-size: 2.5rem; }
+  .hero p { font-size: 1.1rem; }
+  .features { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2,1fr); gap: 2rem; }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .process-step { flex-direction: column; text-align: center; }
+  .step-number { margin-right: 0; margin-bottom: 1rem; }
+  .footer-links { flex-direction: column; gap: 1rem; }
+}
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .stat-number { font-size: 2.8rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="premium-header">
+  <nav class="premium-nav">
+    <a href="index.html" class="logo">Crown Trade Academy</a>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="mentorship-form.html">Mentorship</a></li>
+      <li><a href="referral-register.html">Referral Program</a></li>
+      <li><a href="login.html">Client Login</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Master the Markets with Crown Trade Academy</h1>
+    <p>Join our elite mentorship program and unlock the secrets to trading success. Expert guidance, step-by-step strategies, and a community of winners.</p>
+    <a href="mentorship-form.html" class="btn-primary">Begin Your Journey</a>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features-section">
+  <div class="premium-container">
+    <div class="section-title"><h2>Our Exclusive Offerings</h2></div>
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+        <h3>Professional Mentorship</h3>
+        <p>Learn from experienced traders with proven strategies and a track record of success in global markets.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-handshake"></i></div>
+        <h3>Referral Program</h3>
+        <p>Earn substantial rewards for every associate who joins our academy. Bonuses are credited after approval.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-gem"></i></div>
+        <h3>Comprehensive Resources</h3>
+        <p>Access premium educational materials, exclusive trading sessions, and our elite community network.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="stats-section">
+  <div class="premium-container">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-number" data-count="500" data-suffix="+">0</div>
+        <div class="stat-label">Successful Traders</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-count="98" data-suffix="%">0</div>
+        <div class="stat-label">Success Rate</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-count="15" data-suffix="+">0</div>
+        <div class="stat-label">Years Experience</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" data-count="24" data-suffix="/7">0</div>
+        <div class="stat-label">Support</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials-section">
+  <div class="premium-container">
+    <div class="section-title"><h2>Success Stories</h2></div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-content"><p>"Crown Trade Academy transformed my approach to trading. The mentorship provided insights I couldn't find anywhere else."</p></div>
+        <div class="testimonial-author"><div class="author-name">Michael Chen</div><div class="author-role">Forex Trader</div></div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-content"><p>"The referral program allowed me to build a substantial secondary income while helping others succeed in trading."</p></div>
+        <div class="testimonial-author"><div class="author-name">Sarah Johnson</div><div class="author-role">Equities Specialist</div></div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-content"><p>"From complete beginner to consistent profitability in 6 months. The structured learning path is incredible."</p></div>
+        <div class="testimonial-author"><div class="author-name">David Martinez</div><div class="author-role">Options Trader</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Process -->
+<section class="process-section">
+  <div class="premium-container">
+    <div class="section-title"><h2>Our Elite Process</h2></div>
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="step-number">01</div>
+        <div class="step-content"><h3>Initial Assessment</h3><p>Comprehensive evaluation of your current trading knowledge and goals</p></div>
+      </div>
+      <div class="process-step">
+        <div class="step-number">02</div>
+        <div class="step-content"><h3>Personalized Strategy</h3><p>Custom trading plan tailored to your risk tolerance and market preferences</p></div>
+      </div>
+      <div class="process-step">
+        <div class="step-number">03</div>
+        <div class="step-content"><h3>Live Mentorship</h3><p>One-on-one sessions with expert traders and real-time market analysis</p></div>
+      </div>
+      <div class="process-step">
+        <div class="step-number">04</div>
+        <div class="step-content"><h3>Advanced Techniques</h3><p>Master advanced strategies and risk management protocols</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA — FIXED: was linking to register.html (doesn't exist), now links to mentorship-form.html -->
+<section class="cta-section">
+  <div class="cta-content">
+    <h2>Elevate Your Trading Journey</h2>
+    <p>Join our distinguished community and transform your approach to financial markets with our exclusive mentorship program.</p>
+    <a href="mentorship-form.html" class="btn-secondary">Secure Your Position</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-content">
+    <div class="footer-logo">Crown Trade Academy</div>
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="mentorship-form.html">Mentorship</a></li>
+      <li><a href="referral-register.html">Referral Program</a></li>
+      <li><a href="login.html">Client Login</a></li>
+      <li><a href="#">Privacy Policy</a></li>
+      <li><a href="#">Terms of Service</a></li>
+    </ul>
+    <p class="copyright">&copy; 2025 Crown Trade Academy. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+// Mobile menu
+function toggleMenu() {
+  const nav = document.getElementById('navLinks');
+  const btn = document.getElementById('hamburger');
+  nav.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
+// Header scroll
+window.addEventListener('scroll', () => {
+  const header = document.querySelector('.premium-header');
+  if (window.scrollY > 50) {
+    header.style.backgroundColor = 'rgba(249,246,242,0.98)';
+    header.style.boxShadow = '0 5px 20px rgba(0,0,0,0.05)';
+  } else {
+    header.style.backgroundColor = 'rgba(249,246,242,0.95)';
+    header.style.boxShadow = 'none';
+  }
+});
+
+// Feature card animation
+const featureCards = document.querySelectorAll('.feature-card');
+const cardObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) { entry.target.style.opacity = '1'; entry.target.style.transform = 'translateY(0)'; }
+  });
+}, { threshold: 0.1 });
+featureCards.forEach(card => {
+  card.style.opacity = '0'; card.style.transform = 'translateY(30px)'; card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  cardObserver.observe(card);
+});
+
+// Stats counter — FIXED: uses data-suffix instead of hardcoded % check
+const statNumbers = document.querySelectorAll('.stat-number');
+const statsSection = document.querySelector('.stats-section');
+const startCounter = el => {
+  const target = parseInt(el.getAttribute('data-count'));
+  const suffix = el.getAttribute('data-suffix') || '';
+  const duration = 2000;
+  const increment = target / (duration / 16);
+  let current = 0;
+  const timer = setInterval(() => {
+    current += increment;
+    if (current >= target) { el.textContent = target + suffix; clearInterval(timer); }
+    else { el.textContent = Math.floor(current) + suffix; }
+  }, 16);
+};
+new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) { statNumbers.forEach(startCounter); }
+  });
+}, { threshold: 0.5 }).observe(statsSection);
+
+// Process steps animation
+document.querySelectorAll('.process-step').forEach(step => {
+  step.style.opacity = '0'; step.style.transform = 'translateX(-30px)'; step.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateX(0)'; } });
+  }, { threshold: 0.2 }).observe(step);
+});
+
+// Testimonial animation
+document.querySelectorAll('.testimonial-card').forEach(card => {
+  card.style.opacity = '0'; card.style.transform = 'translateY(30px)'; card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; } });
+  }, { threshold: 0.1 }).observe(card);
+});
+</script>
+</body>
+</html>
