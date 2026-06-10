@@ -1,5 +1,5 @@
 // Crown Trade Academy — shared API helper
-const API_BASE = window.location.origin + '/api';
+const API_BASE = 'https://crowntrade-academy-phai.onrender.com/api';
 
 const API = {
   // ─── AUTH ──────────────────────────────────────────────────────────────────
