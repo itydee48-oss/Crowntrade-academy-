@@ -1,6 +1,5 @@
 const Database = require('better-sqlite3');
 const path = require('path');
-const fs = require('fs');
 
 const DB_PATH = path.join(__dirname, 'crowntraders.db');
 
@@ -20,7 +19,6 @@ function initDB() {
     try {
       const database = getDB();
 
-      // Users table (clients, mentors, admins)
       database.exec(`
         CREATE TABLE IF NOT EXISTS users (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,8 +26,8 @@ function initDB() {
           email TEXT UNIQUE NOT NULL,
           phone TEXT,
           password_hash TEXT NOT NULL,
-          role TEXT NOT NULL DEFAULT 'client',  -- client | mentor | admin | referral
-          status TEXT NOT NULL DEFAULT 'pending', -- pending | active | suspended
+          role TEXT NOT NULL DEFAULT 'client',
+          status TEXT NOT NULL DEFAULT 'pending',
           referral_code TEXT UNIQUE,
           referred_by TEXT,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -48,8 +46,9 @@ function initDB() {
           time_commitment TEXT NOT NULL,
           program TEXT DEFAULT 'Elite Mentorship',
           amount INTEGER DEFAULT 3500,
-          payment_status TEXT DEFAULT 'pending',  -- pending | verified | rejected
-          status TEXT DEFAULT 'pending',           -- pending | approved | rejected
+          payment_proof TEXT,
+          payment_status TEXT DEFAULT 'unpaid',
+          status TEXT DEFAULT 'pending',
           admin_notes TEXT,
           submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           reviewed_at DATETIME,
@@ -65,8 +64,8 @@ function initDB() {
           referred_by_code TEXT,
           payment_proof TEXT,
           amount INTEGER DEFAULT 500,
-          payment_status TEXT DEFAULT 'pending',  -- pending | verified | rejected
-          status TEXT DEFAULT 'pending',           -- pending | approved | rejected
+          payment_status TEXT DEFAULT 'pending',
+          status TEXT DEFAULT 'pending',
           admin_notes TEXT,
           referral_link TEXT,
           earnings INTEGER DEFAULT 0,
@@ -79,7 +78,7 @@ function initDB() {
           referrer_id INTEGER NOT NULL,
           referred_email TEXT NOT NULL,
           amount INTEGER DEFAULT 200,
-          status TEXT DEFAULT 'pending',  -- pending | paid
+          status TEXT DEFAULT 'pending',
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (referrer_id) REFERENCES referral_applications(id)
         );
@@ -102,23 +101,22 @@ function initDB() {
         );
       `);
 
-      // Seed default admin if not exists
-      const adminExists = database.prepare(
-        "SELECT id FROM admin_users WHERE username = 'admin'"
-      ).get();
+      // Run migrations for existing databases
+      try { database.exec(`ALTER TABLE mentorship_applications ADD COLUMN payment_proof TEXT`); } catch {}
+      try { database.exec(`ALTER TABLE mentorship_applications ADD COLUMN payment_status TEXT DEFAULT 'unpaid'`); } catch {}
 
+      // Seed default admin
+      const adminExists = database.prepare("SELECT id FROM admin_users WHERE username = 'admin'").get();
       if (!adminExists) {
         const bcrypt = require('bcryptjs');
         const defaultPassword = process.env.ADMIN_PASSWORD || 'CrownAdmin2024!';
         const hash = bcrypt.hashSync(defaultPassword, 10);
-        database.prepare(
-          "INSERT INTO admin_users (username, password_hash, email) VALUES (?, ?, ?)"
-        ).run('admin', hash, 'crowntradeacademy@gmail.com');
-        console.log('✅ Default admin created. Username: admin, Password:', defaultPassword);
-        console.log('⚠️  Change the admin password after first login!');
+        database.prepare("INSERT INTO admin_users (username, password_hash, email) VALUES (?, ?, ?)")
+          .run('admin', hash, 'crowntradeacademy@gmail.com');
+        console.log('✅ Default admin created. Password:', defaultPassword);
       }
 
-      console.log('✅ Database initialized successfully');
+      console.log('✅ Database initialized');
       resolve(database);
     } catch (err) {
       reject(err);
