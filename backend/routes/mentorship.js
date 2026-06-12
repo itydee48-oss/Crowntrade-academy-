@@ -36,7 +36,7 @@ router.post('/apply', async (req, res) => {
     `).run(full_name, email, phone, experience_level, trading_goals, marketsStr, time_commitment);
 
     res.status(201).json({
-      message: 'Application submitted successfully! We will review and contact you shortly.',
+      message: 'Application submitted successfully.',
       application_id: result.lastInsertRowid
     });
   } catch (err) {
@@ -45,12 +45,42 @@ router.post('/apply', async (req, res) => {
   }
 });
 
+// ─── ATTACH PAYMENT PROOF TO APPLICATION ─────────────────────────────────────
+router.post('/payment-proof', async (req, res) => {
+  try {
+    const { email, proof_url } = req.body;
+    if (!email || !proof_url) {
+      return res.status(400).json({ error: 'Email and proof URL are required' });
+    }
+
+    const db = getDB();
+    const app = db.prepare(
+      "SELECT id FROM mentorship_applications WHERE email = ? AND status != 'rejected' ORDER BY submitted_at DESC LIMIT 1"
+    ).get(email);
+
+    if (!app) {
+      return res.status(404).json({ error: 'No application found for this email' });
+    }
+
+    db.prepare(`
+      UPDATE mentorship_applications
+      SET payment_proof = ?, payment_status = 'pending'
+      WHERE id = ?
+    `).run(proof_url, app.id);
+
+    res.json({ message: 'Payment proof submitted. We will verify shortly.' });
+  } catch (err) {
+    console.error('Payment proof error:', err);
+    res.status(500).json({ error: 'Failed to submit payment proof' });
+  }
+});
+
 // ─── GET OWN APPLICATION STATUS ──────────────────────────────────────────────
 router.get('/status/:email', (req, res) => {
   try {
     const db = getDB();
     const app = db.prepare(
-      'SELECT id, full_name, email, status, payment_status, submitted_at FROM mentorship_applications WHERE email = ?'
+      'SELECT id, full_name, email, status, payment_status, payment_proof, submitted_at, admin_notes FROM mentorship_applications WHERE email = ? ORDER BY submitted_at DESC LIMIT 1'
     ).get(req.params.email);
 
     if (!app) return res.status(404).json({ error: 'No application found for this email' });
