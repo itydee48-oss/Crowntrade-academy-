@@ -257,7 +257,15 @@ let currentFilter = { mentorship: '', referral: '' };
 let modalContext = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-  if (!requireAdminAuth()) return;
+  // Verify token and role before loading
+  const _token = getToken();
+  const _user = getUser();
+  if (!_token || !_user || _user.role !== 'admin') {
+    console.warn('Admin auth failed. Token:', !!_token, 'User:', _user?.role);
+    logout();
+    window.location.href = 'admin-login.html';
+    return;
+  }
 
   const user = getUser();
   const name = user?.username || 'Admin';
