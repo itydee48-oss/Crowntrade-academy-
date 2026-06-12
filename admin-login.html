@@ -18,21 +18,22 @@ body{font-family:'Montserrat',sans-serif;background:linear-gradient(135deg,#1a1a
 .logo-sub{color:var(--muted);font-size:0.85rem;margin-top:4px;}
 .admin-badge{display:inline-block;background:#FEF3C7;color:#92400E;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:8px;}
 .form-group{margin-bottom:18px;}
-.form-label{display:block;margin-bottom:7px;font-weight:600;font-size:0.85rem;color:var(--charcoal);letter-spacing:0.3px;}
+.form-label{display:block;margin-bottom:7px;font-weight:600;font-size:0.85rem;color:var(--charcoal);}
 .input-wrap{position:relative;}
-.form-control{width:100%;padding:11px 40px 11px 14px;border:1px solid rgba(212,200,188,0.6);border-radius:9px;font-family:'Montserrat',sans-serif;font-size:0.92rem;color:var(--charcoal);transition:all 0.3s;background:var(--nude-light);}
+.form-control{width:100%;padding:11px 40px 11px 14px;border:1px solid rgba(212,200,188,0.6);border-radius:9px;font-family:'Montserrat',sans-serif;font-size:0.92rem;color:var(--charcoal);background:var(--nude-light);transition:all 0.3s;}
 .form-control:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,169,126,0.12);background:#fff;}
-.toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:0.9rem;}
-.btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#fff;border:none;border-radius:9px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.3s;letter-spacing:0.5px;}
+.toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);}
+.btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#fff;border:none;border-radius:9px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;letter-spacing:0.5px;transition:all 0.3s;}
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(200,169,126,0.35);}
 .btn-primary:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
 .alert{padding:11px 14px;margin-bottom:16px;font-size:0.88rem;border-radius:8px;border-left:3px solid;}
 .alert-error{background:#FEF2F2;border-color:var(--danger);color:#991B1B;}
 .alert-success{background:#F0FDF4;border-color:#10B981;color:#065F46;}
-.divider{border:none;border-top:1px solid rgba(212,200,188,0.4);margin:20px 0;}
-.back-link{display:block;text-align:center;color:var(--muted);font-size:0.85rem;text-decoration:none;transition:color 0.3s;}
+hr{border:none;border-top:1px solid rgba(212,200,188,0.4);margin:20px 0;}
+.back-link{display:block;text-align:center;color:var(--muted);font-size:0.85rem;text-decoration:none;}
 .back-link:hover{color:var(--gold-dark);}
-.security-note{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:10px 13px;font-size:0.8rem;color:#991B1B;display:flex;align-items:flex-start;gap:8px;margin-top:12px;}
+/* Debug panel */
+.debug{background:#f8f8f8;border:1px solid #ddd;border-radius:8px;padding:10px;margin-top:14px;font-size:0.78rem;color:#555;display:none;}
 </style>
 </head>
 <body>
@@ -48,9 +49,7 @@ body{font-family:'Montserrat',sans-serif;background:linear-gradient(135deg,#1a1a
 
     <div class="form-group">
       <label class="form-label">Username</label>
-      <div class="input-wrap">
-        <input type="text" id="username" class="form-control" placeholder="Admin username" autocomplete="username">
-      </div>
+      <input type="text" id="username" class="form-control" placeholder="admin" autocomplete="username">
     </div>
     <div class="form-group">
       <label class="form-label">Password</label>
@@ -64,20 +63,18 @@ body{font-family:'Montserrat',sans-serif;background:linear-gradient(135deg,#1a1a
       <i class="fas fa-sign-in-alt"></i>&nbsp; Sign In
     </button>
 
-    <div class="security-note">
-      <i class="fas fa-lock" style="margin-top:1px;flex-shrink:0;"></i>
-      <span>This is a restricted admin area. Unauthorized access attempts are logged.</span>
-    </div>
+    <div class="debug" id="debugPanel"></div>
 
-    <hr class="divider">
+    <hr>
     <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Homepage</a>
   </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Redirect if already logged in as admin
-  const user = getUser();
-  if (getToken() && user && user.role === 'admin') {
+  // Clear any stale tokens first
+  const existingToken = getToken();
+  const existingUser = getUser();
+  if (existingToken && existingUser && existingUser.role === 'admin') {
     window.location.href = 'admin-dashboard.html';
   }
 });
@@ -87,6 +84,12 @@ function showAlert(msg, type = 'error') {
   el.className = `alert alert-${type}`;
   el.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i> ${msg}`;
   el.style.display = 'block';
+}
+
+function debug(msg) {
+  const panel = document.getElementById('debugPanel');
+  panel.style.display = 'block';
+  panel.innerHTML += `<div>${new Date().toLocaleTimeString()} — ${msg}</div>`;
 }
 
 async function doLogin() {
@@ -101,12 +104,32 @@ async function doLogin() {
   document.getElementById('login-alert').style.display = 'none';
 
   try {
+    debug(`Calling: ${API_BASE}/auth/admin/login`);
     const data = await API.adminLogin(username, password);
+    debug(`Response received. Role: ${data.user?.role}`);
+
+    if (!data.token) throw new Error('No token received from server');
+    if (data.user?.role !== 'admin') throw new Error('Account does not have admin access');
+
+    // Save token and user
     setToken(data.token);
     setUser(data.user);
-    showAlert('Access granted. Redirecting…', 'success');
-    setTimeout(() => window.location.href = 'admin-dashboard.html', 700);
+
+    // Verify it was saved
+    const savedToken = getToken();
+    const savedUser = getUser();
+    debug(`Token saved: ${savedToken ? 'YES' : 'NO'}`);
+    debug(`User saved: ${savedUser ? savedUser.username : 'NO'}`);
+
+    showAlert('Access granted! Redirecting…', 'success');
+
+    // Small delay to ensure localStorage writes complete
+    setTimeout(() => {
+      window.location.href = 'admin-dashboard.html';
+    }, 800);
+
   } catch (err) {
+    debug(`Error: ${err.message}`);
     showAlert(err.message || 'Invalid credentials');
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-sign-in-alt"></i>&nbsp; Sign In';
