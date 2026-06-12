@@ -46,13 +46,17 @@ const API = {
     const formData = new FormData();
     formData.append('proof', file);
     const token = getToken();
-    const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+    // Do NOT set Content-Type header — browser sets it automatically with boundary for multipart
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
     const res = await fetch(`${API_BASE}/upload/payment-proof`, {
       method: 'POST',
       headers,
       body: formData
     });
-    return await res.json();
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Upload failed');
+    return data;
   },
 
   // ─── ADMIN ─────────────────────────────────────────────────────────────────
@@ -96,13 +100,17 @@ function logout() {
   localStorage.removeItem('ct_token');
   localStorage.removeItem('ct_user');
 }
+function isLoggedIn() {
+  return !!getToken();
+}
 function requireAuth(redirectTo = 'login.html') {
   if (!getToken()) { window.location.href = redirectTo; return false; }
   return true;
 }
 function requireAdminAuth() {
+  const token = getToken();
   const user = getUser();
-  if (!getToken() || !user || user.role !== 'admin') {
+  if (!token || !user || user.role !== 'admin') {
     window.location.href = 'admin-login.html';
     return false;
   }
@@ -113,10 +121,14 @@ function requireAdminAuth() {
 async function get(path) {
   const token = getToken();
   const res = await fetch(API_BASE + path, {
-    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    }
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Request failed');
+  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
   return data;
 }
 
@@ -131,7 +143,7 @@ async function post(path, body) {
     body: JSON.stringify(body)
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Request failed');
+  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
   return data;
 }
 
@@ -146,6 +158,6 @@ async function patch(path, body) {
     body: JSON.stringify(body)
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Request failed');
+  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
   return data;
 }
