@@ -442,7 +442,7 @@ async function loadEarnings() {
     if (!agents.length) { document.getElementById('earningsTable').innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No approved referral agents.</p>'; return; }
     // Load each agent's details to get earnings
     const details = await Promise.all(agents.slice(0, 20).map(a =>
-      fetch(`/api/admin/referral/${a.id}`, { headers: { Authorization: `Bearer ${getToken()}` } }).then(r => r.json())
+      fetch(`https://crowntrade-academy-phai.onrender.com/api/admin/referral/${a.id}`, { headers: { Authorization: `Bearer ${getToken()}` } }).then(r => r.json())
     ));
     const allEarnings = details.flatMap(d => (d.earnings || []).map(e => ({
       ...e, agent_name: d.application?.full_name || '—'
@@ -511,7 +511,7 @@ async function toggleUserStatus(id, currentStatus, btn) {
   btn.disabled = true;
   try {
     await API.getUsers(); // just to verify auth
-    await fetch(`/api/admin/users/${id}`, {
+    await fetch(`https://crowntrade-academy-phai.onrender.com/api/admin/users/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
       body: JSON.stringify({ status: newStatus })
