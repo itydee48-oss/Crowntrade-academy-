@@ -13,36 +13,41 @@ const uploadRoutes = require('./routes/upload');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ─── CORS — allow GitHub Pages + localhost ────────────────────────────────────
-const allowedOrigins = [
-  'https://itydee48-oss.github.io',
-  'http://localhost:3000',
-  'http://localhost:5500',
-  'http://127.0.0.1:5500'
-];
-
+// ─── CORS ─────────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, curl)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      return callback(null, true);
-    }
-    return callback(null, true); // Allow all for now — tighten after testing
-  },
+  origin: '*',  // Allow all origins — fine for this project
   credentials: true,
   methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
-
-// Handle preflight OPTIONS requests
 app.options('*', cors());
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve uploaded files publicly
+// Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// ─── DEBUG: Token verify endpoint ─────────────────────────────────────────────
+// Visit: https://crowntrade-academy-phai.onrender.com/api/auth/verify-token
+// with Authorization: Bearer <your_token> to test if your token works
+app.get('/api/auth/verify-token', (req, res) => {
+  const jwt = require('jsonwebtoken');
+  const secret = process.env.JWT_SECRET || 'crowntraders_secret_change_in_production';
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.json({ ok: false, error: 'No token provided', hint: 'Send Authorization: Bearer <token>' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, secret);
+    res.json({ ok: true, decoded, secret_length: secret.length });
+  } catch (err) {
+    res.json({ ok: false, error: err.message, name: err.name, token_prefix: token.substring(0, 30) });
+  }
+});
 
 // ─── API Routes ───────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
@@ -53,21 +58,28 @@ app.use('/api/upload', uploadRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Crown Trade Academy API running' });
+  res.json({
+    status: 'ok',
+    message: 'Crown Trade Academy API running',
+    jwt_secret_set: !!process.env.JWT_SECRET,
+    node_version: process.version
+  });
 });
 
-// 404 handler for unknown API routes
+// 404 for unknown API routes
 app.use('/api/*', (req, res) => {
-  res.status(404).json({ error: `API route not found: ${req.originalUrl}` });
+  res.status(404).json({ error: `Route not found: ${req.method} ${req.originalUrl}` });
 });
 
 // ─── Start ────────────────────────────────────────────────────────────────────
 initDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`✅ Crown Trade Academy server running on port ${PORT}`);
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`🔑 JWT_SECRET set: ${!!process.env.JWT_SECRET}`);
+    console.log(`🌍 CORS: open to all origins`);
   });
 }).catch(err => {
-  console.error('❌ Failed to initialize database:', err);
+  console.error('❌ Database init failed:', err);
   process.exit(1);
 });
 
