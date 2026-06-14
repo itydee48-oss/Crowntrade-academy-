@@ -70,12 +70,30 @@ hr{border:none;border-top:1px solid rgba(212,200,188,0.4);margin:20px 0;}
   </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  // Clear any stale tokens first
+document.addEventListener('DOMContentLoaded', async () => {
   const existingToken = getToken();
   const existingUser = getUser();
+
   if (existingToken && existingUser && existingUser.role === 'admin') {
-    window.location.href = 'admin-dashboard.html';
+    // Verify token is still valid before redirecting
+    try {
+      const res = await fetch(`${API_BASE}/auth/verify-token`, {
+        headers: { 'Authorization': `Bearer ${existingToken}` }
+      });
+      const data = await res.json();
+      if (data.ok) {
+        // Token valid — go to dashboard
+        window.location.href = 'admin-dashboard.html';
+      } else {
+        // Token expired or invalid — clear it and show login form
+        logout();
+        console.log('Stale token cleared:', data.error);
+      }
+    } catch (err) {
+      // Server unreachable — clear token and show form
+      logout();
+      console.log('Could not verify token, clearing:', err.message);
+    }
   }
 });
 
