@@ -70,10 +70,25 @@ footer{background:var(--charcoal);text-align:center;padding:1.5rem;color:var(--n
 </main>
 <footer>&copy; 2025 Crown Trade Academy. All rights reserved.</footer>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  if (getToken()) {
+document.addEventListener('DOMContentLoaded', async () => {
+  const token = getToken();
+  if (token) {
     const user = getUser();
-    if (user && user.role === 'referral') window.location.href = 'referral-dashboard.html';
+    if (user && user.role === 'referral') {
+      try {
+        const res = await fetch(`${API_BASE}/auth/verify-token`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.ok) {
+          window.location.href = 'referral-dashboard.html';
+        } else {
+          logout();
+        }
+      } catch {
+        logout();
+      }
+    }
   }
 });
 
