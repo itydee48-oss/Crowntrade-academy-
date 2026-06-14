@@ -4,296 +4,823 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Crown Trade Academy — Client Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="api.js"></script>
 <style>
-:root{--nude-light:#F9F6F2;--nude-med:#E8DFD6;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#2e2e2e;--muted:#7A7A7A;--success:#10B981;--danger:#EF4444;}
+:root{--nude-light:#F9F6F2;--nude-med:#E8DFD6;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#2e2e2e;--muted:#7A7A7A;--success:#10B981;--danger:#EF4444;--info:#3B82F6;--locked:#CBD5E1;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Montserrat',sans-serif;background:linear-gradient(135deg,var(--nude-light) 0%,#fff 100%);color:var(--charcoal);min-height:100vh;line-height:1.6;}
-.app{display:grid;grid-template-columns:260px 1fr;gap:24px;padding:24px;min-height:100vh;max-width:1600px;margin:0 auto;}
-/* Sidebar */
-.sidebar{background:rgba(255,255,255,0.95);border:1px solid rgba(212,200,188,0.6);border-radius:20px;padding:28px 18px;height:fit-content;position:sticky;top:24px;box-shadow:0 8px 32px rgba(0,0,0,0.08);}
-.brand{font-family:'Cormorant Garamond',serif;color:var(--gold-dark);font-size:2rem;margin-bottom:6px;text-align:center;font-weight:700;}
-.brand-sub{color:var(--muted);font-size:0.85rem;text-align:center;margin-bottom:24px;}
-.user-info{display:flex;align-items:center;gap:12px;padding:14px;background:var(--nude-light);border-radius:12px;margin-bottom:24px;border:1px solid rgba(212,200,188,0.3);}
-.user-avatar{width:44px;height:44px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;}
-.user-name{font-weight:700;font-size:0.95rem;}
-.user-role{color:var(--muted);font-size:0.8rem;}
-.nav{display:flex;flex-direction:column;gap:6px;margin-bottom:24px;}
-.nav-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid transparent;border-radius:10px;cursor:pointer;font-weight:600;font-size:0.9rem;color:var(--charcoal);text-decoration:none;transition:all 0.3s;}
-.nav-item:hover{background:var(--nude-light);border-color:rgba(212,200,188,0.3);transform:translateX(4px);}
-.nav-item.active{background:var(--gold);color:#fff;border-color:var(--gold);}
-.nav-item i{width:18px;text-align:center;}
-.logout-btn{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--danger);color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:0.9rem;width:100%;transition:all 0.3s;}
-.logout-btn:hover{background:#DC2626;transform:translateY(-1px);}
-/* Main */
-.main{background:rgba(255,255,255,0.95);border-radius:20px;padding:28px;border:1px solid rgba(212,200,188,0.6);box-shadow:0 8px 32px rgba(0,0,0,0.08);}
-.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;padding-bottom:18px;border-bottom:2px solid var(--nude-med);}
-.page-title{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold-dark);font-weight:700;}
-.btn{background:var(--gold);color:#fff;border:none;padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:600;font-size:0.88rem;display:inline-flex;align-items:center;gap:7px;transition:all 0.3s;font-family:'Montserrat',sans-serif;}
-.btn:hover{background:var(--gold-dark);transform:translateY(-1px);}
-.btn.ghost{background:transparent;border:1px solid var(--gold);color:var(--gold);}
-.btn.ghost:hover{background:var(--gold);color:#fff;}
-/* Stats */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px;}
-.stat{text-align:center;padding:20px 14px;background:linear-gradient(135deg,var(--nude-light),#fff);border-radius:14px;border:1px solid rgba(212,200,188,0.3);transition:all 0.3s;}
-.stat:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,0.07);}
-.stat-icon{font-size:1.8rem;color:var(--gold);margin-bottom:8px;}
-.stat-value{font-size:1.9rem;font-weight:700;color:var(--gold-dark);margin-bottom:5px;}
-.stat-label{color:var(--muted);font-size:0.82rem;font-weight:600;}
-/* Card */
-.card{background:#fff;padding:24px;border-radius:14px;margin-bottom:20px;box-shadow:0 4px 16px rgba(0,0,0,0.05);border:1px solid rgba(212,200,188,0.3);}
-.card-title{font-family:'Cormorant Garamond',serif;color:var(--gold-dark);font-size:1.5rem;margin-bottom:18px;}
-/* Status badges */
-.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:600;}
-.badge-pending{background:#FEF3C7;color:#92400E;}
-.badge-approved{background:#D1FAE5;color:#065F46;}
-.badge-rejected{background:#FEE2E2;color:#991B1B;}
-.badge-verified{background:#DBEAFE;color:#1E40AF;}
-/* Application status block */
-.app-status{background:var(--nude-light);border-radius:12px;padding:24px;border:1px solid rgba(212,200,188,0.4);}
-.app-status-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(212,200,188,0.3);}
-.app-status-row:last-child{border-bottom:none;}
-.app-status-label{color:var(--muted);font-size:0.88rem;font-weight:600;}
-.app-status-value{font-weight:600;color:var(--charcoal);}
-/* Tab panels */
-.tab-content{display:none;}
-.tab-content.active{display:block;animation:fadeIn 0.4s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-/* Info box */
-.info-box{background:var(--nude-light);border-left:4px solid var(--gold);padding:16px 18px;border-radius:0 8px 8px 0;margin-bottom:20px;font-size:0.9rem;color:var(--charcoal);}
-/* Loading spinner */
-.spinner-wrap{text-align:center;padding:40px;color:var(--muted);}
-.spin{display:inline-block;width:28px;height:28px;border:3px solid var(--nude-med);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-/* Toast */
-.toast{position:fixed;top:20px;right:20px;padding:14px 20px;border-radius:10px;color:#fff;font-weight:600;font-size:0.9rem;z-index:9999;display:flex;align-items:center;gap:8px;animation:slideIn 0.4s ease;box-shadow:0 8px 24px rgba(0,0,0,0.15);}
-.toast-success{background:var(--success);}
-.toast-error{background:var(--danger);}
-.toast-info{background:var(--gold);}
-@keyframes slideIn{from{transform:translateX(120%);opacity:0;}to{transform:translateX(0);opacity:1;}}
-/* Responsive */
-@media(max-width:900px){.app{grid-template-columns:1fr;}.sidebar{position:static;display:grid;grid-template-columns:1fr 1fr;gap:12px;}.brand,.brand-sub,.user-info{grid-column:1/-1;}.nav{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;}.logout-btn{grid-column:1/-1;}}
-@media(max-width:480px){.app{padding:12px;gap:12px;}.main{padding:16px;}.stats{grid-template-columns:repeat(2,1fr);}}
+body{font-family:'Montserrat',sans-serif;background:#F0EDE8;color:var(--charcoal);min-height:100vh;}
+
+/* ── LAYOUT ── */
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{background:#1C1C1E;color:#E0D8CF;display:flex;flex-direction:column;}
+.sidebar-logo{padding:28px 22px 20px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.brand{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold);font-weight:700;}
+.brand-sub{font-size:0.76rem;color:#666;margin-top:2px;}
+.sidebar-user{padding:18px 22px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:12px;}
+.user-avatar{width:42px;height:42px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;flex-shrink:0;}
+.user-name{font-weight:600;font-size:0.9rem;color:#E0D8CF;}
+.user-status{font-size:0.74rem;color:var(--success);margin-top:2px;}
+.sidebar-nav{flex:1;padding:14px 12px;display:flex;flex-direction:column;gap:3px;}
+.nav-section{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#444;padding:12px 10px 5px;}
+.nav-item{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;cursor:pointer;font-weight:500;font-size:0.87rem;color:#999;border:1px solid transparent;text-decoration:none;transition:all 0.2s;}
+.nav-item:hover{background:rgba(255,255,255,0.05);color:#E0D8CF;}
+.nav-item.active{background:var(--gold);color:#fff;font-weight:700;}
+.nav-item i{width:16px;text-align:center;}
+.nav-item .badge{margin-left:auto;background:var(--danger);color:#fff;font-size:0.7rem;padding:2px 7px;border-radius:10px;font-weight:700;}
+.sidebar-footer{padding:14px 12px;border-top:1px solid rgba(255,255,255,0.07);}
+.logout-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(239,68,68,0.12);color:#EF4444;border:1px solid rgba(239,68,68,0.2);border-radius:9px;cursor:pointer;font-weight:600;font-size:0.87rem;width:100%;font-family:'Montserrat',sans-serif;transition:all 0.2s;}
+.logout-btn:hover{background:var(--danger);color:#fff;}
+
+/* ── MAIN ── */
+.main{display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:#fff;border-bottom:1px solid rgba(212,200,188,0.4);padding:16px 28px;display:flex;justify-content:space-between;align-items:center;}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold-dark);font-weight:700;}
+.topbar-right{display:flex;align-items:center;gap:14px;}
+.progress-pill{background:var(--nude-med);padding:6px 14px;border-radius:20px;font-size:0.82rem;font-weight:700;color:var(--charcoal);}
+.progress-pill span{color:var(--gold-dark);}
+.content{flex:1;padding:24px 28px;overflow-y:auto;}
+
+/* ── TAB PANELS ── */
+.tab-panel{display:none;}
+.tab-panel.active{display:block;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── OVERVIEW STATS ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.stat{background:#fff;border-radius:12px;padding:18px 16px;border:1px solid rgba(212,200,188,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:all 0.2s;}
+.stat:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.07);}
+.stat-icon{font-size:1.5rem;margin-bottom:8px;}
+.stat-value{font-size:1.8rem;font-weight:700;color:var(--gold-dark);margin-bottom:3px;}
+.stat-label{color:var(--muted);font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+
+/* ── CARDS ── */
+.card{background:#fff;border-radius:14px;padding:22px;margin-bottom:18px;border:1px solid rgba(212,200,188,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--gold-dark);font-weight:700;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.82rem;border:1px solid transparent;transition:all 0.2s;font-family:'Montserrat',sans-serif;text-decoration:none;}
+.btn-gold{background:var(--gold);color:#fff;border-color:var(--gold);}
+.btn-gold:hover{background:var(--gold-dark);}
+.btn-outline{background:transparent;border-color:var(--gold);color:var(--gold-dark);}
+.btn-outline:hover{background:var(--gold);color:#fff;}
+.btn-sm{padding:5px 12px;font-size:0.78rem;}
+
+/* ── COURSE PROGRESS BAR ── */
+.overall-progress{background:var(--nude-med);border-radius:10px;padding:18px 20px;margin-bottom:18px;display:flex;align-items:center;gap:20px;}
+.prog-text{flex:1;}
+.prog-title{font-weight:700;margin-bottom:4px;font-size:0.9rem;}
+.prog-sub{color:var(--muted);font-size:0.8rem;}
+.prog-bar-wrap{flex:2;}
+.prog-bar{height:10px;background:rgba(212,200,188,0.5);border-radius:5px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-dark));border-radius:5px;transition:width 1s ease;}
+.prog-pct{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--gold-dark);white-space:nowrap;}
+
+/* ── MODULE LIST ── */
+.module-list{display:flex;flex-direction:column;gap:10px;}
+.module-item{display:flex;align-items:center;gap:14px;padding:16px 18px;border:1px solid rgba(212,200,188,0.4);border-radius:10px;cursor:pointer;transition:all 0.2s;background:#fff;text-decoration:none;color:var(--charcoal);}
+.module-item:hover:not(.locked){border-color:var(--gold);transform:translateX(4px);box-shadow:0 4px 14px rgba(0,0,0,0.06);}
+.module-item.locked{opacity:0.55;cursor:not-allowed;}
+.module-item.completed{border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.03);}
+.module-item.current{border-color:var(--gold);background:rgba(200,169,126,0.05);box-shadow:0 4px 14px rgba(200,169,126,0.15);}
+.mod-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0;}
+.mod-num.done{background:var(--success);color:#fff;}
+.mod-num.active{background:var(--gold);color:#fff;}
+.mod-num.locked{background:var(--locked);color:#fff;}
+.mod-num.upcoming{background:var(--nude-med);color:var(--muted);}
+.mod-info{flex:1;}
+.mod-title{font-weight:700;font-size:0.92rem;margin-bottom:3px;}
+.mod-desc{color:var(--muted);font-size:0.8rem;}
+.mod-meta{display:flex;align-items:center;gap:8px;margin-top:4px;}
+.mod-tag{font-size:0.72rem;padding:2px 8px;border-radius:10px;font-weight:600;}
+.tag-done{background:#D1FAE5;color:#065F46;}
+.tag-current{background:#FEF3C7;color:#92400E;}
+.tag-locked{background:#F1F5F9;color:#94A3B8;}
+.mod-duration{color:var(--muted);font-size:0.78rem;display:flex;align-items:center;gap:4px;}
+.mod-arrow{color:var(--muted);font-size:0.9rem;}
+
+/* ── VIDEO PLAYER ── */
+.video-section{display:none;}
+.video-section.show{display:block;}
+.video-header{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.back-btn{display:flex;align-items:center;gap:6px;color:var(--gold-dark);cursor:pointer;font-weight:600;font-size:0.88rem;background:none;border:none;font-family:'Montserrat',sans-serif;}
+.back-btn:hover{color:var(--gold);}
+.video-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;background:#000;margin-bottom:18px;}
+.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:12px;}
+.video-info{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:start;}
+.video-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;margin-bottom:6px;}
+.video-desc{color:var(--muted);font-size:0.88rem;line-height:1.6;}
+.video-actions{display:flex;flex-direction:column;gap:10px;min-width:160px;}
+
+/* ── QUIZ ── */
+.quiz-wrap{background:var(--nude-light);border:1px solid rgba(212,200,188,0.4);border-radius:12px;padding:22px;margin-top:18px;}
+.quiz-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;margin-bottom:16px;color:var(--gold-dark);}
+.quiz-q{margin-bottom:18px;}
+.quiz-q-text{font-weight:700;font-size:0.9rem;margin-bottom:10px;}
+.quiz-options{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid rgba(212,200,188,0.5);border-radius:8px;cursor:pointer;transition:all 0.2s;font-size:0.88rem;}
+.quiz-opt:hover{border-color:var(--gold);background:rgba(200,169,126,0.05);}
+.quiz-opt.selected{border-color:var(--gold);background:rgba(200,169,126,0.1);}
+.quiz-opt.correct{border-color:var(--success);background:rgba(16,185,129,0.08);color:#065F46;}
+.quiz-opt.wrong{border-color:var(--danger);background:rgba(239,68,68,0.06);color:#991B1B;}
+.quiz-opt input{accent-color:var(--gold);}
+.quiz-result{padding:14px;border-radius:8px;margin-top:14px;font-weight:700;text-align:center;font-size:0.9rem;}
+.quiz-result.pass{background:#D1FAE5;color:#065F46;}
+.quiz-result.fail{background:#FEE2E2;color:#991B1B;}
+
+/* ── SESSIONS ── */
+.session-card{display:flex;gap:16px;padding:16px;border:1px solid rgba(212,200,188,0.4);border-radius:10px;margin-bottom:12px;background:#fff;align-items:flex-start;transition:all 0.2s;}
+.session-card:hover{border-color:var(--gold);box-shadow:0 4px 14px rgba(0,0,0,0.06);}
+.session-date{background:var(--gold);color:#fff;border-radius:10px;padding:10px 14px;text-align:center;min-width:60px;}
+.session-day{font-size:1.6rem;font-weight:700;line-height:1;}
+.session-mon{font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;}
+.session-info{flex:1;}
+.session-title{font-weight:700;margin-bottom:4px;}
+.session-meta{color:var(--muted);font-size:0.82rem;margin-bottom:8px;}
+.session-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.73rem;font-weight:700;}
+.badge-upcoming{background:#DBEAFE;color:#1E40AF;}
+.badge-completed{background:#D1FAE5;color:#065F46;}
+.badge-live{background:#FEE2E2;color:#991B1B;animation:pulse 1.5s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;};}
+
+/* ── PROGRESS TAB ── */
+.achievement-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:14px;}
+.achievement{background:var(--nude-light);border:1px solid rgba(212,200,188,0.4);border-radius:10px;padding:16px;text-align:center;transition:all 0.2s;}
+.achievement.earned{border-color:var(--gold);background:rgba(200,169,126,0.05);}
+.achievement.locked{opacity:0.45;}
+.achievement-icon{font-size:2rem;margin-bottom:8px;}
+.achievement-name{font-size:0.78rem;font-weight:700;color:var(--charcoal);}
+.achievement-desc{font-size:0.72rem;color:var(--muted);margin-top:3px;}
+
+/* ── MOBILE ── */
+.mobile-menu-btn{display:none;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--charcoal);}
+@media(max-width:900px){
+  .app{grid-template-columns:1fr;}
+  .sidebar{display:none;position:fixed;top:0;left:0;width:260px;height:100vh;z-index:1000;}
+  .sidebar.open{display:flex;}
+  .mobile-menu-btn{display:block;}
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .content{padding:16px;}
+  .topbar{padding:14px 16px;}
+}
+@media(max-width:480px){.stats{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
 <div class="app">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="brand">Crown Trade</div>
-    <div class="brand-sub">Client Portal</div>
-    <div class="user-info">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">Crown Trade</div>
+      <div class="brand-sub">Academy Portal</div>
+    </div>
+    <div class="sidebar-user">
       <div class="user-avatar" id="userAvatar">C</div>
       <div>
         <div class="user-name" id="userName">Loading…</div>
-        <div class="user-role">Trading Student</div>
+        <div class="user-status"><i class="fas fa-circle" style="font-size:0.5rem;"></i> Active Member</div>
       </div>
     </div>
-    <nav class="nav">
-      <a href="#" class="nav-item active" data-tab="dashboard"><i class="fas fa-chart-line"></i> Dashboard</a>
-      <a href="#" class="nav-item" data-tab="application"><i class="fas fa-file-alt"></i> My Application</a>
-      <a href="#" class="nav-item" data-tab="resources"><i class="fas fa-book-open"></i> Resources</a>
-      <a href="#" class="nav-item" data-tab="contact"><i class="fas fa-envelope"></i> Contact Mentor</a>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <a href="#" class="nav-item active" data-tab="overview"><i class="fas fa-chart-pie"></i> Overview</a>
+      <div class="nav-section">Learning</div>
+      <a href="#" class="nav-item" data-tab="course"><i class="fas fa-play-circle"></i> Course Content</a>
+      <a href="#" class="nav-item" data-tab="sessions"><i class="fas fa-video"></i> Live Sessions</a>
+      <a href="#" class="nav-item" data-tab="progress"><i class="fas fa-trophy"></i> My Progress</a>
+      <div class="nav-section">Support</div>
+      <a href="#" class="nav-item" data-tab="contact"><i class="fas fa-comments"></i> Contact Mentor</a>
     </nav>
-    <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    <div class="sidebar-footer">
+      <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
   </aside>
 
-  <!-- Main content -->
-  <main class="main">
-
-    <!-- ── DASHBOARD TAB ── -->
-    <div id="dashboard" class="tab-content active">
-      <div class="page-header">
-        <h1 class="page-title">Welcome Back</h1>
-        <a href="mentorship-form.html" class="btn"><i class="fas fa-plus"></i> Apply for Mentorship</a>
+  <!-- ── MAIN ── -->
+  <div class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title" id="pageTitle">Overview</div>
       </div>
-      <div class="stats">
-        <div class="stat"><div class="stat-icon"><i class="fas fa-file-alt"></i></div><div class="stat-value" id="appStatus">—</div><div class="stat-label">Application Status</div></div>
-        <div class="stat"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-value" id="payStatus">—</div><div class="stat-label">Payment Status</div></div>
-        <div class="stat"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div><div class="stat-value">24/7</div><div class="stat-label">Support Available</div></div>
-        <div class="stat"><div class="stat-icon"><i class="fas fa-graduation-cap"></i></div><div class="stat-value">KES 3,500</div><div class="stat-label">Program Fee</div></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Your Mentorship Application</div>
-        <div id="dashAppSummary"><div class="spinner-wrap"><div class="spin"></div></div></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Next Steps</div>
-        <div class="info-box"><i class="fas fa-info-circle"></i> After submitting your application, our team will review it and contact you via email within 24 hours.</div>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--nude-light);border-radius:10px;">
-            <div style="width:32px;height:32px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;">1</div>
-            <div><strong>Submit Application</strong> — Fill out the mentorship form</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--nude-light);border-radius:10px;">
-            <div style="width:32px;height:32px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;">2</div>
-            <div><strong>Payment Verification</strong> — Pay KES 3,500 and confirm with our team</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--nude-light);border-radius:10px;">
-            <div style="width:32px;height:32px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;">3</div>
-            <div><strong>Onboarding Call</strong> — Meet your mentor and start your journey</div>
-          </div>
-        </div>
+      <div class="topbar-right">
+        <div class="progress-pill">Course Progress: <span id="topProgress">0/12</span></div>
       </div>
     </div>
 
-    <!-- ── APPLICATION TAB ── -->
-    <div id="application" class="tab-content">
-      <div class="page-header">
-        <h1 class="page-title">My Application</h1>
-        <a href="mentorship-form.html" class="btn ghost"><i class="fas fa-edit"></i> New Application</a>
-      </div>
-      <div id="appDetailCard"><div class="spinner-wrap"><div class="spin"></div></div></div>
-    </div>
+    <div class="content">
 
-    <!-- ── RESOURCES TAB ── -->
-    <div id="resources" class="tab-content">
-      <div class="page-header"><h1 class="page-title">Learning Resources</h1></div>
-      <div class="info-box"><i class="fas fa-lock"></i> Full resources unlock after your application is approved and payment is verified.</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
-        <div class="card" style="text-align:center;padding:28px 16px;">
-          <div style="font-size:2.5rem;color:var(--gold);margin-bottom:12px;"><i class="fas fa-chart-bar"></i></div>
-          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:8px;">Technical Analysis</h3>
-          <p style="color:var(--muted);font-size:0.88rem;">Master chart reading and indicators</p>
-          <div style="margin-top:14px;"><span class="badge badge-pending">Coming Soon</span></div>
+      <!-- ══ OVERVIEW TAB ══ -->
+      <div id="overview" class="tab-panel active">
+        <div class="stats">
+          <div class="stat"><div class="stat-icon">🎬</div><div class="stat-value" id="statModules">0/12</div><div class="stat-label">Modules Done</div></div>
+          <div class="stat"><div class="stat-icon">📅</div><div class="stat-value" id="statSessions">0</div><div class="stat-label">Sessions Left</div></div>
+          <div class="stat"><div class="stat-icon">🏆</div><div class="stat-value" id="statAchievements">0</div><div class="stat-label">Achievements</div></div>
+          <div class="stat"><div class="stat-icon">🔥</div><div class="stat-value" id="statStreak">0</div><div class="stat-label">Day Streak</div></div>
         </div>
-        <div class="card" style="text-align:center;padding:28px 16px;">
-          <div style="font-size:2.5rem;color:var(--gold);margin-bottom:12px;"><i class="fas fa-shield-alt"></i></div>
-          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:8px;">Risk Management</h3>
-          <p style="color:var(--muted);font-size:0.88rem;">Protect your capital strategically</p>
-          <div style="margin-top:14px;"><span class="badge badge-pending">Coming Soon</span></div>
+
+        <!-- Progress bar -->
+        <div class="overall-progress">
+          <div class="prog-text">
+            <div class="prog-title">Elite Mentorship Program</div>
+            <div class="prog-sub">12-Week Trading Mastery Course</div>
+          </div>
+          <div class="prog-bar-wrap">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.78rem;color:var(--muted);font-weight:600;">
+              <span id="progLabel">0 of 12 modules completed</span>
+            </div>
+            <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+          </div>
+          <div class="prog-pct" id="progPct">0%</div>
         </div>
-        <div class="card" style="text-align:center;padding:28px 16px;">
-          <div style="font-size:2.5rem;color:var(--gold);margin-bottom:12px;"><i class="fas fa-brain"></i></div>
-          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:8px;">Trading Psychology</h3>
-          <p style="color:var(--muted);font-size:0.88rem;">Master your emotions and mindset</p>
-          <div style="margin-top:14px;"><span class="badge badge-pending">Coming Soon</span></div>
+
+        <!-- Continue where you left off -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Continue Learning</div>
+          </div>
+          <div id="continueSection"></div>
         </div>
-        <div class="card" style="text-align:center;padding:28px 16px;">
-          <div style="font-size:2.5rem;color:var(--gold);margin-bottom:12px;"><i class="fas fa-video"></i></div>
-          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:8px;">Live Sessions</h3>
-          <p style="color:var(--muted);font-size:0.88rem;">1-on-1 with your mentor</p>
-          <div style="margin-top:14px;"><span class="badge badge-pending">Coming Soon</span></div>
+
+        <!-- Upcoming session -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Next Live Session</div>
+            <a href="#" class="btn btn-outline btn-sm" onclick="switchTab('sessions')">View All</a>
+          </div>
+          <div id="nextSessionPreview"></div>
         </div>
       </div>
-    </div>
 
-    <!-- ── CONTACT TAB ── -->
-    <div id="contact" class="tab-content">
-      <div class="page-header"><h1 class="page-title">Contact Your Mentor</h1></div>
-      <div class="card">
-        <div class="card-title">Reach Out</div>
-        <div class="info-box"><i class="fas fa-envelope"></i> Direct communication is available via email. A live chat system will be available once your mentorship is active.</div>
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          <a href="mailto:crowntradeacademy@gmail.com" class="btn" style="width:fit-content;"><i class="fas fa-envelope"></i> Email the Team</a>
-          <div style="background:var(--nude-light);padding:16px;border-radius:10px;font-size:0.9rem;">
-            <strong>Email:</strong> crowntradeacademy@gmail.com<br>
-            <strong>Response Time:</strong> Within 24 hours<br>
-            <strong>Support Hours:</strong> Mon–Sat, 8AM–8PM EAT
+      <!-- ══ COURSE TAB ══ -->
+      <div id="course" class="tab-panel">
+
+        <!-- Module list view -->
+        <div id="moduleListView">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Course Modules</div>
+              <div style="color:var(--muted);font-size:0.82rem;"><i class="fas fa-lock" style="margin-right:4px;"></i>Modules unlock as you progress</div>
+            </div>
+            <div class="module-list" id="moduleList"></div>
+          </div>
+        </div>
+
+        <!-- Video player view (hidden by default) -->
+        <div id="videoView" class="video-section">
+          <div class="video-header">
+            <button class="back-btn" onclick="backToModules()"><i class="fas fa-arrow-left"></i> Back to Modules</button>
+            <div style="color:var(--muted);font-size:0.82rem;" id="videoModuleLabel"></div>
+          </div>
+          <div class="card">
+            <div class="video-wrap">
+              <iframe id="videoFrame" src="" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+            </div>
+            <div class="video-info">
+              <div>
+                <div class="video-title" id="videoTitle"></div>
+                <div class="video-desc" id="videoDesc"></div>
+              </div>
+              <div class="video-actions">
+                <button class="btn btn-gold" id="markDoneBtn" onclick="markModuleComplete()"><i class="fas fa-check"></i> Mark Complete</button>
+                <button class="btn btn-outline" id="nextModBtn" onclick="goNextModule()"><i class="fas fa-forward"></i> Next Module</button>
+              </div>
+            </div>
+            <!-- Quiz -->
+            <div class="quiz-wrap" id="quizSection" style="display:none;">
+              <div class="quiz-title"><i class="fas fa-question-circle" style="color:var(--gold);margin-right:8px;"></i>Module Quiz</div>
+              <div id="quizContent"></div>
+              <button class="btn btn-gold" id="submitQuizBtn" onclick="submitQuiz()" style="margin-top:14px;width:100%;justify-content:center;">Submit Answers</button>
+              <div id="quizResult" style="display:none;" class="quiz-result"></div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-  </main>
-</div>
+      <!-- ══ SESSIONS TAB ══ -->
+      <div id="sessions" class="tab-panel">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Live Mentorship Sessions</div>
+          </div>
+          <div style="background:rgba(200,169,126,0.08);border-left:4px solid var(--gold);padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:18px;font-size:0.88rem;">
+            <i class="fas fa-info-circle" style="color:var(--gold);margin-right:6px;"></i>
+            Sessions are conducted via <strong>Zoom or Google Meet</strong>. Your mentor will send the link to your email before each session.
+          </div>
+          <div id="sessionsList"></div>
+        </div>
+      </div>
+
+      <!-- ══ PROGRESS TAB ══ -->
+      <div id="progress" class="tab-panel">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Overall Progress</div></div>
+          <div class="overall-progress" style="margin-bottom:0;">
+            <div class="prog-text"><div class="prog-title">Course Completion</div><div class="prog-sub" id="progDetailLabel">0 of 12 modules</div></div>
+            <div class="prog-bar-wrap"><div class="prog-bar"><div class="prog-fill" id="progFill2" style="width:0%"></div></div></div>
+            <div class="prog-pct" id="progPct2">0%</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Achievements</div></div>
+          <div class="achievement-grid" id="achievementGrid"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Module Breakdown</div></div>
+          <div id="moduleBreakdown"></div>
+        </div>
+      </div>
+
+      <!-- ══ CONTACT TAB ══ -->
+      <div id="contact" class="tab-panel">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Contact Your Mentor</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;">
+            <a href="mailto:crowntradeacademy@gmail.com" style="display:flex;align-items:center;gap:12px;padding:18px;background:var(--nude-light);border:1px solid rgba(212,200,188,0.4);border-radius:10px;text-decoration:none;color:var(--charcoal);transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(212,200,188,0.4)'">
+              <div style="width:44px;height:44px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;flex-shrink:0;"><i class="fas fa-envelope"></i></div>
+              <div><div style="font-weight:700;margin-bottom:2px;">Email</div><div style="color:var(--muted);font-size:0.8rem;">crowntradeacademy@gmail.com</div></div>
+            </a>
+            <div style="display:flex;align-items:center;gap:12px;padding:18px;background:var(--nude-light);border:1px solid rgba(212,200,188,0.4);border-radius:10px;">
+              <div style="width:44px;height:44px;background:#25D366;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;flex-shrink:0;"><i class="fab fa-whatsapp"></i></div>
+              <div><div style="font-weight:700;margin-bottom:2px;">WhatsApp</div><div style="color:var(--muted);font-size:0.8rem;">Contact admin for number</div></div>
+            </div>
+          </div>
+          <div style="background:var(--nude-light);border-radius:10px;padding:18px;font-size:0.88rem;">
+            <div style="font-weight:700;margin-bottom:8px;"><i class="fas fa-clock" style="color:var(--gold);margin-right:6px;"></i>Support Hours</div>
+            <div style="color:var(--muted);">Monday – Saturday: 8:00 AM – 8:00 PM EAT<br>Response time: within 24 hours</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.content -->
+  </div><!-- /.main -->
+</div><!-- /.app -->
 
 <script>
+// ── COURSE DATA (edit this to add your real videos & quizzes) ──────────────
+const MODULES = [
+  {
+    id: 1, title: 'Introduction to Trading',
+    desc: 'Understanding financial markets, participants, and the trading mindset.',
+    duration: '22 min',
+    // Replace with your actual YouTube video ID (the part after ?v= in the URL)
+    videoId: 'YOUTUBE_VIDEO_ID_1',
+    quiz: [
+      { q: 'What is the primary purpose of financial markets?', opts: ['To make banks rich', 'To facilitate buying and selling of assets', 'To print money', 'To control inflation'], answer: 1 },
+      { q: 'Which of these is NOT a financial market?', opts: ['Forex market', 'Stock market', 'Supermarket', 'Commodities market'], answer: 2 }
+    ]
+  },
+  {
+    id: 2, title: 'Market Structure',
+    desc: 'Learn how price moves in trends, ranges, and how to identify key levels.',
+    duration: '35 min',
+    videoId: 'YOUTUBE_VIDEO_ID_2',
+    quiz: [
+      { q: 'What defines an uptrend?', opts: ['Lower highs and lower lows', 'Higher highs and higher lows', 'Sideways price action', 'Random price movement'], answer: 1 },
+      { q: 'What is a Break of Structure (BOS)?', opts: ['Price reversing trend', 'Price breaking a previous swing high or low', 'A chart pattern', 'A candlestick pattern'], answer: 1 }
+    ]
+  },
+  {
+    id: 3, title: 'Supply & Demand Zones',
+    desc: 'Identify institutional order blocks and high-probability trade zones.',
+    duration: '40 min',
+    videoId: 'YOUTUBE_VIDEO_ID_3',
+    quiz: [
+      { q: 'A demand zone is where price is likely to...', opts: ['Fall further', 'Reverse upward', 'Move sideways', 'None of the above'], answer: 1 },
+      { q: 'What causes supply and demand zones?', opts: ['Retail traders', 'Institutional order flow', 'News events only', 'Technical indicators'], answer: 1 }
+    ]
+  },
+  {
+    id: 4, title: 'Price Action & Candlesticks',
+    desc: 'Master reading raw price action without relying on indicators.',
+    duration: '38 min',
+    videoId: 'YOUTUBE_VIDEO_ID_4',
+    quiz: [
+      { q: 'A doji candlestick indicates...', opts: ['Strong bullish momentum', 'Indecision in the market', 'Strong bearish momentum', 'A trend continuation'], answer: 1 },
+      { q: 'An engulfing candle is most significant when...', opts: ['It appears mid-trend', 'It appears at key levels', 'It has a long wick', 'It is colored green'], answer: 1 }
+    ]
+  },
+  {
+    id: 5, title: 'Risk Management',
+    desc: 'The most important skill in trading — protect your capital above all else.',
+    duration: '30 min',
+    videoId: 'YOUTUBE_VIDEO_ID_5',
+    quiz: [
+      { q: 'What is the recommended max risk per trade?', opts: ['10% of account', '1-2% of account', '50% of account', '5% of account'], answer: 1 },
+      { q: 'What is a Risk:Reward ratio of 1:3?', opts: ['Risk 3, gain 1', 'Risk 1, gain 3', 'Risk and gain equally', 'None of the above'], answer: 1 }
+    ]
+  },
+  {
+    id: 6, title: 'Entry & Exit Strategies',
+    desc: 'Precise entry triggers and smart exit techniques for maximum profitability.',
+    duration: '42 min',
+    videoId: 'YOUTUBE_VIDEO_ID_6',
+    quiz: [
+      { q: 'A limit order is placed...', opts: ['At market price immediately', 'At a specified price in the future', 'Only for selling', 'Only for buying'], answer: 1 },
+      { q: 'When should you move your stop loss to break-even?', opts: ['Immediately after entry', 'When price has moved in your favour significantly', 'Never', 'At the end of each day'], answer: 1 }
+    ]
+  },
+  { id: 7, title: 'Trading Psychology', desc: 'Control emotions, eliminate revenge trading, and build discipline.', duration: '28 min', videoId: 'YOUTUBE_VIDEO_ID_7', quiz: [] },
+  { id: 8, title: 'Forex Fundamentals', desc: 'Currency pairs, pip values, lot sizes, and session timing.', duration: '35 min', videoId: 'YOUTUBE_VIDEO_ID_8', quiz: [] },
+  { id: 9, title: 'Technical Indicators', desc: 'When and how to use RSI, MACD, moving averages correctly.', duration: '40 min', videoId: 'YOUTUBE_VIDEO_ID_9', quiz: [] },
+  { id: 10, title: 'Building a Trading Plan', desc: 'Create your personal trading plan and journal system.', duration: '32 min', videoId: 'YOUTUBE_VIDEO_ID_10', quiz: [] },
+  { id: 11, title: 'Live Trade Analysis', desc: 'Real trade breakdowns — what worked, what didn\'t, and why.', duration: '50 min', videoId: 'YOUTUBE_VIDEO_ID_11', quiz: [] },
+  { id: 12, title: 'Prop Firm Pathway', desc: 'How to pass funded account challenges and scale your trading.', duration: '45 min', videoId: 'YOUTUBE_VIDEO_ID_12', quiz: [] }
+];
+
+const SESSIONS = [
+  { title: 'Onboarding Call', date: '2025-07-05', time: '10:00 AM EAT', mentor: 'Crown Trade Mentor', type: 'completed', link: '' },
+  { title: 'Market Structure Review', date: '2025-07-12', time: '10:00 AM EAT', mentor: 'Crown Trade Mentor', type: 'upcoming', link: 'https://zoom.us/j/your-link' },
+  { title: 'Live Trade Session', date: '2025-07-19', time: '10:00 AM EAT', mentor: 'Crown Trade Mentor', type: 'upcoming', link: 'https://zoom.us/j/your-link' },
+  { title: 'Risk Management Deep Dive', date: '2025-07-26', time: '10:00 AM EAT', mentor: 'Crown Trade Mentor', type: 'upcoming', link: '' },
+  { title: 'Mid-Program Review', date: '2025-08-02', time: '10:00 AM EAT', mentor: 'Crown Trade Mentor', type: 'upcoming', link: '' },
+  { title: 'Strategy Refinement', date: '2025-08-09', time: '10:00 AM EAT', mentor: 'Crown Trade Mentor', type: 'upcoming', link: '' },
+];
+
+const ACHIEVEMENTS = [
+  { id: 'first_module', icon: '🎬', name: 'First Step', desc: 'Complete module 1', req: 1 },
+  { id: 'halfway', icon: '⚡', name: 'Halfway There', desc: 'Complete 6 modules', req: 6 },
+  { id: 'graduate', icon: '🎓', name: 'Graduate', desc: 'Complete all 12 modules', req: 12 },
+  { id: 'risk_master', icon: '🛡️', name: 'Risk Master', desc: 'Complete module 5', req: 5 },
+  { id: 'consistent', icon: '🔥', name: 'Consistent', desc: '3-day learning streak', req: 0 },
+  { id: 'quiz_ace', icon: '💡', name: 'Quiz Ace', desc: 'Pass 5 quizzes', req: 0 },
+];
+
+// ── STATE ──────────────────────────────────────────────────────────────────────
+let completedModules = JSON.parse(localStorage.getItem('ct_completed') || '[]');
+let currentModuleId = null;
+let quizAnswers = {};
+let passedQuizzes = JSON.parse(localStorage.getItem('ct_quizzes') || '[]');
+let streak = parseInt(localStorage.getItem('ct_streak') || '0');
+
+// ── INIT ───────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  if (!requireAuth('login.html')) return;
+  const token = getToken();
   const user = getUser();
-  if (user) {
-    document.getElementById('userName').textContent = user.full_name || user.email;
-    document.getElementById('userAvatar').textContent = (user.full_name || user.email).charAt(0).toUpperCase();
-  }
+  if (!token || !user) { window.location.href = 'login.html'; return; }
 
-  // Load application data
-  await loadApplicationData();
+  // Verify token
+  try {
+    const res = await fetch(`${API_BASE}/auth/verify-token`, { headers: { Authorization: `Bearer ${token}` } });
+    const data = await res.json();
+    if (!data.ok) { logout(); window.location.href = 'login.html'; return; }
+  } catch { /* server sleeping — allow through */ }
 
-  // Nav tabs
+  document.getElementById('userName').textContent = user.full_name || user.email;
+  document.getElementById('userAvatar').textContent = (user.full_name || user.email).charAt(0).toUpperCase();
+
+  // Nav
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', e => {
       e.preventDefault();
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-      item.classList.add('active');
-      document.getElementById(item.dataset.tab).classList.add('active');
+      switchTab(item.dataset.tab);
     });
   });
 
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    logout();
-    window.location.href = 'login.html';
-  });
+  document.getElementById('logoutBtn').addEventListener('click', () => { logout(); window.location.href = 'login.html'; });
+
+  renderAll();
 });
 
-async function loadApplicationData() {
-  try {
-    const user = getUser();
-    const data = await API.getMentorshipStatus(user.email);
-    renderApplicationData(data.application);
-  } catch {
-    renderNoApplication();
+function switchTab(tab) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(t => t.classList.remove('active'));
+  const item = document.querySelector(`[data-tab="${tab}"]`);
+  if (item) item.classList.add('active');
+  const panel = document.getElementById(tab);
+  if (panel) panel.classList.add('active');
+  const titles = { overview:'Overview', course:'Course Content', sessions:'Live Sessions', progress:'My Progress', contact:'Contact Mentor' };
+  document.getElementById('pageTitle').textContent = titles[tab] || tab;
+  if (tab === 'course') backToModules();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ── RENDER ALL ──────────────────────────────────────────────────────────────────
+function renderAll() {
+  updateProgress();
+  renderModuleList();
+  renderContinueSection();
+  renderSessions();
+  renderAchievements();
+  renderModuleBreakdown();
+  renderNextSessionPreview();
+}
+
+function updateProgress() {
+  const done = completedModules.length;
+  const total = MODULES.length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('statModules').textContent = `${done}/${total}`;
+  document.getElementById('statSessions').textContent = SESSIONS.filter(s => s.type === 'upcoming').length;
+  document.getElementById('statAchievements').textContent = getEarnedAchievements().length;
+  document.getElementById('statStreak').textContent = streak;
+  document.getElementById('topProgress').textContent = `${done}/${total}`;
+  document.getElementById('progLabel').textContent = `${done} of ${total} modules completed`;
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progPct').textContent = pct + '%';
+  document.getElementById('progFill2').style.width = pct + '%';
+  document.getElementById('progPct2').textContent = pct + '%';
+  document.getElementById('progDetailLabel').textContent = `${done} of ${total} modules`;
+}
+
+// ── MODULE LIST ────────────────────────────────────────────────────────────────
+function renderModuleList() {
+  const container = document.getElementById('moduleList');
+  container.innerHTML = MODULES.map(mod => {
+    const done = completedModules.includes(mod.id);
+    const nextId = getNextModuleId();
+    const isCurrent = mod.id === nextId;
+    const isLocked = !done && !isCurrent;
+    let cls = isLocked ? 'locked' : done ? 'completed' : isCurrent ? 'current' : '';
+    let numCls = isLocked ? 'locked' : done ? 'done' : isCurrent ? 'active' : 'upcoming';
+    let numIcon = done ? '<i class="fas fa-check"></i>' : isLocked ? '<i class="fas fa-lock"></i>' : mod.id;
+    let tag = done ? '<span class="mod-tag tag-done">Completed</span>' : isCurrent ? '<span class="mod-tag tag-current">Continue</span>' : isLocked ? '<span class="mod-tag tag-locked">Locked</span>' : '';
+    return `
+      <div class="module-item ${cls}" onclick="${isLocked ? '' : `openModule(${mod.id})`}">
+        <div class="mod-num ${numCls}">${numIcon}</div>
+        <div class="mod-info">
+          <div class="mod-title">Module ${mod.id}: ${mod.title}</div>
+          <div class="mod-desc">${mod.desc}</div>
+          <div class="mod-meta">
+            ${tag}
+            <span class="mod-duration"><i class="fas fa-clock"></i> ${mod.duration}</span>
+          </div>
+        </div>
+        ${!isLocked ? '<div class="mod-arrow"><i class="fas fa-chevron-right"></i></div>' : ''}
+      </div>`;
+  }).join('');
+}
+
+function getNextModuleId() {
+  for (let m of MODULES) { if (!completedModules.includes(m.id)) return m.id; }
+  return null;
+}
+
+// ── OPEN MODULE / VIDEO ────────────────────────────────────────────────────────
+function openModule(id) {
+  const mod = MODULES.find(m => m.id === id);
+  if (!mod) return;
+  currentModuleId = id;
+
+  document.getElementById('moduleListView').style.display = 'none';
+  document.getElementById('videoView').classList.add('show');
+
+  document.getElementById('videoModuleLabel').textContent = `Module ${mod.id} of ${MODULES.length}`;
+  document.getElementById('videoTitle').textContent = `Module ${mod.id}: ${mod.title}`;
+  document.getElementById('videoDesc').textContent = mod.desc;
+
+  // Embed YouTube video — strips controls, related videos, branding
+  document.getElementById('videoFrame').src =
+    `https://www.youtube-nocookie.com/embed/${mod.videoId}?rel=0&modestbranding=1&showinfo=0&color=white`;
+
+  const isDone = completedModules.includes(id);
+  const markBtn = document.getElementById('markDoneBtn');
+  markBtn.innerHTML = isDone ? '<i class="fas fa-check-circle"></i> Completed' : '<i class="fas fa-check"></i> Mark Complete';
+  markBtn.disabled = isDone;
+
+  // Quiz
+  if (mod.quiz && mod.quiz.length > 0 && !passedQuizzes.includes(id)) {
+    renderQuiz(mod);
+    document.getElementById('quizSection').style.display = 'block';
+  } else {
+    document.getElementById('quizSection').style.display = 'none';
+  }
+
+  quizAnswers = {};
+  document.getElementById('quizResult').style.display = 'none';
+  switchTab('course');
+}
+
+function backToModules() {
+  document.getElementById('moduleListView').style.display = 'block';
+  document.getElementById('videoView').classList.remove('show');
+  document.getElementById('videoFrame').src = '';
+  currentModuleId = null;
+}
+
+function goNextModule() {
+  if (!currentModuleId) return;
+  const idx = MODULES.findIndex(m => m.id === currentModuleId);
+  if (idx < MODULES.length - 1) {
+    const next = MODULES[idx + 1];
+    const isAccessible = completedModules.includes(next.id) || next.id === getNextModuleId();
+    if (isAccessible) openModule(next.id);
+    else showToast('Complete this module first to unlock the next one', 'info');
+  } else {
+    showToast('🎉 You\'ve reached the last module!', 'success');
   }
 }
 
-function renderApplicationData(app) {
-  if (!app) { renderNoApplication(); return; }
+// ── MARK COMPLETE ──────────────────────────────────────────────────────────────
+function markModuleComplete() {
+  if (!currentModuleId) return;
+  const mod = MODULES.find(m => m.id === currentModuleId);
 
-  const statusBadge = badge(app.status);
-  const payBadge = badge(app.payment_status);
+  // If quiz exists and not passed, require quiz first
+  if (mod.quiz && mod.quiz.length > 0 && !passedQuizzes.includes(currentModuleId)) {
+    showToast('Please complete the quiz below to mark this module done', 'info');
+    document.getElementById('quizSection').scrollIntoView({ behavior: 'smooth' });
+    return;
+  }
 
-  document.getElementById('appStatus').textContent = cap(app.status);
-  document.getElementById('payStatus').textContent = cap(app.payment_status);
+  if (!completedModules.includes(currentModuleId)) {
+    completedModules.push(currentModuleId);
+    localStorage.setItem('ct_completed', JSON.stringify(completedModules));
 
-  const summary = `
-    <div class="app-status">
-      <div class="app-status-row"><span class="app-status-label">Full Name</span><span class="app-status-value">${app.full_name}</span></div>
-      <div class="app-status-row"><span class="app-status-label">Email</span><span class="app-status-value">${app.email}</span></div>
-      <div class="app-status-row"><span class="app-status-label">Application Status</span><span class="app-status-value">${statusBadge}</span></div>
-      <div class="app-status-row"><span class="app-status-label">Payment Status</span><span class="app-status-value">${payBadge}</span></div>
-      <div class="app-status-row"><span class="app-status-label">Submitted</span><span class="app-status-value">${new Date(app.submitted_at).toLocaleDateString()}</span></div>
-    </div>`;
-  document.getElementById('dashAppSummary').innerHTML = summary;
+    // Update streak
+    const today = new Date().toDateString();
+    const lastDay = localStorage.getItem('ct_last_day');
+    if (lastDay !== today) { streak++; localStorage.setItem('ct_streak', streak); localStorage.setItem('ct_last_day', today); }
+  }
 
-  const detail = `
-    <div class="card">
-      <div class="card-title">Application Details</div>
-      <div class="app-status">
-        <div class="app-status-row"><span class="app-status-label">Full Name</span><span class="app-status-value">${app.full_name}</span></div>
-        <div class="app-status-row"><span class="app-status-label">Phone</span><span class="app-status-value">${app.phone}</span></div>
-        <div class="app-status-row"><span class="app-status-label">Experience Level</span><span class="app-status-value">${cap(app.experience_level)}</span></div>
-        <div class="app-status-row"><span class="app-status-label">Time Commitment</span><span class="app-status-value">${app.time_commitment} hrs/week</span></div>
-        <div class="app-status-row"><span class="app-status-label">Markets</span><span class="app-status-value">${app.preferred_markets || 'Not specified'}</span></div>
-        <div class="app-status-row"><span class="app-status-label">Application Status</span><span class="app-status-value">${statusBadge}</span></div>
-        <div class="app-status-row"><span class="app-status-label">Payment Status</span><span class="app-status-value">${payBadge}</span></div>
-        <div class="app-status-row"><span class="app-status-label">Submitted</span><span class="app-status-value">${new Date(app.submitted_at).toLocaleDateString()}</span></div>
-        ${app.admin_notes ? `<div class="app-status-row"><span class="app-status-label">Admin Notes</span><span class="app-status-value">${app.admin_notes}</span></div>` : ''}
+  renderAll();
+  document.getElementById('markDoneBtn').innerHTML = '<i class="fas fa-check-circle"></i> Completed';
+  document.getElementById('markDoneBtn').disabled = true;
+  showToast(`✅ Module ${currentModuleId} completed!`, 'success');
+}
+
+// ── QUIZ ───────────────────────────────────────────────────────────────────────
+function renderQuiz(mod) {
+  document.getElementById('quizContent').innerHTML = mod.quiz.map((q, qi) => `
+    <div class="quiz-q">
+      <div class="quiz-q-text">${qi + 1}. ${q.q}</div>
+      <div class="quiz-options">
+        ${q.opts.map((opt, oi) => `
+          <label class="quiz-opt" id="opt-${qi}-${oi}" onclick="selectOpt(${qi},${oi})">
+            <input type="radio" name="q${qi}" value="${oi}"> ${opt}
+          </label>`).join('')}
       </div>
-      <div style="margin-top:18px;padding:16px;background:var(--nude-light);border-radius:10px;">
-        <strong>Trading Goals:</strong><br><span style="color:var(--muted);">${app.trading_goals}</span>
+    </div>`).join('');
+}
+
+function selectOpt(qi, oi) {
+  quizAnswers[qi] = oi;
+  document.querySelectorAll(`[id^="opt-${qi}-"]`).forEach(el => el.classList.remove('selected'));
+  document.getElementById(`opt-${qi}-${oi}`).classList.add('selected');
+}
+
+function submitQuiz() {
+  const mod = MODULES.find(m => m.id === currentModuleId);
+  if (!mod || !mod.quiz.length) return;
+
+  let correct = 0;
+  mod.quiz.forEach((q, qi) => {
+    const selected = quizAnswers[qi];
+    const optEls = document.querySelectorAll(`[id^="opt-${qi}-"]`);
+    optEls.forEach((el, oi) => {
+      el.style.pointerEvents = 'none';
+      if (oi === q.answer) el.classList.add('correct');
+      else if (oi === selected && selected !== q.answer) el.classList.add('wrong');
+    });
+    if (selected === q.answer) correct++;
+  });
+
+  const passed = correct >= Math.ceil(mod.quiz.length * 0.5);
+  const resultEl = document.getElementById('quizResult');
+  resultEl.style.display = 'block';
+  resultEl.className = `quiz-result ${passed ? 'pass' : 'fail'}`;
+  resultEl.innerHTML = passed
+    ? `<i class="fas fa-trophy"></i> Passed! ${correct}/${mod.quiz.length} correct — you can now mark this module complete.`
+    : `<i class="fas fa-times-circle"></i> ${correct}/${mod.quiz.length} correct — review the module and try again.`;
+
+  document.getElementById('submitQuizBtn').style.display = 'none';
+
+  if (passed) {
+    if (!passedQuizzes.includes(currentModuleId)) {
+      passedQuizzes.push(currentModuleId);
+      localStorage.setItem('ct_quizzes', JSON.stringify(passedQuizzes));
+    }
+    setTimeout(() => markModuleComplete(), 800);
+  } else {
+    setTimeout(() => {
+      document.getElementById('submitQuizBtn').style.display = 'block';
+      document.getElementById('submitQuizBtn').textContent = 'Try Again';
+      document.getElementById('submitQuizBtn').onclick = () => {
+        quizAnswers = {};
+        renderQuiz(mod);
+        document.getElementById('quizResult').style.display = 'none';
+        document.getElementById('submitQuizBtn').innerHTML = 'Submit Answers';
+        document.getElementById('submitQuizBtn').onclick = submitQuiz;
+      };
+    }, 2000);
+  }
+}
+
+// ── SESSIONS ───────────────────────────────────────────────────────────────────
+function renderSessions() {
+  document.getElementById('sessionsList').innerHTML = SESSIONS.map(s => {
+    const d = new Date(s.date);
+    const day = d.getDate();
+    const mon = d.toLocaleString('default', { month: 'short' }).toUpperCase();
+    const badge = s.type === 'completed' ? '<span class="session-badge badge-completed">Completed</span>'
+      : s.type === 'live' ? '<span class="session-badge badge-live">🔴 LIVE NOW</span>'
+      : '<span class="session-badge badge-upcoming">Upcoming</span>';
+    const linkBtn = s.link && s.type !== 'completed'
+      ? `<a href="${s.link}" target="_blank" class="btn btn-gold btn-sm"><i class="fas fa-video"></i> Join Session</a>` : '';
+    return `
+      <div class="session-card">
+        <div class="session-date"><div class="session-day">${day}</div><div class="session-mon">${mon}</div></div>
+        <div class="session-info">
+          <div class="session-title">${s.title}</div>
+          <div class="session-meta"><i class="fas fa-clock" style="margin-right:4px;"></i>${s.time} · <i class="fas fa-user" style="margin:0 4px;"></i>${s.mentor}</div>
+          <div style="display:flex;align-items:center;gap:10px;">${badge} ${linkBtn}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderNextSessionPreview() {
+  const next = SESSIONS.find(s => s.type === 'upcoming' || s.type === 'live');
+  const container = document.getElementById('nextSessionPreview');
+  if (!next) { container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No upcoming sessions scheduled yet.</p>'; return; }
+  const d = new Date(next.date);
+  const day = d.getDate();
+  const mon = d.toLocaleString('default', { month: 'short' }).toUpperCase();
+  container.innerHTML = `
+    <div class="session-card" style="margin-bottom:0;">
+      <div class="session-date"><div class="session-day">${day}</div><div class="session-mon">${mon}</div></div>
+      <div class="session-info">
+        <div class="session-title">${next.title}</div>
+        <div class="session-meta"><i class="fas fa-clock" style="margin-right:4px;"></i>${next.time} · <i class="fas fa-user" style="margin:0 4px;"></i>${next.mentor}</div>
+        ${next.link ? `<a href="${next.link}" target="_blank" class="btn btn-gold btn-sm" style="margin-top:6px;"><i class="fas fa-video"></i> Join Session</a>` : '<span style="color:var(--muted);font-size:0.8rem;">Link will be sent via email</span>'}
       </div>
     </div>`;
-  document.getElementById('appDetailCard').innerHTML = detail;
 }
 
-function renderNoApplication() {
-  document.getElementById('appStatus').textContent = 'None';
-  document.getElementById('payStatus').textContent = 'None';
-  const msg = `<div class="info-box"><i class="fas fa-info-circle"></i> You haven't submitted a mentorship application yet. <a href="mentorship-form.html" style="color:var(--gold-dark);font-weight:700;">Apply now →</a></div>`;
-  document.getElementById('dashAppSummary').innerHTML = msg;
-  document.getElementById('appDetailCard').innerHTML = msg;
+function renderContinueSection() {
+  const nextId = getNextModuleId();
+  const container = document.getElementById('continueSection');
+  if (!nextId) {
+    container.innerHTML = '<div style="text-align:center;padding:20px;"><div style="font-size:3rem;margin-bottom:10px;">🎉</div><div style="font-weight:700;font-size:1.1rem;margin-bottom:6px;">Course Complete!</div><div style="color:var(--muted);">You\'ve finished all 12 modules. Congratulations!</div></div>';
+    return;
+  }
+  const mod = MODULES.find(m => m.id === nextId);
+  container.innerHTML = `
+    <div class="module-item current" onclick="openModule(${mod.id}); switchTab('course');" style="cursor:pointer;">
+      <div class="mod-num active">${mod.id}</div>
+      <div class="mod-info">
+        <div class="mod-title">Module ${mod.id}: ${mod.title}</div>
+        <div class="mod-desc">${mod.desc}</div>
+        <div class="mod-meta"><span class="mod-tag tag-current">Continue</span><span class="mod-duration"><i class="fas fa-clock"></i> ${mod.duration}</span></div>
+      </div>
+      <div class="mod-arrow"><i class="fas fa-play-circle" style="color:var(--gold);font-size:1.4rem;"></i></div>
+    </div>`;
 }
 
-function badge(status) {
-  const map = { pending:'badge-pending', approved:'badge-approved', rejected:'badge-rejected', verified:'badge-verified' };
-  return `<span class="badge ${map[status]||'badge-pending'}">${cap(status)}</span>`;
+// ── ACHIEVEMENTS ───────────────────────────────────────────────────────────────
+function getEarnedAchievements() {
+  return ACHIEVEMENTS.filter(a => {
+    if (a.id === 'first_module') return completedModules.length >= 1;
+    if (a.id === 'halfway') return completedModules.length >= 6;
+    if (a.id === 'graduate') return completedModules.length >= 12;
+    if (a.id === 'risk_master') return completedModules.includes(5);
+    if (a.id === 'consistent') return streak >= 3;
+    if (a.id === 'quiz_ace') return passedQuizzes.length >= 5;
+    return false;
+  });
 }
 
-function cap(str) {
-  return str ? str.charAt(0).toUpperCase() + str.slice(1) : '—';
+function renderAchievements() {
+  const earned = getEarnedAchievements().map(a => a.id);
+  document.getElementById('achievementGrid').innerHTML = ACHIEVEMENTS.map(a => `
+    <div class="achievement ${earned.includes(a.id) ? 'earned' : 'locked'}">
+      <div class="achievement-icon">${a.icon}</div>
+      <div class="achievement-name">${a.name}</div>
+      <div class="achievement-desc">${a.desc}</div>
+      ${earned.includes(a.id) ? '<div style="margin-top:6px;font-size:0.7rem;color:var(--success);font-weight:700;">✅ Earned</div>' : ''}
+    </div>`).join('');
+}
+
+function renderModuleBreakdown() {
+  document.getElementById('moduleBreakdown').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${MODULES.map(m => {
+        const done = completedModules.includes(m.id);
+        const pct = done ? 100 : 0;
+        return `
+          <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid rgba(212,200,188,0.3);">
+            <div style="width:22px;height:22px;border-radius:50%;background:${done ? 'var(--success)' : 'var(--nude-med)'};display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:${done ? '#fff' : 'var(--muted)'};font-weight:700;flex-shrink:0;">${done ? '✓' : m.id}</div>
+            <div style="flex:1;font-size:0.84rem;font-weight:${done ? '700' : '400'};color:${done ? 'var(--charcoal)' : 'var(--muted)'};">Module ${m.id}: ${m.title}</div>
+            <div style="font-size:0.78rem;font-weight:700;color:${done ? 'var(--success)' : 'var(--muted)'};">${done ? 'Done' : '—'}</div>
+          </div>`;
+      }).join('')}
+    </div>`;
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'info') {
+  const colors = { success: 'var(--success)', error: 'var(--danger)', info: 'var(--gold)' };
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;background:${colors[type]||colors.info};color:#fff;padding:13px 18px;border-radius:10px;font-weight:600;font-size:0.88rem;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.15);animation:slideUp 0.3s ease;font-family:'Montserrat',sans-serif;`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
 }
 </script>
 </body>
