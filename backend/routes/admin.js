@@ -144,6 +144,15 @@ router.patch('/referral/:id', (req, res) => {
       WHERE id = ?
     `).run(status || null, payment_status || null, admin_notes || null, req.params.id);
 
+    // If newly approved (wasn't approved before, now is) — fill a spot
+    if (status === 'approved' && app.status !== 'approved') {
+      db.prepare('UPDATE referral_settings SET spots_filled = spots_filled + 1 WHERE id = 1').run();
+    }
+    // If un-approving someone who was approved — free up a spot
+    if (status && status !== 'approved' && app.status === 'approved') {
+      db.prepare('UPDATE referral_settings SET spots_filled = MAX(0, spots_filled - 1) WHERE id = 1').run();
+    }
+
     res.json({ message: 'Referral application updated successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update referral application' });
