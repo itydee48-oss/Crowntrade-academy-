@@ -3,193 +3,348 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Apply for Referral Program - Crown Trade Academy</title>
+<title>Crown Partner Program — Crown Trade Academy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="api.js"></script>
 <style>
-:root{--nude-light:#F9F6F2;--nude-medium:#E8DFD6;--nude-dark:#D4C8BC;--nude-accent:#C4B5A3;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#3A3A3A;--text-light:#7A7A7A;--transition:all 0.4s cubic-bezier(0.165,0.84,0.44,1);}
+:root{--nude-light:#F9F6F2;--nude-medium:#E8DFD6;--nude-dark:#D4C8BC;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#1C1C1E;--text-light:#7A7A7A;--success:#10B981;--transition:all 0.4s cubic-bezier(0.165,0.84,0.44,1);}
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Montserrat',sans-serif;background-color:var(--nude-light);color:var(--charcoal);line-height:1.6;min-height:100vh;}
-h1,h2,h3,h4,h5{font-family:'Cormorant Garamond',serif;font-weight:600;line-height:1.3;}
-.premium-header{background-color:rgba(249,246,242,0.95);backdrop-filter:blur(10px);position:fixed;width:100%;z-index:1000;border-bottom:1px solid rgba(212,200,188,0.3);transition:var(--transition);}
+body{font-family:'Montserrat',sans-serif;background-color:var(--nude-light);color:var(--charcoal);line-height:1.6;}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',serif;font-weight:600;line-height:1.25;}
+.premium-header{background:rgba(249,246,242,0.95);backdrop-filter:blur(10px);position:fixed;width:100%;z-index:1000;border-bottom:1px solid rgba(212,200,188,0.3);}
 .premium-nav{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;padding:1.2rem 2rem;}
-.logo{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--charcoal);text-decoration:none;letter-spacing:1px;}
-.main-content{padding-top:100px;min-height:100vh;}
-.premium-container{max-width:800px;margin:0 auto;padding:0 2rem 3rem;}
-.premium-card{background:var(--nude-light);padding:4rem;box-shadow:0 10px 30px rgba(0,0,0,0.08);border:1px solid var(--nude-medium);position:relative;overflow:hidden;}
-.premium-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:var(--gold);}
-.page-title{font-size:2.8rem;text-align:center;margin-bottom:0.5rem;color:var(--charcoal);}
-.page-subtitle{text-align:center;color:var(--text-light);margin-bottom:3rem;font-size:1.1rem;}
-/* Step indicator */
-.step-indicator{display:flex;justify-content:space-between;margin-bottom:3rem;position:relative;}
-.step-indicator::before{content:'';position:absolute;top:20px;left:10%;right:10%;height:2px;background:var(--nude-medium);z-index:1;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--charcoal);text-decoration:none;}
+
+/* ── HERO — elite positioning ── */
+.hero{background:linear-gradient(135deg,#1C1C1E 0%,#2d2d35 100%);color:#fff;padding:10rem 2rem 5rem;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-50%;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(200,169,126,0.15) 0%,transparent 70%);}
+.hero-content{position:relative;z-index:2;max-width:720px;margin:0 auto;}
+.crown-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(200,169,126,0.15);border:1px solid rgba(200,169,126,0.4);color:var(--gold);padding:8px 18px;border-radius:30px;font-size:0.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:1.8rem;}
+.hero h1{font-size:3rem;margin-bottom:1.2rem;font-weight:700;}
+.hero h1 span{color:var(--gold);}
+.hero p{font-size:1.15rem;color:rgba(255,255,255,0.7);max-width:560px;margin:0 auto 2.2rem;}
+
+/* Spots counter */
+.spots-box{display:inline-block;background:rgba(255,255,255,0.06);border:1px solid rgba(200,169,126,0.3);border-radius:14px;padding:1.4rem 2.2rem;margin-bottom:1rem;}
+.spots-label{font-size:0.74rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;}
+.spots-row{display:flex;align-items:center;gap:14px;justify-content:center;}
+.spots-num{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:700;color:var(--gold);}
+.spots-bar{width:160px;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;}
+.spots-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-dark));border-radius:3px;transition:width 1s ease;}
+.spots-sub{font-size:0.8rem;color:rgba(255,255,255,0.5);margin-top:8px;}
+
+/* ── EARNINGS SECTION ── */
+.earnings-section{padding:5rem 2rem;background:var(--nude-light);}
+.premium-container{max-width:1100px;margin:0 auto;}
+.section-title{text-align:center;margin-bottom:3rem;}
+.section-title h2{font-size:2.3rem;position:relative;display:inline-block;}
+.section-title h2::after{content:'';position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);width:60px;height:2px;background:var(--gold);}
+.section-title p{color:var(--text-light);margin-top:1.4rem;max-width:600px;margin-left:auto;margin-right:auto;}
+
+.earn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:3rem;}
+.earn-card{background:#fff;border:1px solid var(--nude-medium);padding:2rem 1.5rem;text-align:center;transition:var(--transition);}
+.earn-card:hover{transform:translateY(-6px);box-shadow:0 15px 30px rgba(0,0,0,0.08);border-color:var(--gold);}
+.earn-num{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:700;color:var(--gold);margin-bottom:6px;}
+.earn-label{color:var(--text-light);font-size:0.88rem;font-weight:500;}
+.earn-sub{font-size:0.78rem;color:var(--text-light);margin-top:4px;}
+
+/* Tier table */
+.tier-table{background:#fff;border:1px solid var(--nude-medium);overflow:hidden;}
+.tier-row{display:grid;grid-template-columns:auto 1fr auto auto;gap:1rem;align-items:center;padding:1.1rem 1.5rem;border-bottom:1px solid var(--nude-medium);}
+.tier-row:last-child{border-bottom:none;}
+.tier-row.header{background:var(--charcoal);color:#fff;font-weight:700;font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;}
+.tier-icon{font-size:1.4rem;width:32px;text-align:center;}
+.tier-name{font-weight:700;}
+.tier-req{color:var(--text-light);font-size:0.85rem;}
+.tier-rate{font-weight:700;color:var(--gold-dark);text-align:right;}
+
+/* ── APPLICATION FORM ── */
+.application-section{padding:5rem 2rem;background:linear-gradient(135deg,rgba(232,223,214,0.4) 0%,rgba(249,246,242,1) 100%);}
+.app-container{max-width:760px;margin:0 auto;}
+.premium-card{background:var(--nude-light);padding:3rem;box-shadow:0 20px 50px rgba(0,0,0,0.08);border:1px solid var(--nude-medium);position:relative;}
+.premium-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-dark));}
+
+.step-indicator{display:flex;justify-content:space-between;margin-bottom:2.5rem;position:relative;}
+.step-indicator::before{content:'';position:absolute;top:18px;left:8%;right:8%;height:2px;background:var(--nude-medium);z-index:1;}
 .step-wrapper{flex:1;text-align:center;position:relative;z-index:2;}
-.step{background:var(--nude-light);border:2px solid var(--nude-medium);border-radius:50%;width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;font-weight:600;transition:var(--transition);margin-bottom:0.5rem;color:var(--text-light);}
-.step.active{background:var(--gold);border-color:var(--gold);color:var(--nude-light);}
-.step.completed{background:var(--nude-accent);border-color:var(--nude-accent);color:var(--nude-light);}
-.step-label{font-size:0.85rem;color:var(--text-light);font-weight:500;}
+.step{background:var(--nude-light);border:2px solid var(--nude-medium);border-radius:50%;width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;color:var(--text-light);margin-bottom:6px;transition:var(--transition);}
+.step.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+.step.completed{background:var(--success);border-color:var(--success);color:#fff;}
+.step-label{font-size:0.76rem;color:var(--text-light);font-weight:600;}
+
 .step-content{display:none;}
 .step-content.active{display:block;}
-.step-title{color:var(--charcoal);margin-bottom:1.5rem;font-size:1.5rem;display:flex;align-items:center;gap:0.8rem;}
-.form-group{margin-bottom:1.8rem;}
-.form-label{display:block;margin-bottom:0.8rem;color:var(--charcoal);font-weight:500;font-size:0.95rem;letter-spacing:0.5px;}
-.form-control{width:100%;padding:1.2rem;border:1px solid var(--nude-medium);background:var(--nude-light);font-family:'Montserrat',sans-serif;font-size:1rem;transition:var(--transition);color:var(--charcoal);}
+.form-group{margin-bottom:1.5rem;}
+.form-label{display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.88rem;}
+.form-control{width:100%;padding:0.95rem 1rem;border:1px solid var(--nude-medium);background:#fff;font-family:'Montserrat',sans-serif;font-size:0.95rem;transition:var(--transition);}
 .form-control:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(200,169,126,0.2);}
-.payment-notice{background:var(--nude-medium);padding:1.5rem;margin:2rem 0;border-left:4px solid var(--gold);}
-.payment-notice h4{color:var(--charcoal);margin-bottom:1rem;font-size:1.2rem;}
-.payment-notice p{color:var(--text-light);margin:0.5rem 0;line-height:1.6;}
-.file-upload{border:2px dashed var(--nude-medium);padding:2.5rem;text-align:center;cursor:pointer;transition:var(--transition);background:var(--nude-light);}
-.file-upload:hover{border-color:var(--gold);background:rgba(200,169,126,0.05);}
-.file-upload.dragover{border-color:var(--gold);background:rgba(200,169,126,0.1);}
-.file-preview img{max-width:300px;max-height:200px;margin-bottom:1rem;box-shadow:0 8px 20px rgba(0,0,0,0.1);}
-.btn-premium{display:inline-block;background:var(--gold);color:var(--nude-light);padding:1.2rem 2.5rem;font-weight:500;letter-spacing:1px;transition:var(--transition);border:1px solid var(--gold);cursor:pointer;width:100%;text-align:center;font-family:'Montserrat',sans-serif;font-size:1rem;}
-.btn-premium:hover:not(:disabled){background:transparent;color:var(--gold);}
-.btn-premium:disabled{opacity:0.6;cursor:not-allowed;}
-.btn-secondary{display:inline-block;background:transparent;color:var(--charcoal);padding:1rem 2rem;font-weight:500;letter-spacing:1px;transition:var(--transition);border:1px solid var(--charcoal);cursor:pointer;width:100%;text-align:center;font-family:'Montserrat',sans-serif;font-size:0.95rem;}
-.btn-secondary:hover{background:var(--charcoal);color:var(--nude-light);}
-.button-group{display:flex;gap:1rem;margin-top:2rem;}
-.button-group button{flex:1;}
-.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;}
-.summary-item{background:var(--nude-medium);padding:1.5rem;border:1px solid var(--nude-dark);}
-.summary-label{color:var(--text-light);font-size:0.85rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.5rem;}
-.summary-value{color:var(--charcoal);font-weight:600;font-size:1.1rem;word-break:break-word;}
-.terms-box{background:var(--nude-medium);padding:1.5rem;margin-bottom:2rem;border:1px solid var(--nude-dark);}
-.terms-box label{display:flex;align-items:start;cursor:pointer;gap:1rem;}
-.terms-box input[type="checkbox"]{margin-top:0.3rem;width:20px;height:20px;accent-color:var(--gold);}
-.spinner{border:3px solid var(--nude-medium);border-top:3px solid var(--gold);border-radius:50%;width:20px;height:20px;animation:spin 1s linear infinite;display:inline-block;margin-right:10px;vertical-align:middle;}
-@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-.alert{padding:0.9rem 1rem;margin-bottom:1.2rem;font-size:0.9rem;border-left:3px solid;}
+textarea.form-control{resize:vertical;min-height:90px;}
+
+.alert{padding:0.9rem 1rem;margin-bottom:1.2rem;font-size:0.88rem;border-left:3px solid;}
 .alert-error{background:#fdf0f0;border-color:#e74c3c;color:#c0392b;}
-footer{background:var(--charcoal);padding:3rem 2rem 2rem;color:var(--nude-medium);text-align:center;}
-.copyright{padding-top:2rem;border-top:1px solid rgba(212,200,188,0.2);color:var(--nude-dark);font-size:0.9rem;}
-@media(max-width:768px){.premium-card{padding:2.5rem;}.summary-grid{grid-template-columns:1fr;}.button-group{flex-direction:column;}.page-title{font-size:2.2rem;}}
+.alert-success{background:#f0fdf4;border-color:#2ecc71;color:#27ae60;}
+
+.file-upload{border:2px dashed var(--nude-dark);padding:2.2rem;text-align:center;cursor:pointer;transition:var(--transition);background:#fff;}
+.file-upload:hover,.file-upload.dragover{border-color:var(--gold);background:rgba(200,169,126,0.03);}
+.file-preview img{max-width:260px;max-height:160px;margin-bottom:0.8rem;box-shadow:0 8px 20px rgba(0,0,0,0.1);}
+
+.btn-premium{display:inline-block;background:var(--gold);color:#fff;padding:1.1rem 2.2rem;font-weight:600;letter-spacing:0.5px;border:1px solid var(--gold);cursor:pointer;width:100%;text-align:center;font-family:'Montserrat',sans-serif;font-size:0.95rem;transition:var(--transition);}
+.btn-premium:hover:not(:disabled){background:transparent;color:var(--gold);}
+.btn-premium:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-secondary{background:transparent;color:var(--charcoal);padding:1rem 2rem;font-weight:600;border:1px solid var(--charcoal);cursor:pointer;font-family:'Montserrat',sans-serif;font-size:0.9rem;width:100%;transition:var(--transition);}
+.btn-secondary:hover{background:var(--charcoal);color:#fff;}
+.button-group{display:flex;gap:1rem;margin-top:1.5rem;}
+.button-group button{flex:1;}
+
+.payment-notice{background:var(--nude-medium);padding:1.3rem;margin:1.5rem 0;border-left:4px solid var(--gold);font-size:0.88rem;}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+.summary-item{background:var(--nude-medium);padding:1.2rem;border:1px solid var(--nude-dark);}
+.summary-label{color:var(--text-light);font-size:0.78rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.summary-value{font-weight:700;word-break:break-word;}
+.terms-box{background:var(--nude-medium);padding:1.3rem;margin-bottom:1.5rem;}
+.terms-box label{display:flex;align-items:flex-start;gap:0.8rem;cursor:pointer;}
+.terms-box input{margin-top:3px;accent-color:var(--gold);}
+
+.spinner{border:3px solid var(--nude-medium);border-top:3px solid var(--gold);border-radius:50%;width:18px;height:18px;animation:spin 1s linear infinite;display:inline-block;margin-right:8px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.login-cta{text-align:center;margin-top:1.5rem;font-size:0.88rem;color:var(--text-light);}
+.login-cta a{color:var(--gold-dark);font-weight:700;text-decoration:none;}
+
+/* Full state */
+.full-state{text-align:center;padding:3rem 1rem;}
+.full-icon{font-size:3.5rem;color:var(--gold);margin-bottom:1rem;}
+
+footer{background:var(--charcoal);padding:2.5rem 2rem;color:rgba(255,255,255,0.5);text-align:center;font-size:0.85rem;}
+
+@media(max-width:768px){.hero h1{font-size:2.1rem;}.earn-grid{grid-template-columns:1fr;}.tier-row{grid-template-columns:auto 1fr auto;font-size:0.85rem;}.tier-req{display:none;}.premium-card{padding:2rem 1.5rem;}.button-group{flex-direction:column;}}
 </style>
 </head>
 <body>
+
 <header class="premium-header">
   <nav class="premium-nav">
     <a href="index.html" class="logo">Crown Trade Academy</a>
-    <a href="index.html" style="color:var(--text-light);text-decoration:none;font-size:0.9rem;">← Back to Home</a>
+    <a href="index.html" style="color:var(--text-light);text-decoration:none;font-size:0.9rem;">← Home</a>
   </nav>
 </header>
 
-<main class="main-content">
-  <section class="premium-container">
-    <div class="premium-card">
-      <h1 class="page-title">Join Our Referral Program</h1>
-      <p class="page-subtitle">Complete your application in 3 simple steps and start earning</p>
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="crown-badge"><i class="fas fa-crown"></i> By Application Only</div>
+    <h1>Earn a Real Income as a <span>Crown Partner</span></h1>
+    <p>We're building a small, elite circle of partners who refer serious traders to Crown Trade Academy — and get paid well for it. This isn't a mass affiliate program. It's a managed income opportunity for the right people.</p>
 
-      <div class="step-indicator">
-        <div class="step-wrapper"><div class="step active" id="si1">1</div><div class="step-label">Personal Info</div></div>
-        <div class="step-wrapper"><div class="step" id="si2">2</div><div class="step-label">Payment</div></div>
-        <div class="step-wrapper"><div class="step" id="si3">3</div><div class="step-label">Review</div></div>
-      </div>
-
-      <!-- Step 1 -->
-      <div id="step1" class="step-content active">
-        <h3 class="step-title"><i class="fas fa-user-edit"></i> Personal Information</h3>
-        <div id="step1-alert" style="display:none;" class="alert alert-error"></div>
-        <div class="form-group"><label class="form-label">Full Name *</label><input type="text" id="fullName" class="form-control" placeholder="Enter your full name"></div>
-        <div class="form-group"><label class="form-label">Email Address *</label><input type="email" id="email" class="form-control" placeholder="your.email@example.com"></div>
-        <div class="form-group"><label class="form-label">Phone Number *</label><input type="tel" id="phone" class="form-control" placeholder="+254 712 345 678"></div>
-        <div class="form-group"><label class="form-label">Referral Code (Optional)</label><input type="text" id="referralCode" class="form-control" placeholder="Enter referral code if you have one"></div>
-        <button type="button" class="btn-premium" onclick="validateStep1()">Continue to Payment <i class="fas fa-arrow-right"></i></button>
-      </div>
-
-      <!-- Step 2 -->
-      <div id="step2" class="step-content">
-        <h3 class="step-title"><i class="fas fa-credit-card"></i> Payment Details</h3>
-        <div id="step2-alert" style="display:none;" class="alert alert-error"></div>
-        <div class="payment-notice">
-          <h4>💰 Payment Instructions</h4>
-          <p><strong>Amount:</strong> KES 500</p>
-          <p><strong>Till Number:</strong> 123456</p>
-          <p><strong>Reference:</strong> Use your full name</p>
-          <p style="margin-top:1rem;font-style:italic;color:var(--text-light);">After making payment, upload a screenshot of the transaction below.</p>
+    <div class="spots-box">
+      <div class="spots-label">Spots Available This Round</div>
+      <div class="spots-row">
+        <div class="spots-num" id="spotsRemaining">—</div>
+        <div>
+          <div class="spots-bar"><div class="spots-fill" id="spotsFill" style="width:0%"></div></div>
+          <div class="spots-sub" id="spotsSub">Loading availability…</div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Upload Payment Proof (Screenshot) *</label>
-          <div class="file-upload" id="fileUploadArea">
-            <input type="file" id="paymentProof" accept="image/*" style="display:none;">
-            <div id="fileUploadContent">
-              <p style="font-size:3rem;margin-bottom:1rem;color:var(--gold);"><i class="fas fa-cloud-upload-alt"></i></p>
-              <p style="color:var(--text-light);margin-bottom:0.5rem;font-weight:600;">Click to upload or drag and drop</p>
-              <p style="color:var(--text-light);font-size:0.9rem;">PNG, JPG, JPEG up to 5MB</p>
-            </div>
-            <div id="filePreview" style="display:none;">
-              <img id="previewImage" src="" alt="Preview">
-              <p style="color:#28a745;font-weight:600;margin-bottom:1rem;"><i class="fas fa-check-circle"></i> Payment proof ready</p>
-              <button type="button" class="btn-secondary" style="width:auto;padding:0.6rem 1.5rem;" onclick="changeFile()">Change File</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ EARNINGS / TIERS ══ -->
+<section class="earnings-section">
+  <div class="premium-container">
+    <div class="section-title">
+      <h2>What Crown Partners Earn</h2>
+      <p>Your income grows with your results. The more people you bring into the Academy, the higher your tier — and the higher your rate per referral.</p>
+    </div>
+
+    <div class="earn-grid">
+      <div class="earn-card">
+        <div class="earn-num">KES 2,000</div>
+        <div class="earn-label">Refer 10 people / month</div>
+        <div class="earn-sub">at Bronze tier</div>
+      </div>
+      <div class="earn-card">
+        <div class="earn-num">KES 7,500</div>
+        <div class="earn-label">Refer 30 people / month</div>
+        <div class="earn-sub">at Gold tier</div>
+      </div>
+      <div class="earn-card">
+        <div class="earn-num">KES 15,000+</div>
+        <div class="earn-label">Refer 50 people / month</div>
+        <div class="earn-sub">at Crown tier</div>
+      </div>
+    </div>
+
+    <div class="tier-table">
+      <div class="tier-row header">
+        <div></div><div>Tier</div><div>Requirement</div><div>Per Referral</div>
+      </div>
+      <div class="tier-row">
+        <div class="tier-icon">🥉</div>
+        <div class="tier-name">Bronze Partner</div>
+        <div class="tier-req">0–4 approved referrals</div>
+        <div class="tier-rate">KES 200</div>
+      </div>
+      <div class="tier-row">
+        <div class="tier-icon">🥈</div>
+        <div class="tier-name">Silver Partner</div>
+        <div class="tier-req">5–9 approved referrals</div>
+        <div class="tier-rate">KES 220</div>
+      </div>
+      <div class="tier-row">
+        <div class="tier-icon">🥇</div>
+        <div class="tier-name">Gold Partner</div>
+        <div class="tier-req">10–19 approved referrals</div>
+        <div class="tier-rate">KES 250</div>
+      </div>
+      <div class="tier-row">
+        <div class="tier-icon">👑</div>
+        <div class="tier-name">Crown Partner</div>
+        <div class="tier-req">20+ approved referrals</div>
+        <div class="tier-rate">KES 300</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ APPLICATION FORM ══ -->
+<section class="application-section" id="applyForm">
+  <div class="app-container">
+    <div class="premium-card">
+
+      <!-- Full state (shown if no spots remain) -->
+      <div id="fullState" class="full-state" style="display:none;">
+        <div class="full-icon"><i class="fas fa-door-closed"></i></div>
+        <h2 style="margin-bottom:1rem;">This Round is Full</h2>
+        <p style="color:var(--text-light);margin-bottom:1.5rem;">All Crown Partner spots for this round have been claimed. Email us to join the waitlist for the next opening.</p>
+        <a href="mailto:crowntradeacademy@gmail.com" class="btn-premium" style="display:inline-block;width:auto;text-decoration:none;">Join the Waitlist</a>
+        <div class="login-cta">Already applied? <a href="referral-login.html">Log in to check your status</a></div>
+      </div>
+
+      <!-- Application steps -->
+      <div id="formWrapper">
+        <h2 style="text-align:center;margin-bottom:0.4rem;font-size:1.9rem;">Apply for Crown Partner Status</h2>
+        <p style="text-align:center;color:var(--text-light);font-size:0.9rem;margin-bottom:2rem;">Takes about 3 minutes. You'll get instant login access to track your application.</p>
+
+        <div class="step-indicator">
+          <div class="step-wrapper"><div class="step active" id="si1">1</div><div class="step-label">Your Details</div></div>
+          <div class="step-wrapper"><div class="step" id="si2">2</div><div class="step-label">Payment</div></div>
+          <div class="step-wrapper"><div class="step" id="si3">3</div><div class="step-label">Review</div></div>
+        </div>
+
+        <!-- STEP 1 -->
+        <div id="step1" class="step-content active">
+          <div id="step1-alert" style="display:none;" class="alert alert-error"></div>
+          <div class="form-group"><label class="form-label">Full Name *</label><input type="text" id="fullName" class="form-control" placeholder="Your full name"></div>
+          <div class="form-group"><label class="form-label">Email Address *</label><input type="email" id="email" class="form-control" placeholder="your@email.com"></div>
+          <div class="form-group"><label class="form-label">Phone Number *</label><input type="tel" id="phone" class="form-control" placeholder="+254 712 345 678"></div>
+          <div class="form-group">
+            <label class="form-label">Create a Password *</label>
+            <input type="password" id="password" class="form-control" placeholder="Min. 6 characters — you'll use this to log in">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Why do you want to become a Crown Partner? *</label>
+            <textarea id="motivation" class="form-control" placeholder="Tell us briefly how you plan to refer people, or why this opportunity interests you…"></textarea>
+          </div>
+          <div class="form-group"><label class="form-label">Referral Code (if someone invited you)</label><input type="text" id="referralCode" class="form-control" placeholder="Optional"></div>
+          <button type="button" class="btn-premium" onclick="validateStep1()">Continue to Payment <i class="fas fa-arrow-right"></i></button>
+          <div class="login-cta">Already a partner? <a href="referral-login.html">Log in here</a></div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="step2" class="step-content">
+          <div id="step2-alert" style="display:none;" class="alert alert-error"></div>
+          <div class="payment-notice">
+            <strong>💰 One-Time Activation Fee: KES 500</strong><br>
+            <span style="color:var(--text-light);">M-Pesa Till: <strong>5249867</strong> · Paybill: <strong>247247</strong> (Account: your phone number)</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Upload Payment Proof (M-Pesa Screenshot) *</label>
+            <div class="file-upload" id="fileUploadArea">
+              <input type="file" id="paymentProof" accept="image/*" style="display:none;">
+              <div id="fileUploadContent">
+                <p style="font-size:2.6rem;margin-bottom:0.8rem;color:var(--gold);"><i class="fas fa-cloud-upload-alt"></i></p>
+                <p style="font-weight:600;margin-bottom:0.3rem;">Click to upload or drag and drop</p>
+                <p style="color:var(--text-light);font-size:0.85rem;">PNG, JPG up to 5MB</p>
+              </div>
+              <div id="filePreview" style="display:none;" class="file-preview">
+                <img id="previewImage" src="" alt="Preview">
+                <p style="color:var(--success);font-weight:600;margin-bottom:0.8rem;"><i class="fas fa-check-circle"></i> Payment proof ready</p>
+                <button type="button" class="btn-secondary" style="width:auto;padding:0.5rem 1.2rem;" onclick="changeFile()">Change File</button>
+              </div>
             </div>
           </div>
+          <div class="button-group">
+            <button type="button" class="btn-secondary" onclick="prevStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
+            <button type="button" class="btn-premium" onclick="validateStep2()">Review Application <i class="fas fa-arrow-right"></i></button>
+          </div>
         </div>
-        <div class="button-group">
-          <button type="button" class="btn-secondary" onclick="prevStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
-          <button type="button" class="btn-premium" onclick="validateStep2()">Continue to Review <i class="fas fa-arrow-right"></i></button>
-        </div>
-      </div>
 
-      <!-- Step 3 -->
-      <div id="step3" class="step-content">
-        <h3 class="step-title"><i class="fas fa-check-circle"></i> Review Your Application</h3>
-        <div id="step3-alert" style="display:none;" class="alert alert-error"></div>
-        <div class="summary-grid">
-          <div class="summary-item"><div class="summary-label">Full Name</div><div class="summary-value" id="sumName">-</div></div>
-          <div class="summary-item"><div class="summary-label">Email</div><div class="summary-value" id="sumEmail">-</div></div>
-          <div class="summary-item"><div class="summary-label">Phone</div><div class="summary-value" id="sumPhone">-</div></div>
-          <div class="summary-item"><div class="summary-label">Referral Code</div><div class="summary-value" id="sumReferral">None</div></div>
+        <!-- STEP 3 -->
+        <div id="step3" class="step-content">
+          <div id="step3-alert" style="display:none;" class="alert alert-error"></div>
+          <div class="summary-grid">
+            <div class="summary-item"><div class="summary-label">Full Name</div><div class="summary-value" id="sumName">-</div></div>
+            <div class="summary-item"><div class="summary-label">Email</div><div class="summary-value" id="sumEmail">-</div></div>
+            <div class="summary-item"><div class="summary-label">Phone</div><div class="summary-value" id="sumPhone">-</div></div>
+            <div class="summary-item"><div class="summary-label">Referred By</div><div class="summary-value" id="sumReferral">None</div></div>
+          </div>
+          <div class="terms-box">
+            <label>
+              <input type="checkbox" id="termsAgreement">
+              <span><strong style="display:block;margin-bottom:0.3rem;">I agree to the Crown Partner Terms</strong>
+              <span style="font-size:0.85rem;color:var(--text-light);">I understand my application will be reviewed within 24–48 hours and I can log in anytime with my email and password to check status.</span></span>
+            </label>
+          </div>
+          <div class="button-group">
+            <button type="button" class="btn-secondary" onclick="prevStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
+            <button type="button" class="btn-premium" id="submitBtn" onclick="submitApplication()">
+              <span id="submitText"><i class="fas fa-crown"></i> Submit Application</span>
+            </button>
+          </div>
         </div>
-        <div class="summary-item" style="margin-bottom:2rem;">
-          <div class="summary-label">Payment Proof</div>
-          <div id="proofStatus" style="margin-top:0.5rem;color:#28a745;font-weight:600;"><i class="fas fa-check-circle"></i> Uploaded</div>
-        </div>
-        <div class="terms-box">
-          <label>
-            <input type="checkbox" id="termsAgreement">
-            <span style="color:var(--charcoal);">
-              <strong style="display:block;margin-bottom:0.5rem;">I agree to the Terms and Conditions</strong>
-              <span style="font-size:0.9rem;color:var(--text-light);">I confirm all information is accurate. My application will be reviewed within 24-48 hours.</span>
-            </span>
-          </label>
-        </div>
-        <div class="button-group">
-          <button type="button" class="btn-secondary" onclick="prevStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
-          <button type="button" class="btn-premium" id="submitBtn" onclick="submitApplication()">
-            <span class="spinner" id="submitSpinner" style="display:none;"></span>
-            <span id="submitText"><i class="fas fa-rocket"></i> Submit Application</span>
-          </button>
-        </div>
-      </div>
 
-      <!-- Success state -->
-      <div id="successState" style="display:none;text-align:center;padding:3rem 1rem;">
-        <div style="font-size:4rem;color:var(--gold);margin-bottom:1.5rem;"><i class="fas fa-check-circle"></i></div>
-        <h2 style="font-size:2.2rem;margin-bottom:1rem;">Application Submitted!</h2>
-        <p style="color:var(--text-light);margin-bottom:0.5rem;">Your application is under review and you'll hear from us within 24-48 hours.</p>
-        <p style="color:var(--text-light);margin-bottom:2rem;">Check your email for confirmation.</p>
-        <a href="index.html" class="btn-premium" style="display:inline-block;width:auto;">Back to Home</a>
-      </div>
+        <!-- SUCCESS -->
+        <div id="successState" style="display:none;text-align:center;padding:2rem 0;">
+          <div style="font-size:3.5rem;color:var(--gold);margin-bottom:1.2rem;"><i class="fas fa-crown"></i></div>
+          <h2 style="font-size:1.9rem;margin-bottom:0.8rem;">Application Submitted!</h2>
+          <p style="color:var(--text-light);margin-bottom:0.6rem;">You're member <strong id="memberNum" style="color:var(--gold-dark);">#—</strong> in line for review.</p>
+          <p style="color:var(--text-light);margin-bottom:1.8rem;">You're already logged in — check your status anytime from your dashboard.</p>
+          <a href="referral-dashboard.html" class="btn-premium" style="display:inline-block;width:auto;text-decoration:none;">Go to My Dashboard</a>
+        </div>
 
+      </div>
     </div>
-  </section>
-</main>
+  </div>
+</section>
 
-<footer>
-  <div class="copyright"><p>&copy; 2025 Crown Trade Academy. All rights reserved.</p></div>
-</footer>
+<footer>&copy; 2025 Crown Trade Academy. All rights reserved.</footer>
 
 <script>
 let currentStep = 1;
-let appData = { fullName:'', email:'', phone:'', referralCode:'', proofFile: null, proofBase64:'' };
+let appData = { fullName:'', email:'', phone:'', password:'', motivation:'', referralCode:'', proofFile:null, proofBase64:'' };
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
   const ref = params.get('ref');
   if (ref) document.getElementById('referralCode').value = ref;
 
+  // Load spots availability
+  try {
+    const data = await API.getReferralSpots();
+    renderSpots(data);
+    if (data.is_full) {
+      document.getElementById('formWrapper').style.display = 'none';
+      document.getElementById('fullState').style.display = 'block';
+    }
+  } catch (err) {
+    document.getElementById('spotsSub').textContent = 'Could not load availability';
+  }
+
+  // File upload wiring
   const area = document.getElementById('fileUploadArea');
   const input = document.getElementById('paymentProof');
   area.addEventListener('click', e => { if (e.target.tagName !== 'BUTTON') input.click(); });
@@ -201,6 +356,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.dataTransfer.files.length > 0) { input.files = e.dataTransfer.files; handleFileSelect(); }
   });
 });
+
+function renderSpots(data) {
+  document.getElementById('spotsRemaining').textContent = data.spots_remaining;
+  const pct = Math.round((data.spots_filled / data.total_spots) * 100);
+  document.getElementById('spotsFill').style.width = pct + '%';
+  document.getElementById('spotsSub').textContent = `${data.spots_filled} of ${data.total_spots} spots claimed`;
+}
 
 function showStepAlert(step, msg) {
   const el = document.getElementById(`step${step}-alert`);
@@ -216,7 +378,7 @@ function nextStep(step) {
   document.getElementById('si'+step).classList.add('active');
   currentStep = step;
   if (step === 3) updateSummary();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: document.getElementById('applyForm').offsetTop - 100, behavior: 'smooth' });
 }
 
 function prevStep(step) {
@@ -226,7 +388,6 @@ function prevStep(step) {
   document.getElementById('si'+step).classList.remove('completed');
   document.getElementById('si'+step).classList.add('active');
   currentStep = step;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function validateStep1() {
@@ -234,10 +395,14 @@ function validateStep1() {
   const fn = document.getElementById('fullName').value.trim();
   const em = document.getElementById('email').value.trim();
   const ph = document.getElementById('phone').value.trim();
+  const pw = document.getElementById('password').value;
+  const mo = document.getElementById('motivation').value.trim();
   if (!fn) { showStepAlert(1,'Please enter your full name'); return; }
   if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { showStepAlert(1,'Please enter a valid email'); return; }
   if (!ph) { showStepAlert(1,'Please enter your phone number'); return; }
-  appData.fullName=fn; appData.email=em; appData.phone=ph;
+  if (!pw || pw.length < 6) { showStepAlert(1,'Password must be at least 6 characters'); return; }
+  if (!mo) { showStepAlert(1,'Please tell us why you want to join'); return; }
+  appData.fullName=fn; appData.email=em; appData.phone=ph; appData.password=pw; appData.motivation=mo;
   appData.referralCode=document.getElementById('referralCode').value.trim();
   nextStep(2);
 }
@@ -280,55 +445,56 @@ function updateSummary() {
 
 async function submitApplication() {
   document.getElementById('step3-alert').style.display = 'none';
-  if (!document.getElementById('termsAgreement').checked) { showStepAlert(3,'Please agree to the Terms and Conditions'); return; }
+  if (!document.getElementById('termsAgreement').checked) { showStepAlert(3,'Please agree to the Crown Partner Terms'); return; }
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
-  document.getElementById('submitSpinner').style.display = 'inline-block';
-  document.getElementById('submitText').textContent = 'Submitting...';
+  document.getElementById('submitText').innerHTML = '<span class="spinner"></span> Submitting…';
 
   try {
-    // Upload payment proof first
-    let proofUrl = appData.proofBase64; // fallback to base64 if upload fails
+    let proofUrl = appData.proofBase64;
     if (appData.proofFile) {
       try {
         const uploadResult = await API.uploadPaymentProof(appData.proofFile);
         if (uploadResult.url) proofUrl = uploadResult.url;
-      } catch (uploadErr) {
-        // If file upload fails, use base64 string
-        console.warn('File upload failed, using base64:', uploadErr);
-      }
+      } catch (uploadErr) { console.warn('Upload failed, using base64 fallback'); }
     }
 
-    await API.registerReferral({
+    const result = await API.registerReferral({
       full_name: appData.fullName,
       email: appData.email,
       phone: appData.phone,
+      password: appData.password,
+      motivation: appData.motivation,
       referred_by_code: appData.referralCode || undefined,
       payment_proof: proofUrl
     });
 
-    // Show all steps as completed then success state
+    // Auto-login: store the token returned from registration
+    if (result.token) {
+      setToken(result.token);
+      setUser(result.user);
+    }
+
     [1,2,3].forEach(i => {
       document.getElementById('si'+i).classList.remove('active');
       document.getElementById('si'+i).classList.add('completed');
     });
     document.getElementById('step3').classList.remove('active');
+    document.getElementById('memberNum').textContent = '#' + (result.member_number || '—');
     document.getElementById('successState').style.display = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: document.getElementById('applyForm').offsetTop - 100, behavior: 'smooth' });
 
   } catch(err) {
     showStepAlert(3, err.message || 'Submission failed. Please try again.');
     btn.disabled = false;
-    document.getElementById('submitSpinner').style.display = 'none';
-    document.getElementById('submitText').innerHTML = '<i class="fas fa-rocket"></i> Submit Application';
+    document.getElementById('submitText').innerHTML = '<i class="fas fa-crown"></i> Submit Application';
   }
 }
 
 window.addEventListener('scroll', () => {
   const h = document.querySelector('.premium-header');
   h.style.backgroundColor = window.scrollY>50?'rgba(249,246,242,0.98)':'rgba(249,246,242,0.95)';
-  h.style.boxShadow = window.scrollY>50?'0 5px 20px rgba(0,0,0,0.05)':'none';
 });
 </script>
 </body>
