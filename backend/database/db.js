@@ -57,20 +57,31 @@ function initDB() {
 
         CREATE TABLE IF NOT EXISTS referral_applications (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
+          member_number INTEGER,
           full_name TEXT NOT NULL,
           email TEXT UNIQUE NOT NULL,
           phone TEXT NOT NULL,
+          password_hash TEXT,
+          motivation TEXT,
           referral_code TEXT,
           referred_by_code TEXT,
           payment_proof TEXT,
           amount INTEGER DEFAULT 500,
           payment_status TEXT DEFAULT 'pending',
           status TEXT DEFAULT 'pending',
+          tier TEXT DEFAULT 'bronze',
           admin_notes TEXT,
           referral_link TEXT,
           earnings INTEGER DEFAULT 0,
+          welcomed INTEGER DEFAULT 0,
           submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           reviewed_at DATETIME
+        );
+
+        CREATE TABLE IF NOT EXISTS referral_settings (
+          id INTEGER PRIMARY KEY CHECK (id = 1),
+          total_spots INTEGER DEFAULT 50,
+          spots_filled INTEGER DEFAULT 0
         );
 
         CREATE TABLE IF NOT EXISTS referral_earnings (
@@ -104,6 +115,17 @@ function initDB() {
       // Run migrations for existing databases
       try { database.exec(`ALTER TABLE mentorship_applications ADD COLUMN payment_proof TEXT`); } catch {}
       try { database.exec(`ALTER TABLE mentorship_applications ADD COLUMN payment_status TEXT DEFAULT 'unpaid'`); } catch {}
+      try { database.exec(`ALTER TABLE referral_applications ADD COLUMN password_hash TEXT`); } catch {}
+      try { database.exec(`ALTER TABLE referral_applications ADD COLUMN member_number INTEGER`); } catch {}
+      try { database.exec(`ALTER TABLE referral_applications ADD COLUMN motivation TEXT`); } catch {}
+      try { database.exec(`ALTER TABLE referral_applications ADD COLUMN tier TEXT DEFAULT 'bronze'`); } catch {}
+      try { database.exec(`ALTER TABLE referral_applications ADD COLUMN welcomed INTEGER DEFAULT 0`); } catch {}
+
+      // Seed referral_settings singleton row
+      const settingsExists = database.prepare('SELECT id FROM referral_settings WHERE id = 1').get();
+      if (!settingsExists) {
+        database.prepare('INSERT INTO referral_settings (id, total_spots, spots_filled) VALUES (1, 50, 0)').run();
+      }
 
       // Seed default admin
       const adminExists = database.prepare("SELECT id FROM admin_users WHERE username = 'admin'").get();
