@@ -34,11 +34,20 @@ const API = {
   async registerReferral(data) {
     return await post('/referral/register', data);
   },
+  async referralLogin(email, password) {
+    return await post('/referral/login', { email, password });
+  },
   async getReferralDashboard() {
     return await get('/referral/dashboard');
   },
   async checkReferralCode(code) {
     return await get(`/referral/check/${encodeURIComponent(code)}`);
+  },
+  async getReferralSpots() {
+    return await get('/referral/spots');
+  },
+  async getReferralStatus(email) {
+    return await get(`/referral/status/${encodeURIComponent(email)}`);
   },
 
   // ─── FILE UPLOAD ───────────────────────────────────────────────────────────
@@ -128,6 +137,16 @@ async function get(path) {
     }
   });
   const data = await res.json();
+  if (res.status === 401 || res.status === 403) {
+    // Token expired or invalid — clear and redirect to appropriate login
+    const user = getUser();
+    const role = user ? user.role : null;
+    logout();
+    if (role === 'admin') window.location.href = 'admin-login.html';
+    else if (role === 'referral') window.location.href = 'referral-login.html';
+    else window.location.href = 'login.html';
+    throw new Error(data.error || 'Session expired — please log in again');
+  }
   if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
   return data;
 }
@@ -158,6 +177,15 @@ async function patch(path, body) {
     body: JSON.stringify(body)
   });
   const data = await res.json();
+  if (res.status === 401 || res.status === 403) {
+    const user = getUser();
+    const role = user ? user.role : null;
+    logout();
+    if (role === 'admin') window.location.href = 'admin-login.html';
+    else if (role === 'referral') window.location.href = 'referral-login.html';
+    else window.location.href = 'login.html';
+    throw new Error(data.error || 'Session expired — please log in again');
+  }
   if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
   return data;
 }
