@@ -172,13 +172,15 @@ footer{background:var(--charcoal);padding:2rem;color:var(--nude-dark);text-align
 let selectedFile = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Show applicant name if coming from form
-  const name = sessionStorage.getItem('applicant_name');
-  const email = sessionStorage.getItem('applicant_email');
+  // Show applicant name — from session if fresh, else from logged-in user
+  const name = sessionStorage.getItem('applicant_name') || getUser()?.full_name;
+  let email = sessionStorage.getItem('applicant_email') || getUser()?.email;
   if (name) document.getElementById('greetLine').textContent = `Hi ${name}! Pay KES 3,500 to secure your spot, then upload your proof below.`;
-  if (!email) {
-    // If no session, they came directly — still let them through
-    console.warn('No applicant email in session — user may have navigated directly');
+  if (email) {
+    // Ensure session has it for the submit step too
+    sessionStorage.setItem('applicant_email', email);
+  } else {
+    console.warn('No applicant email found — user may not be logged in');
   }
 
   // File upload wiring
