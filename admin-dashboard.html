@@ -85,6 +85,40 @@ tr:hover td{background:#FDFAF7;}
 .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
 .filter-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--nude-med);background:#fff;cursor:pointer;font-size:0.82rem;font-weight:600;color:var(--muted);transition:all 0.2s;font-family:'Montserrat',sans-serif;}
 .filter-btn.active,.filter-btn:hover{background:var(--gold);color:#fff;border-color:var(--gold);}
+.filter-select{padding:8px 14px;border-radius:8px;border:1px solid var(--nude-med);background:#fff;font-size:0.85rem;font-family:'Montserrat',sans-serif;color:var(--charcoal);}
+/* Course cards */
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.course-card{background:#fff;border:1px solid rgba(212,200,188,0.4);border-radius:12px;padding:20px;transition:all 0.2s;position:relative;}
+.course-card:hover{border-color:var(--gold);box-shadow:0 6px 18px rgba(0,0,0,0.07);}
+.course-card.flagship{border-color:var(--gold);background:linear-gradient(135deg,rgba(200,169,126,0.04),#fff);}
+.course-card-icon{width:44px;height:44px;background:var(--nude-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--gold);margin-bottom:12px;}
+.course-card-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;margin-bottom:4px;}
+.course-card-tagline{color:var(--muted);font-size:0.82rem;margin-bottom:12px;min-height:34px;}
+.course-card-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.course-card-price{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--gold-dark);}
+.course-card-status{font-size:0.72rem;padding:3px 9px;border-radius:20px;font-weight:700;}
+.status-published{background:#D1FAE5;color:#065F46;}
+.status-unpublished{background:#F1F5F9;color:#94A3B8;}
+.course-card-actions{display:flex;gap:6px;}
+.course-card-actions button{flex:1;padding:7px;border-radius:7px;border:1px solid var(--nude-med);background:#fff;cursor:pointer;font-size:0.78rem;font-weight:600;color:var(--charcoal);transition:all 0.2s;}
+.course-card-actions button:hover{background:var(--nude-light);border-color:var(--gold);}
+.course-module-count{font-size:0.76rem;color:var(--muted);margin-bottom:10px;}
+/* Form inputs in modal */
+.form-row{margin-bottom:14px;}
+.form-row label{display:block;font-weight:600;font-size:0.84rem;margin-bottom:6px;}
+.form-row input,.form-row textarea,.form-row select{width:100%;padding:9px 12px;border:1px solid var(--nude-med);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:0.88rem;}
+.form-row input:focus,.form-row textarea:focus,.form-row select:focus{outline:none;border-color:var(--gold);}
+.form-row textarea{resize:vertical;min-height:70px;}
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.module-list-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid rgba(212,200,188,0.4);border-radius:8px;margin-bottom:8px;}
+.module-list-item .mod-num-badge{width:26px;height:26px;background:var(--gold);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.76rem;font-weight:700;flex-shrink:0;}
+.module-list-item .mod-info{flex:1;min-width:0;}
+.module-list-item .mod-info-title{font-weight:600;font-size:0.86rem;}
+.module-list-item .mod-info-meta{font-size:0.74rem;color:var(--muted);}
+.module-list-item .mod-actions{display:flex;gap:4px;}
+.module-list-item .mod-actions button{padding:5px 8px;border-radius:5px;border:1px solid var(--nude-med);background:#fff;cursor:pointer;font-size:0.74rem;}
+.module-list-item .mod-actions button:hover{background:var(--nude-light);}
+.modal.modal-wide{max-width:680px;}
 /* Modal */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.show{display:flex;}
@@ -124,8 +158,11 @@ tr:hover td{background:#FDFAF7;}
     <nav class="sidebar-nav">
       <div class="sidebar-section">Main</div>
       <a href="#" class="sidebar-item active" data-tab="overview"><i class="fas fa-tachometer-alt"></i> Overview</a>
+      <div class="sidebar-section">Courses</div>
+      <a href="#" class="sidebar-item" data-tab="courses"><i class="fas fa-book"></i> Manage Courses</a>
+      <a href="#" class="sidebar-item" data-tab="enrollments"><i class="fas fa-user-graduate"></i> Enrollments</a>
       <div class="sidebar-section">Applications</div>
-      <a href="#" class="sidebar-item" data-tab="mentorship"><i class="fas fa-graduation-cap"></i> Mentorship</a>
+      <a href="#" class="sidebar-item" data-tab="mentorship"><i class="fas fa-graduation-cap"></i> Mentorship (Legacy)</a>
       <a href="#" class="sidebar-item" data-tab="referral"><i class="fas fa-users"></i> Referral Agents</a>
       <div class="sidebar-section">Finance</div>
       <a href="#" class="sidebar-item" data-tab="earnings"><i class="fas fa-coins"></i> Earnings Payouts</a>
@@ -135,6 +172,7 @@ tr:hover td{background:#FDFAF7;}
     <div class="sidebar-footer">
       <div style="color:#555;font-size:0.8rem;margin-bottom:10px;padding:0 3px;">
         <span id="adminName" style="color:#A8A8A8;font-weight:600;"></span>
+
       </div>
       <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
@@ -171,6 +209,39 @@ tr:hover td{background:#FDFAF7;}
             <a href="#" class="btn btn-primary" onclick="switchTab('referral')"><i class="fas fa-eye"></i> View All</a>
           </div>
           <div class="table-wrap" id="recentReferralTable"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── COURSES TAB ── -->
+      <div id="courses" class="tab-content">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Manage Courses</div>
+            <button class="btn btn-primary" onclick="openCourseModal()"><i class="fas fa-plus"></i> Add Course</button>
+          </div>
+          <div id="coursesGrid" class="courses-grid"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── ENROLLMENTS TAB ── -->
+      <div id="enrollments" class="tab-content">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Course Enrollments</div>
+            <button class="btn btn-primary" onclick="loadEnrollments()"><i class="fas fa-sync"></i> Refresh</button>
+          </div>
+          <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterEnrollments('')">All</button>
+            <button class="filter-btn" onclick="filterEnrollments('pending')">Pending</button>
+            <button class="filter-btn" onclick="filterEnrollments('approved')">Approved</button>
+            <button class="filter-btn" onclick="filterEnrollments('rejected')">Rejected</button>
+          </div>
+          <div style="margin-bottom:14px;">
+            <select id="enrollmentCourseFilter" class="filter-select" onchange="loadEnrollments()">
+              <option value="">All Courses</option>
+            </select>
+          </div>
+          <div class="table-wrap" id="enrollmentsTable"><div class="spinner-wrap"><div class="spin"></div></div></div>
         </div>
       </div>
 
@@ -250,11 +321,123 @@ tr:hover td{background:#FDFAF7;}
   </div>
 </div>
 
+<!-- Course Add/Edit Modal -->
+<div class="modal-overlay" id="courseModal">
+  <div class="modal">
+    <div class="modal-title" id="courseModalTitle">Add Course</div>
+    <input type="hidden" id="courseId">
+    <div class="form-row">
+      <label>Course Title *</label>
+      <input type="text" id="courseTitle" placeholder="e.g. Personal Finance Foundations">
+    </div>
+    <div class="form-row">
+      <label>URL Slug * <span style="color:var(--muted);font-weight:400;">(used in links, no spaces)</span></label>
+      <input type="text" id="courseSlug" placeholder="e.g. personal-finance-foundations">
+    </div>
+    <div class="form-row">
+      <label>Tagline</label>
+      <input type="text" id="courseTagline" placeholder="Short one-line hook">
+    </div>
+    <div class="form-row">
+      <label>Description</label>
+      <textarea id="courseDescription" placeholder="What this course covers…"></textarea>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-row">
+        <label>Price (KES) *</label>
+        <input type="number" id="coursePrice" placeholder="3500">
+      </div>
+      <div class="form-row">
+        <label>Referral Commission (KES)</label>
+        <input type="number" id="courseCommission" placeholder="200">
+      </div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-row">
+        <label>Icon <span style="color:var(--muted);font-weight:400;">(Font Awesome class)</span></label>
+        <input type="text" id="courseIcon" placeholder="fa-chart-line">
+      </div>
+      <div class="form-row">
+        <label>Status</label>
+        <select id="coursePublished">
+          <option value="1">Published</option>
+          <option value="0">Unpublished (hidden)</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-approve" onclick="saveCourse()"><i class="fas fa-save"></i> Save Course</button>
+      <button class="btn btn-view" onclick="closeCourseModal()"><i class="fas fa-times"></i> Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Module Manager Modal -->
+<div class="modal-overlay" id="moduleManagerModal">
+  <div class="modal modal-wide">
+    <div class="modal-title" id="moduleManagerTitle">Manage Modules</div>
+    <input type="hidden" id="moduleManagerCourseId">
+    <div id="moduleListContainer" style="margin-bottom:18px;"></div>
+    <button class="btn btn-primary" onclick="openModuleForm()" style="width:100%;justify-content:center;margin-bottom:10px;"><i class="fas fa-plus"></i> Add Module</button>
+    <button class="btn btn-view" onclick="closeModuleManager()" style="width:100%;justify-content:center;"><i class="fas fa-times"></i> Close</button>
+  </div>
+</div>
+
+<!-- Module Add/Edit Form Modal -->
+<div class="modal-overlay" id="moduleFormModal">
+  <div class="modal">
+    <div class="modal-title" id="moduleFormTitle">Add Module</div>
+    <input type="hidden" id="moduleId">
+    <div class="form-grid-2">
+      <div class="form-row">
+        <label>Module Number *</label>
+        <input type="number" id="moduleNumber" placeholder="1">
+      </div>
+      <div class="form-row">
+        <label>Duration Label</label>
+        <input type="text" id="moduleDuration" placeholder="e.g. 22 min">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Module Title *</label>
+      <input type="text" id="moduleTitle" placeholder="e.g. Introduction to Budgeting">
+    </div>
+    <div class="form-row">
+      <label>Description</label>
+      <textarea id="moduleDescription" placeholder="Brief description of this module…"></textarea>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-row">
+        <label>Video Provider</label>
+        <select id="moduleVideoProvider">
+          <option value="vimeo">Vimeo</option>
+          <option value="youtube">YouTube (unlisted)</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Video ID <span style="color:var(--muted);font-weight:400;">(not full URL)</span></label>
+        <input type="text" id="moduleVideoId" placeholder="e.g. 123456789">
+      </div>
+    </div>
+    <div style="background:var(--nude-light);border-left:3px solid var(--gold);padding:10px 14px;border-radius:0 8px 8px 0;font-size:0.8rem;margin-bottom:14px;">
+      <i class="fas fa-info-circle" style="color:var(--gold);margin-right:5px;"></i>
+      For Vimeo: the ID is the number in your video URL (vimeo.com/<strong>123456789</strong>). For YouTube: the ID after ?v= in the URL.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-approve" onclick="saveModule()"><i class="fas fa-save"></i> Save Module</button>
+      <button class="btn btn-view" onclick="closeModuleForm()"><i class="fas fa-times"></i> Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script>
 let mentorshipData = [];
 let referralData = [];
-let currentFilter = { mentorship: '', referral: '' };
+let currentFilter = { mentorship: '', referral: '', enrollments: '' };
 let modalContext = null;
+let coursesData = [];
+let currentCourseModules = [];
+let enrollmentsData = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Verify token and role before loading
@@ -300,12 +483,14 @@ function switchTab(tab) {
   const item = document.querySelector(`[data-tab="${tab}"]`);
   if (item) item.classList.add('active');
   document.getElementById(tab).classList.add('active');
-  document.getElementById('pageTitle').textContent = { overview:'Overview', mentorship:'Mentorship Applications', referral:'Referral Agents', earnings:'Earnings Payouts', users:'Users' }[tab] || tab;
+  document.getElementById('pageTitle').textContent = { overview:'Overview', courses:'Manage Courses', enrollments:'Course Enrollments', mentorship:'Mentorship Applications (Legacy)', referral:'Referral Agents', earnings:'Earnings Payouts', users:'Users' }[tab] || tab;
 
   if (tab === 'mentorship') loadMentorship();
   else if (tab === 'referral') loadReferral();
   else if (tab === 'earnings') loadEarnings();
   else if (tab === 'users') loadUsers();
+  else if (tab === 'courses') loadCourses();
+  else if (tab === 'enrollments') loadEnrollments();
 }
 
 // ─── OVERVIEW ────────────────────────────────────────────────────────────────
@@ -586,6 +771,312 @@ function showToast(msg, type = 'info') {
   t.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':type==='error'?'times-circle':'info-circle'}"></i> ${msg}`;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 3500);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// COURSES MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function loadCourses() {
+  document.getElementById('coursesGrid').innerHTML = '<div class="spinner-wrap"><div class="spin"></div></div>';
+  try {
+    const data = await API.getAdminCourses();
+    coursesData = data.courses;
+    renderCoursesGrid();
+    populateCourseFilterDropdown();
+  } catch (err) { showToast('Failed to load courses: ' + err.message, 'error'); }
+}
+
+function renderCoursesGrid() {
+  const container = document.getElementById('coursesGrid');
+  if (!coursesData.length) { container.innerHTML = '<p style="color:var(--muted);padding:30px;text-align:center;">No courses yet. Click "Add Course" to create one.</p>'; return; }
+
+  container.innerHTML = coursesData.map(c => `
+    <div class="course-card ${c.is_flagship ? 'flagship' : ''}">
+      ${c.is_flagship ? '<div style="position:absolute;top:14px;right:14px;color:var(--gold);font-size:1.1rem;" title="Flagship course"><i class="fas fa-crown"></i></div>' : ''}
+      <div class="course-card-icon"><i class="fas ${c.icon || 'fa-graduation-cap'}"></i></div>
+      <div class="course-card-title">${c.title}</div>
+      <div class="course-card-tagline">${c.tagline || 'No tagline set'}</div>
+      <div class="course-card-meta">
+        <div class="course-card-price">KES ${c.price.toLocaleString()}</div>
+        <span class="course-card-status ${c.is_published ? 'status-published' : 'status-unpublished'}">${c.is_published ? 'Published' : 'Hidden'}</span>
+      </div>
+      <div class="course-card-actions">
+        <button onclick="openCourseModal(${c.id})"><i class="fas fa-edit"></i> Edit</button>
+        <button onclick="openModuleManager(${c.id})"><i class="fas fa-film"></i> Modules</button>
+        <button onclick="deleteCourse(${c.id})" style="color:#991B1B;"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function populateCourseFilterDropdown() {
+  const select = document.getElementById('enrollmentCourseFilter');
+  if (!select) return;
+  const current = select.value;
+  select.innerHTML = '<option value="">All Courses</option>' + coursesData.map(c => `<option value="${c.id}">${c.title}</option>`).join('');
+  select.value = current;
+}
+
+function openCourseModal(id) {
+  document.getElementById('courseId').value = id || '';
+  if (id) {
+    const c = coursesData.find(c => c.id === id);
+    document.getElementById('courseModalTitle').textContent = 'Edit Course';
+    document.getElementById('courseTitle').value = c.title;
+    document.getElementById('courseSlug').value = c.slug;
+    document.getElementById('courseSlug').disabled = true;
+    document.getElementById('courseTagline').value = c.tagline || '';
+    document.getElementById('courseDescription').value = c.description || '';
+    document.getElementById('coursePrice').value = c.price;
+    document.getElementById('courseCommission').value = c.referral_commission || 200;
+    document.getElementById('courseIcon').value = c.icon || '';
+    document.getElementById('coursePublished').value = c.is_published ? '1' : '0';
+  } else {
+    document.getElementById('courseModalTitle').textContent = 'Add Course';
+    ['courseTitle','courseSlug','courseTagline','courseDescription','coursePrice','courseIcon'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('courseSlug').disabled = false;
+    document.getElementById('courseCommission').value = 200;
+    document.getElementById('coursePublished').value = '1';
+  }
+  document.getElementById('courseModal').classList.add('show');
+}
+
+function closeCourseModal() {
+  document.getElementById('courseModal').classList.remove('show');
+}
+
+async function saveCourse() {
+  const id = document.getElementById('courseId').value;
+  const title = document.getElementById('courseTitle').value.trim();
+  const slug = document.getElementById('courseSlug').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+  const tagline = document.getElementById('courseTagline').value.trim();
+  const description = document.getElementById('courseDescription').value.trim();
+  const price = Number(document.getElementById('coursePrice').value);
+  const referral_commission = Number(document.getElementById('courseCommission').value) || 200;
+  const icon = document.getElementById('courseIcon').value.trim() || 'fa-graduation-cap';
+  const is_published = Number(document.getElementById('coursePublished').value);
+
+  if (!title || !price) { showToast('Title and price are required', 'error'); return; }
+  if (!id && !slug) { showToast('Slug is required', 'error'); return; }
+
+  try {
+    if (id) {
+      await API.updateCourse(id, { title, tagline, description, price, referral_commission, icon, is_published });
+      showToast('Course updated!', 'success');
+    } else {
+      await API.createCourse({ slug, title, tagline, description, price, referral_commission, icon });
+      showToast('Course created!', 'success');
+    }
+    closeCourseModal();
+    loadCourses();
+  } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+}
+
+async function deleteCourse(id) {
+  if (!confirm('Delete this course? This cannot be undone and will remove all its modules.')) return;
+  try {
+    await API.deleteCourseAdmin(id);
+    showToast('Course deleted', 'success');
+    loadCourses();
+  } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+}
+
+// ─── MODULE MANAGER ───────────────────────────────────────────────────────────
+async function openModuleManager(courseId) {
+  document.getElementById('moduleManagerCourseId').value = courseId;
+  const course = coursesData.find(c => c.id === courseId);
+  document.getElementById('moduleManagerTitle').textContent = `Modules — ${course?.title || ''}`;
+  document.getElementById('moduleManagerModal').classList.add('show');
+  await loadModulesForCourse(courseId);
+}
+
+async function loadModulesForCourse(courseId) {
+  try {
+    const data = await API.getCourseModulesAdmin(courseId);
+    currentCourseModules = data.modules;
+    renderModuleList();
+  } catch (err) { showToast('Failed to load modules: ' + err.message, 'error'); }
+}
+
+function renderModuleList() {
+  const container = document.getElementById('moduleListContainer');
+  if (!currentCourseModules.length) { container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No modules yet. Add your first one below.</p>'; return; }
+  container.innerHTML = currentCourseModules.map(m => `
+    <div class="module-list-item">
+      <div class="mod-num-badge">${m.module_number}</div>
+      <div class="mod-info">
+        <div class="mod-info-title">${m.title}</div>
+        <div class="mod-info-meta">${m.duration_label || 'No duration set'} · ${m.video_id ? `${m.video_provider} video set` : '⚠️ No video set'}</div>
+      </div>
+      <div class="mod-actions">
+        <button onclick="openModuleForm(${m.id})"><i class="fas fa-edit"></i></button>
+        <button onclick="deleteModule(${m.id})" style="color:#991B1B;"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function closeModuleManager() {
+  document.getElementById('moduleManagerModal').classList.remove('show');
+  loadCourses(); // refresh grid in case module count matters visually later
+}
+
+function openModuleForm(moduleId) {
+  document.getElementById('moduleId').value = moduleId || '';
+  if (moduleId) {
+    const m = currentCourseModules.find(m => m.id === moduleId);
+    document.getElementById('moduleFormTitle').textContent = 'Edit Module';
+    document.getElementById('moduleNumber').value = m.module_number;
+    document.getElementById('moduleDuration').value = m.duration_label || '';
+    document.getElementById('moduleTitle').value = m.title;
+    document.getElementById('moduleDescription').value = m.description || '';
+    document.getElementById('moduleVideoProvider').value = m.video_provider || 'vimeo';
+    document.getElementById('moduleVideoId').value = m.video_id || '';
+  } else {
+    document.getElementById('moduleFormTitle').textContent = 'Add Module';
+    const nextNum = currentCourseModules.length + 1;
+    document.getElementById('moduleNumber').value = nextNum;
+    ['moduleDuration','moduleTitle','moduleDescription','moduleVideoId'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('moduleVideoProvider').value = 'vimeo';
+  }
+  document.getElementById('moduleFormModal').classList.add('show');
+}
+
+function closeModuleForm() {
+  document.getElementById('moduleFormModal').classList.remove('show');
+}
+
+async function saveModule() {
+  const id = document.getElementById('moduleId').value;
+  const courseId = document.getElementById('moduleManagerCourseId').value;
+  const module_number = Number(document.getElementById('moduleNumber').value);
+  const title = document.getElementById('moduleTitle').value.trim();
+  const description = document.getElementById('moduleDescription').value.trim();
+  const video_provider = document.getElementById('moduleVideoProvider').value;
+  const video_id = document.getElementById('moduleVideoId').value.trim();
+  const duration_label = document.getElementById('moduleDuration').value.trim();
+
+  if (!title || !module_number) { showToast('Module number and title are required', 'error'); return; }
+
+  try {
+    if (id) {
+      await API.updateCourseModule(id, { title, description, video_provider, video_id, duration_label });
+      showToast('Module updated!', 'success');
+    } else {
+      await API.addCourseModule(courseId, { module_number, title, description, video_provider, video_id, duration_label, quiz_json: '[]' });
+      showToast('Module added!', 'success');
+    }
+    closeModuleForm();
+    loadModulesForCourse(courseId);
+  } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+}
+
+async function deleteModule(moduleId) {
+  if (!confirm('Delete this module?')) return;
+  const courseId = document.getElementById('moduleManagerCourseId').value;
+  try {
+    await API.deleteCourseModule(moduleId);
+    showToast('Module deleted', 'success');
+    loadModulesForCourse(courseId);
+  } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ENROLLMENTS MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function loadEnrollments(status = currentFilter.enrollments) {
+  currentFilter.enrollments = status;
+  const courseFilter = document.getElementById('enrollmentCourseFilter')?.value || '';
+  document.getElementById('enrollmentsTable').innerHTML = '<div class="spinner-wrap"><div class="spin"></div></div>';
+
+  // Ensure courses are loaded for the filter dropdown
+  if (!coursesData.length) {
+    try { const cd = await API.getAdminCourses(); coursesData = cd.courses; populateCourseFilterDropdown(); } catch {}
+  }
+
+  try {
+    const data = await API.getAdminEnrollments(status, courseFilter);
+    enrollmentsData = data.enrollments;
+    renderEnrollmentsTable();
+  } catch (err) { showToast('Failed to load enrollments: ' + err.message, 'error'); }
+}
+
+function filterEnrollments(status) {
+  document.querySelectorAll('#enrollments .filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  loadEnrollments(status);
+}
+
+function renderEnrollmentsTable() {
+  const container = document.getElementById('enrollmentsTable');
+  if (!enrollmentsData.length) { container.innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No enrollments found.</p>'; return; }
+  container.innerHTML = `
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Course</th><th>Amount</th><th>Status</th><th>Payment</th><th>Date</th><th>Action</th></tr></thead>
+      <tbody>${enrollmentsData.map(e => `
+        <tr>
+          <td><strong>${e.full_name}</strong></td>
+          <td>${e.email}</td>
+          <td>${e.course_title}</td>
+          <td>KES ${e.amount?.toLocaleString() || 0}</td>
+          <td><span class="badge badge-${e.status}">${cap(e.status)}</span></td>
+          <td><span class="badge badge-${e.payment_status||'unpaid'}">${cap(e.payment_status||'unpaid')}</span></td>
+          <td>${fmt(e.submitted_at)}</td>
+          <td><button class="btn btn-view" onclick="openEnrollmentModal(${JSON.stringify(e).replace(/"/g,"'")})"><i class="fas fa-eye"></i> Review</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function openEnrollmentModal(enrollment) {
+  modalContext = { app: enrollment, type: 'enrollment' };
+  document.getElementById('adminNotes').value = enrollment.admin_notes || '';
+  document.getElementById('modalTitle').textContent = 'Course Enrollment';
+
+  const fields = [
+    ['Full Name', enrollment.full_name],
+    ['Email', enrollment.email],
+    ['Phone', enrollment.phone],
+    ['Course', enrollment.course_title],
+    ['Amount', `KES ${enrollment.amount?.toLocaleString() || 0}`],
+    ['Status', `<span class="badge badge-${enrollment.status}">${cap(enrollment.status)}</span>`],
+    ['Payment', `<span class="badge badge-${enrollment.payment_status||'unpaid'}">${cap(enrollment.payment_status||'unpaid')}</span>`],
+    ['Submitted', fmt(enrollment.submitted_at)]
+  ];
+
+  document.getElementById('modalBody').innerHTML = fields.map(([l, v]) =>
+    `<div class="modal-row"><span class="modal-label">${l}</span><span class="modal-value">${v}</span></div>`
+  ).join('') + (enrollment.payment_proof ? `<div style="margin-top:12px;"><a href="${enrollment.payment_proof}" target="_blank" class="btn btn-view"><i class="fas fa-image"></i> View Payment Proof</a></div>` : '');
+
+  document.getElementById('modalActions').innerHTML = `
+    ${enrollment.status !== 'approved' ? `<button class="btn btn-approve" onclick="updateEnrollmentStatus('approved')"><i class="fas fa-check"></i> Approve</button>` : ''}
+    ${enrollment.status !== 'rejected' ? `<button class="btn btn-reject" onclick="updateEnrollmentStatus('rejected')"><i class="fas fa-times"></i> Reject</button>` : ''}
+    ${enrollment.payment_status !== 'verified' ? `<button class="btn btn-verify" onclick="updateEnrollmentPayment('verified')"><i class="fas fa-credit-card"></i> Verify Payment</button>` : ''}
+  `;
+
+  document.getElementById('reviewModal').classList.add('show');
+}
+
+async function updateEnrollmentStatus(status) {
+  const notes = document.getElementById('adminNotes').value;
+  const { app } = modalContext;
+  try {
+    await API.updateEnrollment(app.id, { status, admin_notes: notes });
+    showToast(`Enrollment ${status}!`, status === 'approved' ? 'success' : 'error');
+    closeModal();
+    loadEnrollments();
+  } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+}
+
+async function updateEnrollmentPayment(payment_status) {
+  const notes = document.getElementById('adminNotes').value;
+  const { app } = modalContext;
+  try {
+    await API.updateEnrollment(app.id, { payment_status, admin_notes: notes });
+    showToast(`Payment ${payment_status}!`, 'success');
+    closeModal();
+    loadEnrollments();
+  } catch (err) { showToast('Failed: ' + err.message, 'error'); }
 }
 </script>
 </body>
