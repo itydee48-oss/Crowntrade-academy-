@@ -93,8 +93,63 @@ function initDB() {
           referred_email TEXT NOT NULL,
           amount INTEGER DEFAULT 200,
           status TEXT DEFAULT 'pending',
+          source_type TEXT DEFAULT 'mentorship',
+          source_id INTEGER,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (referrer_id) REFERENCES referral_applications(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS courses (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          slug TEXT UNIQUE NOT NULL,
+          title TEXT NOT NULL,
+          tagline TEXT,
+          description TEXT,
+          price INTEGER NOT NULL DEFAULT 0,
+          thumbnail_url TEXT,
+          icon TEXT DEFAULT 'fa-graduation-cap',
+          is_flagship INTEGER DEFAULT 0,
+          is_published INTEGER DEFAULT 1,
+          sort_order INTEGER DEFAULT 0,
+          referral_commission INTEGER DEFAULT 200,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS course_modules (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          course_id INTEGER NOT NULL,
+          module_number INTEGER NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT,
+          video_provider TEXT DEFAULT 'vimeo',
+          video_id TEXT,
+          duration_label TEXT,
+          quiz_json TEXT,
+          sort_order INTEGER DEFAULT 0,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS enrollments (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          full_name TEXT NOT NULL,
+          email TEXT NOT NULL,
+          phone TEXT NOT NULL,
+          password_hash TEXT,
+          course_id INTEGER NOT NULL,
+          member_number INTEGER,
+          referred_by_code TEXT,
+          payment_proof TEXT,
+          amount INTEGER,
+          payment_status TEXT DEFAULT 'unpaid',
+          status TEXT DEFAULT 'pending',
+          admin_notes TEXT,
+          welcomed INTEGER DEFAULT 0,
+          completed_modules TEXT DEFAULT '[]',
+          submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          reviewed_at DATETIME,
+          FOREIGN KEY (course_id) REFERENCES courses(id)
         );
 
         CREATE TABLE IF NOT EXISTS admin_users (
@@ -131,6 +186,23 @@ function initDB() {
       const settingsExists = database.prepare('SELECT id FROM referral_settings WHERE id = 1').get();
       if (!settingsExists) {
         database.prepare('INSERT INTO referral_settings (id, total_spots, spots_filled) VALUES (1, 50, 0)').run();
+      }
+
+      // Seed the flagship Elite Trading Mentorship course if no courses exist yet
+      const courseCount = database.prepare('SELECT COUNT(*) as c FROM courses').get();
+      if (courseCount.c === 0) {
+        database.prepare(`
+          INSERT INTO courses (slug, title, tagline, description, price, icon, is_flagship, is_published, sort_order, referral_commission)
+          VALUES (?, ?, ?, ?, ?, ?, 1, 1, 0, 200)
+        `).run(
+          'elite-trading-mentorship',
+          'Elite Trading Mentorship',
+          'Transform Your Trading with 1-on-1 Expert Guidance',
+          'Our flagship program — advanced chart analysis, proprietary strategies, risk management, and live trading sessions with a personal mentor.',
+          3500,
+          'fa-chart-line'
+        );
+        console.log('✅ Seeded flagship course: Elite Trading Mentorship');
       }
 
       // Seed default admin
