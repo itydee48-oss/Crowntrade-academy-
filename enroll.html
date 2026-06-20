@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enroll — Crown Trade Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="api.js"></script>
+<style>
+:root{--nude-light:#F9F6F2;--nude-medium:#E8DFD6;--nude-dark:#D4C8BC;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#1C1C1E;--text-light:#7A7A7A;--success:#10B981;--transition:all 0.4s cubic-bezier(0.165,0.84,0.44,1);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Montserrat',sans-serif;background-color:var(--nude-light);color:var(--charcoal);line-height:1.6;}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;}
+.premium-header{background:rgba(249,246,242,0.95);backdrop-filter:blur(10px);position:fixed;width:100%;z-index:1000;border-bottom:1px solid rgba(212,200,188,0.3);}
+.premium-nav{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;padding:1.2rem 2rem;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--charcoal);text-decoration:none;}
+
+.page-wrap{padding:9rem 2rem 5rem;}
+.premium-container{max-width:900px;margin:0 auto;}
+
+/* Course header */
+.course-header{background:linear-gradient(135deg,#1C1C1E 0%,#2d2d35 100%);color:#fff;border-radius:12px;padding:2.5rem;margin-bottom:2rem;display:flex;gap:1.6rem;align-items:center;flex-wrap:wrap;}
+.course-header-icon{width:70px;height:70px;background:rgba(200,169,126,0.15);border:1px solid rgba(200,169,126,0.3);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--gold);flex-shrink:0;}
+.course-header-info{flex:1;min-width:200px;}
+.course-header h1{font-size:1.9rem;margin-bottom:0.4rem;}
+.course-header p{color:rgba(255,255,255,0.6);font-size:0.92rem;}
+.course-header-price{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:var(--gold);white-space:nowrap;}
+
+/* Form card */
+.premium-card{background:var(--nude-light);padding:3rem;box-shadow:0 20px 50px rgba(0,0,0,0.08);border:1px solid var(--nude-medium);position:relative;}
+.premium-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-dark));}
+
+.step-indicator{display:flex;justify-content:space-between;margin-bottom:2.5rem;position:relative;}
+.step-indicator::before{content:'';position:absolute;top:18px;left:8%;right:8%;height:2px;background:var(--nude-medium);z-index:1;}
+.step-wrapper{flex:1;text-align:center;position:relative;z-index:2;}
+.step{background:var(--nude-light);border:2px solid var(--nude-medium);border-radius:50%;width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;color:var(--text-light);margin-bottom:6px;transition:var(--transition);}
+.step.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+.step.completed{background:var(--success);border-color:var(--success);color:#fff;}
+.step-label{font-size:0.76rem;color:var(--text-light);font-weight:600;}
+
+.step-content{display:none;}
+.step-content.active{display:block;}
+.form-group{margin-bottom:1.5rem;}
+.form-label{display:block;margin-bottom:0.5rem;font-weight:600;font-size:0.88rem;}
+.form-control{width:100%;padding:0.95rem 1rem;border:1px solid var(--nude-medium);background:#fff;font-family:'Montserrat',sans-serif;font-size:0.95rem;transition:var(--transition);}
+.form-control:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(200,169,126,0.2);}
+
+.alert{padding:0.9rem 1rem;margin-bottom:1.2rem;font-size:0.88rem;border-left:3px solid;}
+.alert-error{background:#fdf0f0;border-color:#e74c3c;color:#c0392b;}
+.alert-success{background:#f0fdf4;border-color:#2ecc71;color:#27ae60;}
+
+.file-upload{border:2px dashed var(--nude-dark);padding:2.2rem;text-align:center;cursor:pointer;transition:var(--transition);background:#fff;}
+.file-upload:hover,.file-upload.dragover{border-color:var(--gold);background:rgba(200,169,126,0.03);}
+.file-preview img{max-width:260px;max-height:160px;margin-bottom:0.8rem;box-shadow:0 8px 20px rgba(0,0,0,0.1);}
+
+.btn-premium{display:inline-block;background:var(--gold);color:#fff;padding:1.1rem 2.2rem;font-weight:600;letter-spacing:0.5px;border:1px solid var(--gold);cursor:pointer;width:100%;text-align:center;font-family:'Montserrat',sans-serif;font-size:0.95rem;transition:var(--transition);}
+.btn-premium:hover:not(:disabled){background:transparent;color:var(--gold);}
+.btn-premium:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-secondary{background:transparent;color:var(--charcoal);padding:1rem 2rem;font-weight:600;border:1px solid var(--charcoal);cursor:pointer;font-family:'Montserrat',sans-serif;font-size:0.9rem;width:100%;transition:var(--transition);}
+.btn-secondary:hover{background:var(--charcoal);color:#fff;}
+.button-group{display:flex;gap:1rem;margin-top:1.5rem;}
+.button-group button{flex:1;}
+
+.payment-notice{background:var(--nude-medium);padding:1.3rem;margin:1.5rem 0;border-left:4px solid var(--gold);font-size:0.88rem;}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+.summary-item{background:var(--nude-medium);padding:1.2rem;border:1px solid var(--nude-dark);}
+.summary-label{color:var(--text-light);font-size:0.78rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.summary-value{font-weight:700;word-break:break-word;}
+.terms-box{background:var(--nude-medium);padding:1.3rem;margin-bottom:1.5rem;}
+.terms-box label{display:flex;align-items:flex-start;gap:0.8rem;cursor:pointer;}
+.terms-box input{margin-top:3px;accent-color:var(--gold);}
+
+.login-cta{text-align:center;margin-top:1.5rem;font-size:0.88rem;color:var(--text-light);}
+.login-cta a{color:var(--gold-dark);font-weight:700;text-decoration:none;}
+
+.loading-state,.error-state{text-align:center;padding:4rem 2rem;}
+
+footer{background:var(--charcoal);padding:2.5rem 2rem;color:rgba(255,255,255,0.5);text-align:center;font-size:0.85rem;}
+
+@media(max-width:600px){.course-header{flex-direction:column;text-align:center;}.premium-card{padding:2rem 1.5rem;}.button-group{flex-direction:column;}.summary-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header class="premium-header">
+  <nav class="premium-nav">
+    <a href="index.html" class="logo">Crown Trade Academy</a>
+    <a href="courses.html" style="color:var(--text-light);text-decoration:none;font-size:0.9rem;">← All Courses</a>
+  </nav>
+</header>
+
+<div class="page-wrap">
+  <div class="premium-container">
+
+    <div id="loadingState" class="loading-state"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:var(--gold);"></i></div>
+
+    <div id="contentWrap" style="display:none;">
+      <div class="course-header">
+        <div class="course-header-icon"><i class="fas fa-graduation-cap" id="courseIcon"></i></div>
+        <div class="course-header-info">
+          <h1 id="courseTitle">—</h1>
+          <p id="courseTagline">—</p>
+        </div>
+        <div class="course-header-price" id="coursePrice">KES —</div>
+      </div>
+
+      <div class="premium-card">
+        <div class="step-indicator">
+          <div class="step-wrapper"><div class="step active" id="si1">1</div><div class="step-label">Your Details</div></div>
+          <div class="step-wrapper"><div class="step" id="si2">2</div><div class="step-label">Payment</div></div>
+          <div class="step-wrapper"><div class="step" id="si3">3</div><div class="step-label">Review</div></div>
+        </div>
+
+        <!-- STEP 1 -->
+        <div id="step1" class="step-content active">
+          <div id="step1-alert" style="display:none;" class="alert alert-error"></div>
+          <div class="form-group"><label class="form-label">Full Name *</label><input type="text" id="fullName" class="form-control" placeholder="Your full name"></div>
+          <div class="form-group"><label class="form-label">Email Address *</label><input type="email" id="email" class="form-control" placeholder="your@email.com"></div>
+          <div class="form-group"><label class="form-label">Phone Number *</label><input type="tel" id="phone" class="form-control" placeholder="+254 712 345 678"></div>
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <input type="password" id="password" class="form-control" placeholder="Min. 6 characters — used to log in">
+            <p style="font-size:0.78rem;color:var(--text-light);margin-top:6px;">Already have an account from another course? Use the same password.</p>
+          </div>
+          <div class="form-group"><label class="form-label">Referral Code (if someone invited you)</label><input type="text" id="referralCode" class="form-control" placeholder="Optional"></div>
+          <button type="button" class="btn-premium" onclick="validateStep1()">Continue to Payment <i class="fas fa-arrow-right"></i></button>
+          <div class="login-cta">Already enrolled? <a href="login.html">Log in here</a></div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="step2" class="step-content">
+          <div id="step2-alert" style="display:none;" class="alert alert-error"></div>
+          <div class="payment-notice">
+            <strong>💰 Course Fee: <span id="payAmount">KES —</span></strong><br>
+            <span style="color:var(--text-light);">M-Pesa Till: <strong>5249867</strong> · Paybill: <strong>247247</strong> (Account: your phone number)</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Upload Payment Proof (M-Pesa Screenshot) *</label>
+            <div class="file-upload" id="fileUploadArea">
+              <input type="file" id="paymentProof" accept="image/*" style="display:none;">
+              <div id="fileUploadContent">
+                <p style="font-size:2.6rem;margin-bottom:0.8rem;color:var(--gold);"><i class="fas fa-cloud-upload-alt"></i></p>
+                <p style="font-weight:600;margin-bottom:0.3rem;">Click to upload or drag and drop</p>
+                <p style="color:var(--text-light);font-size:0.85rem;">PNG, JPG up to 5MB</p>
+              </div>
+              <div id="filePreview" style="display:none;" class="file-preview">
+                <img id="previewImage" src="" alt="Preview">
+                <p style="color:var(--success);font-weight:600;margin-bottom:0.8rem;"><i class="fas fa-check-circle"></i> Payment proof ready</p>
+                <button type="button" class="btn-secondary" style="width:auto;padding:0.5rem 1.2rem;" onclick="changeFile()">Change File</button>
+              </div>
+            </div>
+          </div>
+          <div class="button-group">
+            <button type="button" class="btn-secondary" onclick="prevStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
+            <button type="button" class="btn-premium" onclick="validateStep2()">Review Enrollment <i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div id="step3" class="step-content">
+          <div id="step3-alert" style="display:none;" class="alert alert-error"></div>
+          <div class="summary-grid">
+            <div class="summary-item"><div class="summary-label">Course</div><div class="summary-value" id="sumCourse">-</div></div>
+            <div class="summary-item"><div class="summary-label">Full Name</div><div class="summary-value" id="sumName">-</div></div>
+            <div class="summary-item"><div class="summary-label">Email</div><div class="summary-value" id="sumEmail">-</div></div>
+            <div class="summary-item"><div class="summary-label">Phone</div><div class="summary-value" id="sumPhone">-</div></div>
+          </div>
+          <div class="terms-box">
+            <label>
+              <input type="checkbox" id="termsAgreement">
+              <span><strong style="display:block;margin-bottom:0.3rem;">I agree to the Terms</strong>
+              <span style="font-size:0.85rem;color:var(--text-light);">My enrollment will be reviewed within 24–48 hours and I can log in anytime to check status.</span></span>
+            </label>
+          </div>
+          <div class="button-group">
+            <button type="button" class="btn-secondary" onclick="prevStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
+            <button type="button" class="btn-premium" id="submitBtn" onclick="submitEnrollment()">
+              <span id="submitText"><i class="fas fa-graduation-cap"></i> Submit Enrollment</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- SUCCESS -->
+        <div id="successState" style="display:none;text-align:center;padding:2rem 0;">
+          <div style="font-size:3.5rem;color:var(--gold);margin-bottom:1.2rem;"><i class="fas fa-check-circle"></i></div>
+          <h2 style="font-size:1.9rem;margin-bottom:0.8rem;">Enrollment Submitted!</h2>
+          <p style="color:var(--text-light);margin-bottom:0.6rem;">You're member <strong id="memberNum" style="color:var(--gold-dark);">#—</strong>.</p>
+          <p style="color:var(--text-light);margin-bottom:1.8rem;">You're already logged in — check your status anytime from your dashboard.</p>
+          <a href="client-dashboard.html" class="btn-premium" style="display:inline-block;width:auto;text-decoration:none;">Go to My Dashboard</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="errorState" class="error-state" style="display:none;">
+      <i class="fas fa-exclamation-circle" style="font-size:2.5rem;color:var(--gold);margin-bottom:1rem;"></i>
+      <h2 style="margin-bottom:0.6rem;">Course Not Found</h2>
+      <p style="color:var(--text-light);margin-bottom:1.5rem;">This course doesn't exist or is no longer available.</p>
+      <a href="courses.html" class="btn-premium" style="display:inline-block;width:auto;text-decoration:none;">View All Courses</a>
+    </div>
+
+  </div>
+</div>
+
+<footer>&copy; 2025 Crown Trade Academy. All rights reserved.</footer>
+
+<script>
+let currentStep = 1;
+let courseData = null;
+let appData = { fullName:'', email:'', phone:'', password:'', referralCode:'', proofFile:null, proofBase64:'' };
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get('course');
+  if (!slug) { showErrorState(); return; }
+
+  try {
+    const data = await API.getCourse(slug);
+    courseData = data.course;
+    renderCourseInfo();
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('contentWrap').style.display = 'block';
+  } catch (err) {
+    showErrorState();
+  }
+
+  const ref = params.get('ref');
+  if (ref) document.getElementById('referralCode').value = ref;
+
+  const area = document.getElementById('fileUploadArea');
+  const input = document.getElementById('paymentProof');
+  area.addEventListener('click', e => { if (e.target.tagName !== 'BUTTON') input.click(); });
+  input.addEventListener('change', handleFileSelect);
+  area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('dragover'); });
+  area.addEventListener('dragleave', () => area.classList.remove('dragover'));
+  area.addEventListener('drop', e => {
+    e.preventDefault(); area.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) { input.files = e.dataTransfer.files; handleFileSelect(); }
+  });
+});
+
+function showErrorState() {
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('errorState').style.display = 'block';
+}
+
+function renderCourseInfo() {
+  document.getElementById('courseIcon').className = `fas ${courseData.icon || 'fa-graduation-cap'}`;
+  document.getElementById('courseTitle').textContent = courseData.title;
+  document.getElementById('courseTagline').textContent = courseData.tagline || '';
+  document.getElementById('coursePrice').textContent = `KES ${courseData.price.toLocaleString()}`;
+  document.getElementById('payAmount').textContent = `KES ${courseData.price.toLocaleString()}`;
+  document.getElementById('sumCourse').textContent = courseData.title;
+}
+
+function showStepAlert(step, msg) {
+  const el = document.getElementById(`step${step}-alert`);
+  el.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${msg}`;
+  el.style.display = 'block';
+}
+
+function nextStep(step) {
+  document.getElementById('step'+currentStep).classList.remove('active');
+  document.getElementById('si'+currentStep).classList.remove('active');
+  document.getElementById('si'+currentStep).classList.add('completed');
+  document.getElementById('step'+step).classList.add('active');
+  document.getElementById('si'+step).classList.add('active');
+  currentStep = step;
+  if (step === 3) updateSummary();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevStep(step) {
+  document.getElementById('step'+currentStep).classList.remove('active');
+  document.getElementById('si'+currentStep).classList.remove('active');
+  document.getElementById('step'+step).classList.add('active');
+  document.getElementById('si'+step).classList.remove('completed');
+  document.getElementById('si'+step).classList.add('active');
+  currentStep = step;
+}
+
+function validateStep1() {
+  document.getElementById('step1-alert').style.display = 'none';
+  const fn = document.getElementById('fullName').value.trim();
+  const em = document.getElementById('email').value.trim();
+  const ph = document.getElementById('phone').value.trim();
+  const pw = document.getElementById('password').value;
+  if (!fn) { showStepAlert(1,'Please enter your full name'); return; }
+  if (!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { showStepAlert(1,'Please enter a valid email'); return; }
+  if (!ph) { showStepAlert(1,'Please enter your phone number'); return; }
+  if (!pw || pw.length < 6) { showStepAlert(1,'Password must be at least 6 characters'); return; }
+  appData.fullName=fn; appData.email=em; appData.phone=ph; appData.password=pw;
+  appData.referralCode=document.getElementById('referralCode').value.trim();
+  nextStep(2);
+}
+
+function validateStep2() {
+  document.getElementById('step2-alert').style.display = 'none';
+  if (!appData.proofFile) { showStepAlert(2,'Please upload your payment proof screenshot'); return; }
+  nextStep(3);
+}
+
+function handleFileSelect() {
+  const file = document.getElementById('paymentProof').files[0];
+  if (!file) return;
+  if (!file.type.match('image.*')) { alert('Please select an image file'); return; }
+  if (file.size > 5*1024*1024) { alert('File size must be less than 5MB'); return; }
+  appData.proofFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    appData.proofBase64 = e.target.result;
+    document.getElementById('fileUploadContent').style.display = 'none';
+    document.getElementById('filePreview').style.display = 'block';
+    document.getElementById('previewImage').src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function changeFile() {
+  document.getElementById('paymentProof').value='';
+  document.getElementById('fileUploadContent').style.display='block';
+  document.getElementById('filePreview').style.display='none';
+  appData.proofFile=null; appData.proofBase64='';
+}
+
+function updateSummary() {
+  document.getElementById('sumName').textContent = appData.fullName||'-';
+  document.getElementById('sumEmail').textContent = appData.email||'-';
+  document.getElementById('sumPhone').textContent = appData.phone||'-';
+}
+
+async function submitEnrollment() {
+  document.getElementById('step3-alert').style.display = 'none';
+  if (!document.getElementById('termsAgreement').checked) { showStepAlert(3,'Please agree to the Terms'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  document.getElementById('submitText').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+
+  try {
+    let proofUrl = appData.proofBase64;
+    if (appData.proofFile) {
+      try {
+        const uploadResult = await API.uploadPaymentProof(appData.proofFile);
+        if (uploadResult.url) proofUrl = uploadResult.url;
+      } catch (uploadErr) { console.warn('Upload failed, using base64 fallback'); }
+    }
+
+    const result = await API.enrollInCourse({
+      course_id: courseData.id,
+      full_name: appData.fullName,
+      email: appData.email,
+      phone: appData.phone,
+      password: appData.password,
+      referred_by_code: appData.referralCode || undefined
+    });
+
+    // Attach payment proof
+    if (proofUrl) {
+      try { await API.submitEnrollmentProof(appData.email, result.enrollment_id, proofUrl); } catch {}
+    }
+
+    if (result.token) { setToken(result.token); setUser(result.user); }
+
+    [1,2,3].forEach(i => {
+      document.getElementById('si'+i).classList.remove('active');
+      document.getElementById('si'+i).classList.add('completed');
+    });
+    document.getElementById('step3').classList.remove('active');
+    document.getElementById('memberNum').textContent = '#' + (result.member_number || '—');
+    document.getElementById('successState').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  } catch(err) {
+    showStepAlert(3, err.message || 'Submission failed. Please try again.');
+    btn.disabled = false;
+    document.getElementById('submitText').innerHTML = '<i class="fas fa-graduation-cap"></i> Submit Enrollment';
+  }
+}
+</script>
+</body>
+</html>
