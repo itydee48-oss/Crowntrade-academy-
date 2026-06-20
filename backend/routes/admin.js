@@ -227,4 +227,80 @@ router.post('/mentor/create', async (req, res) => {
   }
 });
 
+// ─── ENROLLMENTS (multi-course) ───────────────────────────────────────────────
+router.get('/enrollments', (req, res) => {
+  try {
+    const { status, course_id, page = 1, limit = 20 } = req.query;
+    const db = getDB();
+    const offset = (page - 1) * limit;
+
+    let query = `
+      SELECT e.*, c.title as course_title, c.price as course_price
+      FROM enrollments e JOIN courses c ON e.course_id = c.id
+      WHERE 1=1`;
+    const params = [];
+    if (status) { query += ' AND e.status = ?'; params.push(status); }
+    if (course_id) { query += ' AND e.course_id = ?'; params.push(course_id); }
+    query += ' ORDER BY e.submitted_at DESC LIMIT ? OFFSET ?';
+    params.push(Number(limit), Number(offset));
+
+    const enrollments = db.prepare(query).all(...params);
+
+    let countQuery = 'SELECT COUNT(*) as c FROM enrollments e WHERE 1=1';
+    const countParams = [];
+    if (status) { countQuery += ' AND e.status = ?'; countParams.push(status); }
+    if (course_id) { countQuery += ' AND e.course_id = ?'; countParams.push(course_id); }
+    const total = db.prepare(countQuery).get(...countParams).c;
+
+    res.json({ enrollments, total, page: Number(page), limit: Number(limit) });
+  } catch (err) {
+    console.error('Get enrollments error:', err);
+    res.status(500).json({ error: 'Failed to get enrollments' });
+  }
+});
+
+router.get('/enrollments/:id', (req, res) => {
+  try {
+    const db = getDB();
+    const enrollment = db.prepare(`
+      SELECT e.*, c.title as course_title FROM enrollments e
+      JOIN courses c ON e.course_id = c.id WHERE e.id = ?
+    `).get(req.params.id);
+    if (!enrollment) return res.status(404).json({ error: 'Enrollment not found' });
+    res.json({ enrollment });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to get enrollment' });
+  }
+});
+
+router.patch('/enrollments/:id', (req, res) => {
+  try {
+    const { status, payment_status, admin_notes } = req.body;
+    const db = getDB();
+    const enrollment = db.prepare('SELECT * FROM enrollments WHERE id = ?').get(req.params.id);
+    if (!enrollment) return res.status(404).json({ error: 'Enrollment not found' });
+
+    db.prepare(`
+      UPDATE enrollments
+      SET status = COALESCE(?, status),
+          payment_status = COALESCE(?, payment_status),
+          admin_notes = COALESCE(?, admin_notes),
+          reviewed_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(status || null, payment_status || null, admin_notes || null, req.params.id);
+
+    // If approved and there's a pending referral earning tied to this enrollment, activate it
+    if (status === 'approved' && enrollment.status !== 'approved') {
+      db.prepare(`
+        UPDATE referral_earnings SET status = 'pending'
+        WHERE source_type = 'course' AND source_id = ? AND status = 'pending'
+      `).run(req.params.id);
+    }
+
+    res.json({ message: 'Enrollment updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update enrollment' });
+  }
+});
+
 module.exports = router;
