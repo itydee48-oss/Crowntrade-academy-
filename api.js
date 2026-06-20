@@ -23,6 +23,9 @@ const API = {
   async applyMentorship(data) {
     return await post('/mentorship/apply', data);
   },
+  async mentorshipLogin(email, password) {
+    return await post('/mentorship/login', { email, password });
+  },
   async getMentorshipStatus(email) {
     return await get(`/mentorship/status/${encodeURIComponent(email)}`);
   },
