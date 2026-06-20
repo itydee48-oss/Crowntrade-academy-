@@ -36,10 +36,12 @@ function initDB() {
 
         CREATE TABLE IF NOT EXISTS mentorship_applications (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
+          member_number INTEGER,
           user_id INTEGER,
           full_name TEXT NOT NULL,
           email TEXT NOT NULL,
           phone TEXT NOT NULL,
+          password_hash TEXT,
           experience_level TEXT NOT NULL,
           trading_goals TEXT NOT NULL,
           preferred_markets TEXT,
@@ -50,6 +52,7 @@ function initDB() {
           payment_status TEXT DEFAULT 'unpaid',
           status TEXT DEFAULT 'pending',
           admin_notes TEXT,
+          welcomed INTEGER DEFAULT 0,
           submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           reviewed_at DATETIME,
           FOREIGN KEY (user_id) REFERENCES users(id)
@@ -115,6 +118,9 @@ function initDB() {
       // Run migrations for existing databases
       try { database.exec(`ALTER TABLE mentorship_applications ADD COLUMN payment_proof TEXT`); } catch {}
       try { database.exec(`ALTER TABLE mentorship_applications ADD COLUMN payment_status TEXT DEFAULT 'unpaid'`); } catch {}
+      try { database.exec(`ALTER TABLE mentorship_applications ADD COLUMN password_hash TEXT`); } catch {}
+      try { database.exec(`ALTER TABLE mentorship_applications ADD COLUMN member_number INTEGER`); } catch {}
+      try { database.exec(`ALTER TABLE mentorship_applications ADD COLUMN welcomed INTEGER DEFAULT 0`); } catch {}
       try { database.exec(`ALTER TABLE referral_applications ADD COLUMN password_hash TEXT`); } catch {}
       try { database.exec(`ALTER TABLE referral_applications ADD COLUMN member_number INTEGER`); } catch {}
       try { database.exec(`ALTER TABLE referral_applications ADD COLUMN motivation TEXT`); } catch {}
