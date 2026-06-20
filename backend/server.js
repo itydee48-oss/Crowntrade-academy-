@@ -9,6 +9,8 @@ const mentorshipRoutes = require('./routes/mentorship');
 const referralRoutes = require('./routes/referral');
 const adminRoutes = require('./routes/admin');
 const uploadRoutes = require('./routes/upload');
+const coursesRoutes = require('./routes/courses');
+const enrollmentsRoutes = require('./routes/enrollments');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -55,6 +57,8 @@ app.use('/api/mentorship', mentorshipRoutes);
 app.use('/api/referral', referralRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/courses', coursesRoutes);
+app.use('/api/enrollments', enrollmentsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
