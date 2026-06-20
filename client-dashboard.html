@@ -166,10 +166,72 @@ body{font-family:'Montserrat',sans-serif;background:#F0EDE8;color:var(--charcoal
   .topbar{padding:14px 16px;}
 }
 @media(max-width:480px){.stats{grid-template-columns:1fr;}}
+
+/* ── PENDING / WELCOME GATE ── */
+.pending-screen{display:none;min-height:100vh;align-items:center;justify-content:center;padding:2rem;background:linear-gradient(135deg,#1C1C1E 0%,#2d2d35 100%);}
+.pending-screen.show{display:flex;}
+.pending-card{background:var(--nude-light);max-width:520px;width:100%;padding:3rem;text-align:center;border-radius:4px;box-shadow:0 30px 80px rgba(0,0,0,0.4);position:relative;}
+.pending-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-dark));}
+.pending-icon{font-size:3.5rem;color:var(--gold);margin-bottom:1.2rem;}
+.member-tag{display:inline-block;background:var(--nude-med);padding:6px 16px;border-radius:20px;font-size:0.8rem;font-weight:700;color:var(--charcoal);margin-bottom:1.2rem;}
+.pending-status{background:#FEF3C7;color:#92400E;padding:10px 18px;border-radius:30px;font-weight:700;font-size:0.85rem;display:inline-block;margin:1rem 0;}
+.pending-status.payment{background:#DBEAFE;color:#1E40AF;}
+.pending-status.rejected{background:#FEE2E2;color:#991B1B;}
+.welcome-overlay{display:none;position:fixed;inset:0;background:linear-gradient(135deg,#1C1C1E 0%,#2d2d35 100%);z-index:9999;align-items:center;justify-content:center;padding:2rem;}
+.welcome-overlay.show{display:flex;animation:fadeInOv 0.6s ease;}
+@keyframes fadeInOv{from{opacity:0;}to{opacity:1;}}
+.welcome-content{text-align:center;max-width:560px;color:#fff;}
+.welcome-crown{font-size:5rem;color:var(--gold);margin-bottom:1.5rem;animation:dropInOv 0.8s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes dropInOv{from{opacity:0;transform:translateY(-40px) scale(0.5);}to{opacity:1;transform:translateY(0) scale(1);}}
+.welcome-content h1{font-family:'Cormorant Garamond',serif;font-size:2.8rem;margin-bottom:1rem;font-weight:700;}
+.welcome-content h1 span{color:var(--gold);}
+.welcome-content p{color:rgba(255,255,255,0.7);font-size:1.05rem;margin-bottom:2rem;line-height:1.7;}
+.welcome-member-id{display:inline-block;background:rgba(200,169,126,0.15);border:1px solid rgba(200,169,126,0.4);padding:14px 28px;border-radius:8px;margin-bottom:2rem;}
+.welcome-member-id .label{font-size:0.72rem;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.5);margin-bottom:4px;}
+.welcome-member-id .value{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--gold);font-weight:700;}
+.btn-welcome{background:var(--gold);color:#fff;border:none;padding:1rem 2.5rem;font-size:0.95rem;font-weight:700;letter-spacing:0.5px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s;width:100%;}
+.btn-welcome:hover{background:var(--gold-dark);transform:translateY(-2px);}
+.app{display:none;}
+.app.show{display:grid;}
 </style>
 </head>
 <body>
-<div class="app">
+
+<!-- ══ PENDING STATE ══ -->
+<div class="pending-screen" id="pendingScreen">
+  <div class="pending-card">
+    <div class="pending-icon"><i class="fas fa-hourglass-half"></i></div>
+    <div class="member-tag" id="pendingMemberTag">Member #—</div>
+    <h2 style="font-size:1.8rem;margin-bottom:0.6rem;font-family:'Cormorant Garamond',serif;">Application Under Review</h2>
+    <p style="color:var(--muted);margin-bottom:1rem;">Welcome, <strong id="pendingName">—</strong>. Here's where things stand.</p>
+    <div class="pending-status" id="pendingStatusBadge">⏳ Pending Review</div>
+    <div style="background:var(--nude-med);border-radius:8px;padding:16px;margin:1.5rem 0;text-align:left;font-size:0.86rem;">
+      <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:var(--muted);">Email</span><strong id="pendingEmail">—</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid rgba(212,200,188,0.4);"><span style="color:var(--muted);">Payment Status</span><strong id="pendingPaymentStatus">—</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid rgba(212,200,188,0.4);"><span style="color:var(--muted);">Estimated Review Time</span><strong>24-48 hours</strong></div>
+    </div>
+    <div id="pendingActionArea"></div>
+    <p style="color:var(--muted);font-size:0.85rem;margin:1.2rem 0;">You can close this and come back anytime — just log in again with your email and password.</p>
+    <button class="btn-welcome" onclick="checkStatus()"><i class="fas fa-sync"></i> Check Status Now</button>
+    <button id="logoutFromPending" style="width:100%;background:none;border:none;color:var(--muted);margin-top:12px;cursor:pointer;font-size:0.85rem;text-decoration:underline;">Logout</button>
+  </div>
+</div>
+
+<!-- ══ WELCOME OVERLAY ══ -->
+<div class="welcome-overlay" id="welcomeOverlay">
+  <div class="welcome-content">
+    <div class="welcome-crown"><i class="fas fa-crown"></i></div>
+    <h1>Welcome to <span>Crown Trade Academy</span></h1>
+    <p>Your mentorship application has been approved. Your course content, live sessions, and mentor access are now unlocked.</p>
+    <div class="welcome-member-id">
+      <div class="label">Your Member ID</div>
+      <div class="value" id="welcomeMemberNum">#—</div>
+    </div>
+    <div><button class="btn-welcome" onclick="closeWelcome()">Enter Dashboard <i class="fas fa-arrow-right"></i></button></div>
+  </div>
+</div>
+
+<div class="app" id="mainApp">
 
   <!-- ── SIDEBAR ── -->
   <aside class="sidebar" id="sidebar">
@@ -457,12 +519,13 @@ let passedQuizzes = JSON.parse(localStorage.getItem('ct_quizzes') || '[]');
 let streak = parseInt(localStorage.getItem('ct_streak') || '0');
 
 // ── INIT ───────────────────────────────────────────────────────────────────────
+let appStatusData = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
   const token = getToken();
   const user = getUser();
   if (!token || !user) { window.location.href = 'login.html'; return; }
 
-  // Verify token
   try {
     const res = await fetch(`${API_BASE}/auth/verify-token`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json();
@@ -472,7 +535,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('userName').textContent = user.full_name || user.email;
   document.getElementById('userAvatar').textContent = (user.full_name || user.email).charAt(0).toUpperCase();
 
-  // Nav
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', e => {
       e.preventDefault();
@@ -480,9 +542,94 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
-  document.getElementById('logoutBtn').addEventListener('click', () => { logout(); window.location.href = 'login.html'; });
+  document.getElementById('logoutBtn')?.addEventListener('click', () => { logout(); window.location.href = 'login.html'; });
+  document.getElementById('logoutFromPending')?.addEventListener('click', () => { logout(); window.location.href = 'login.html'; });
 
+  await loadGate();
+});
+
+async function loadGate() {
+  try {
+    const data = await API.getMentorshipDashboard();
+    appStatusData = data.application;
+
+    if (!appStatusData) { window.location.href = 'mentorship-form.html'; return; }
+
+    if (appStatusData.status === 'approved') {
+      if (appStatusData.show_welcome) {
+        showWelcome();
+      } else {
+        showMainApp();
+      }
+    } else if (appStatusData.status === 'rejected') {
+      showPendingScreen(true);
+    } else {
+      showPendingScreen(false);
+    }
+  } catch (err) {
+    console.error('Failed to load dashboard:', err);
+  }
+}
+
+async function checkStatus() {
+  await loadGate();
+  showToast('Status refreshed', 'success');
+}
+
+function showPendingScreen(rejected) {
+  document.getElementById('pendingScreen').classList.add('show');
+  document.getElementById('mainApp').classList.remove('show');
+
+  const a = appStatusData;
+  document.getElementById('pendingMemberTag').textContent = `Member #${a.member_number || '—'}`;
+  document.getElementById('pendingName').textContent = a.full_name;
+  document.getElementById('pendingEmail').textContent = a.email;
+  document.getElementById('pendingPaymentStatus').textContent = cap(a.payment_status || 'unpaid');
+
+  const badge = document.getElementById('pendingStatusBadge');
+  const actionArea = document.getElementById('pendingActionArea');
+
+  if (rejected) {
+    badge.className = 'pending-status rejected';
+    badge.innerHTML = '❌ Not Approved';
+    actionArea.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">Contact <strong>crowntradeacademy@gmail.com</strong> for details, or submit a new application.</p>';
+  } else if (a.payment_status === 'unpaid' || !a.payment_proof) {
+    badge.className = 'pending-status payment';
+    badge.innerHTML = '💳 Payment Required';
+    actionArea.innerHTML = '<a href="payment-instructions.html" class="btn-welcome" style="display:block;text-decoration:none;box-sizing:border-box;margin-bottom:12px;"><i class="fas fa-credit-card"></i> Complete Payment</a>';
+  } else {
+    badge.className = 'pending-status';
+    badge.innerHTML = '⏳ Pending Review';
+    actionArea.innerHTML = '';
+  }
+}
+
+function showWelcome() {
+  document.getElementById('welcomeOverlay').classList.add('show');
+  document.getElementById('welcomeMemberNum').textContent = `#${appStatusData.member_number || '—'}`;
+}
+
+function closeWelcome() {
+  document.getElementById('welcomeOverlay').classList.remove('show');
+  showMainApp();
+}
+
+function showMainApp() {
+  document.getElementById('pendingScreen').classList.remove('show');
+  document.getElementById('mainApp').classList.add('show');
   renderAll();
+}
+
+function cap(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : '—'; }
+
+function showToast(msg, type='success') {
+  const colors = { success: 'var(--success)', error: '#EF4444', info: 'var(--gold)' };
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;background:${colors[type]||colors.info};color:#fff;padding:13px 18px;border-radius:10px;font-weight:600;font-size:0.88rem;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.15);font-family:'Montserrat',sans-serif;`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
 });
 
 function switchTab(tab) {
@@ -811,16 +958,6 @@ function renderModuleBreakdown() {
           </div>`;
       }).join('')}
     </div>`;
-}
-
-// ── TOAST ──────────────────────────────────────────────────────────────────────
-function showToast(msg, type = 'info') {
-  const colors = { success: 'var(--success)', error: 'var(--danger)', info: 'var(--gold)' };
-  const t = document.createElement('div');
-  t.style.cssText = `position:fixed;bottom:24px;right:24px;background:${colors[type]||colors.info};color:#fff;padding:13px 18px;border-radius:10px;font-weight:600;font-size:0.88rem;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.15);animation:slideUp 0.3s ease;font-family:'Montserrat',sans-serif;`;
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3500);
 }
 </script>
 </body>
