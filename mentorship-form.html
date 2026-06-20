@@ -125,6 +125,10 @@ footer{background:var(--charcoal);padding:3rem 2rem 2rem;color:var(--nude-medium
               <input type="tel" id="phone" class="form-control" placeholder="+254 XXX XXX XXX" required>
             </div>
             <div class="form-group">
+              <label class="form-label">Create a Password *</label>
+              <input type="password" id="password" class="form-control" placeholder="Min. 6 characters — used to log in" required>
+            </div>
+            <div class="form-group">
               <label class="form-label">Current Trading Experience *</label>
               <select id="experience" class="form-control" required>
                 <option value="">Select experience level</option>
@@ -197,14 +201,16 @@ document.getElementById('mentorshipForm').addEventListener('submit', async funct
   const fullName       = document.getElementById('fullName').value.trim();
   const email          = document.getElementById('email').value.trim();
   const phone          = document.getElementById('phone').value.trim();
+  const password       = document.getElementById('password').value;
   const experience_level = document.getElementById('experience').value;
   const trading_goals  = document.getElementById('goals').value.trim();
   const time_commitment = document.getElementById('timeCommitment').value;
   const terms          = document.getElementById('terms').checked;
 
-  if (!fullName||!email||!phone||!experience_level||!trading_goals||!time_commitment) {
+  if (!fullName||!email||!phone||!password||!experience_level||!trading_goals||!time_commitment) {
     showAlert('Please fill in all required fields.'); return;
   }
+  if (password.length < 6) { showAlert('Password must be at least 6 characters.'); return; }
   if (!terms) { showAlert('Please agree to the terms and conditions.'); return; }
 
   const preferred_markets = ['forex','stocks','crypto','commodities']
@@ -217,7 +223,13 @@ document.getElementById('mentorshipForm').addEventListener('submit', async funct
   document.getElementById('form-alert').style.display = 'none';
 
   try {
-    await API.applyMentorship({ full_name:fullName, email, phone, experience_level, trading_goals, preferred_markets, time_commitment });
+    const result = await API.applyMentorship({ full_name:fullName, email, phone, password, experience_level, trading_goals, preferred_markets, time_commitment });
+
+    // ── Auto-login: store the token returned from registration ──
+    if (result.token) {
+      setToken(result.token);
+      setUser(result.user);
+    }
 
     // ── Store email for payment page then redirect ──
     sessionStorage.setItem('applicant_email', email);
