@@ -71,6 +71,71 @@ const API = {
     return data;
   },
 
+  // ─── COURSES (public catalog) ─────────────────────────────────────────────
+  async getCourses() {
+    return await get('/courses');
+  },
+  async getCourse(slug) {
+    return await get(`/courses/${slug}`);
+  },
+
+  // ─── ENROLLMENTS ───────────────────────────────────────────────────────────
+  async enrollInCourse(data) {
+    return await post('/enrollments/enroll', data);
+  },
+  async enrollmentLogin(email, password) {
+    return await post('/enrollments/login', { email, password });
+  },
+  async submitEnrollmentProof(email, enrollment_id, proof_url) {
+    return await post('/enrollments/payment-proof', { email, enrollment_id, proof_url });
+  },
+  async getMyCourses() {
+    return await get('/enrollments/my-courses');
+  },
+  async getEnrollmentDetail(id) {
+    return await get(`/enrollments/${id}/detail`);
+  },
+  async completeModule(enrollmentId, moduleId) {
+    return await post(`/enrollments/${enrollmentId}/complete-module`, { module_id: moduleId });
+  },
+  async getEnrollmentStatus(email) {
+    return await get(`/enrollments/status/${encodeURIComponent(email)}`);
+  },
+
+  // ─── ADMIN: COURSES ────────────────────────────────────────────────────────
+  async getAdminCourses() {
+    return await get('/courses/admin/all');
+  },
+  async createCourse(data) {
+    return await post('/courses/admin/create', data);
+  },
+  async updateCourse(id, data) {
+    return await patch(`/courses/admin/${id}`, data);
+  },
+  async deleteCourseAdmin(id) {
+    return await del(`/courses/admin/${id}`);
+  },
+  async getCourseModulesAdmin(courseId) {
+    return await get(`/courses/admin/${courseId}/modules`);
+  },
+  async addCourseModule(courseId, data) {
+    return await post(`/courses/admin/${courseId}/modules`, data);
+  },
+  async updateCourseModule(moduleId, data) {
+    return await patch(`/courses/admin/modules/${moduleId}`, data);
+  },
+  async deleteCourseModule(moduleId) {
+    return await del(`/courses/admin/modules/${moduleId}`);
+  },
+
+  // ─── ADMIN: ENROLLMENTS ────────────────────────────────────────────────────
+  async getAdminEnrollments(status = '', course_id = '', page = 1) {
+    return await get(`/admin/enrollments?status=${status}&course_id=${course_id}&page=${page}`);
+  },
+  async updateEnrollment(id, data) {
+    return await patch(`/admin/enrollments/${id}`, data);
+  },
+
   // ─── ADMIN ─────────────────────────────────────────────────────────────────
   async getAdminStats() {
     return await get('/admin/stats');
@@ -178,6 +243,29 @@ async function patch(path, body) {
       ...(token ? { 'Authorization': `Bearer ${token}` } : {})
     },
     body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  if (res.status === 401 || res.status === 403) {
+    const user = getUser();
+    const role = user ? user.role : null;
+    logout();
+    if (role === 'admin') window.location.href = 'admin-login.html';
+    else if (role === 'referral') window.location.href = 'referral-login.html';
+    else window.location.href = 'login.html';
+    throw new Error(data.error || 'Session expired — please log in again');
+  }
+  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+  return data;
+}
+
+async function del(path) {
+  const token = getToken();
+  const res = await fetch(API_BASE + path, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    }
   });
   const data = await res.json();
   if (res.status === 401 || res.status === 403) {
