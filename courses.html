@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Course Catalog — Crown Trade Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="api.js"></script>
+<style>
+:root{--nude-light:#F9F6F2;--nude-medium:#E8DFD6;--nude-dark:#D4C8BC;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#1C1C1E;--text-light:#7A7A7A;--transition:all 0.4s cubic-bezier(0.165,0.84,0.44,1);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Montserrat',sans-serif;background-color:var(--nude-light);color:var(--charcoal);line-height:1.6;}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;}
+.premium-header{background:rgba(249,246,242,0.95);backdrop-filter:blur(10px);position:fixed;width:100%;z-index:1000;border-bottom:1px solid rgba(212,200,188,0.3);}
+.premium-nav{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;padding:1.2rem 2rem;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--charcoal);text-decoration:none;}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--charcoal);font-size:0.9rem;font-weight:500;}
+.nav-links a:hover{color:var(--gold);}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,#1C1C1E 0%,#2d2d35 100%);color:#fff;padding:9rem 2rem 4rem;text-align:center;}
+.hero h1{font-size:2.8rem;margin-bottom:1rem;}
+.hero h1 span{color:var(--gold);}
+.hero p{color:rgba(255,255,255,0.65);max-width:600px;margin:0 auto;font-size:1.05rem;}
+
+.premium-container{max-width:1150px;margin:0 auto;padding:0 2rem;}
+
+/* Catalog */
+.catalog-section{padding:4rem 0 5rem;}
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.8rem;}
+.course-card{background:#fff;border:1px solid var(--nude-medium);border-radius:4px;overflow:hidden;transition:var(--transition);position:relative;display:flex;flex-direction:column;}
+.course-card:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,0.1);border-color:var(--gold);}
+.course-card.flagship{border:2px solid var(--gold);}
+.flagship-tag{position:absolute;top:0;right:0;background:var(--gold);color:#fff;font-size:0.7rem;font-weight:700;letter-spacing:1px;padding:5px 14px;text-transform:uppercase;border-bottom-left-radius:6px;}
+.course-card-top{padding:2rem 1.6rem 1.2rem;flex:1;}
+.course-icon-box{width:54px;height:54px;background:var(--nude-light);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--gold);margin-bottom:1.2rem;}
+.course-title{font-size:1.5rem;margin-bottom:0.5rem;}
+.course-tagline{color:var(--text-light);font-size:0.9rem;margin-bottom:1rem;line-height:1.55;}
+.course-card-bottom{padding:1.2rem 1.6rem 1.6rem;border-top:1px solid var(--nude-medium);display:flex;justify-content:space-between;align-items:center;}
+.course-price{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;color:var(--gold-dark);}
+.course-price small{font-size:0.7rem;color:var(--text-light);font-weight:400;display:block;}
+.btn-view-course{background:var(--gold);color:#fff;padding:0.7rem 1.4rem;border-radius:4px;text-decoration:none;font-size:0.85rem;font-weight:600;transition:var(--transition);}
+.btn-view-course:hover{background:var(--gold-dark);}
+
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--text-light);}
+
+footer{background:var(--charcoal);padding:2.5rem 2rem;color:rgba(255,255,255,0.5);text-align:center;font-size:0.85rem;}
+
+@media(max-width:768px){.hero h1{font-size:2.1rem;}.nav-links{display:none;}}
+</style>
+</head>
+<body>
+
+<header class="premium-header">
+  <nav class="premium-nav">
+    <a href="index.html" class="logo">Crown Trade Academy</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="courses.html">Courses</a></li>
+      <li><a href="login.html">Client Login</a></li>
+    </ul>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Build Skills That <span>Build Wealth</span></h1>
+  <p>From elite trading mentorship to foundational financial literacy — pick the path that matches where you are right now.</p>
+</section>
+
+<section class="catalog-section">
+  <div class="premium-container">
+    <div id="coursesGrid" class="courses-grid">
+      <div class="empty-state"><i class="fas fa-spinner fa-spin" style="font-size:2rem;"></i></div>
+    </div>
+  </div>
+</section>
+
+<footer>&copy; 2025 Crown Trade Academy. All rights reserved.</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', loadCatalog);
+
+const ICON_MAP = {
+  'fa-chart-line':'fa-chart-line','fa-graduation-cap':'fa-graduation-cap','fa-coins':'fa-coins',
+  'fa-piggy-bank':'fa-piggy-bank','fa-briefcase':'fa-briefcase','fa-landmark':'fa-landmark'
+};
+
+async function loadCatalog() {
+  try {
+    const data = await API.getCourses();
+    renderCourses(data.courses);
+  } catch (err) {
+    document.getElementById('coursesGrid').innerHTML = `<div class="empty-state">Could not load courses right now. Please try again shortly.</div>`;
+  }
+}
+
+function renderCourses(courses) {
+  const container = document.getElementById('coursesGrid');
+  if (!courses.length) {
+    container.innerHTML = '<div class="empty-state"><i class="fas fa-book" style="font-size:2.5rem;margin-bottom:1rem;color:var(--gold);"></i><p>No courses available yet — check back soon.</p></div>';
+    return;
+  }
+
+  container.innerHTML = courses.map(c => `
+    <div class="course-card ${c.is_flagship ? 'flagship' : ''}">
+      ${c.is_flagship ? '<div class="flagship-tag"><i class="fas fa-crown"></i> Flagship</div>' : ''}
+      <div class="course-card-top">
+        <div class="course-icon-box"><i class="fas ${c.icon || 'fa-graduation-cap'}"></i></div>
+        <h3 class="course-title">${c.title}</h3>
+        <p class="course-tagline">${c.tagline || ''}</p>
+      </div>
+      <div class="course-card-bottom">
+        <div class="course-price">KES ${c.price.toLocaleString()}<small>one-time</small></div>
+        <a href="enroll.html?course=${c.slug}" class="btn-view-course">View Course <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>`).join('');
+}
+</script>
+</body>
+</html>
