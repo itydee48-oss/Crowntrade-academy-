@@ -98,13 +98,13 @@ footer{background:var(--charcoal);text-align:center;padding:1.5rem;color:var(--n
         <div id="panel-apply" class="tab-panel">
           <div class="signup-redirect">
             <i class="fas fa-graduation-cap"></i>
-            <h2 class="card-title">Start Your Application</h2>
-            <p class="card-subtitle">The mentorship application creates your account automatically — you'll set a password right there and be logged in immediately after submitting.</p>
-            <a href="mentorship-form.html" class="btn-primary" style="display:block;text-decoration:none;box-sizing:border-box;">
-              <i class="fas fa-arrow-right"></i> Go to Application Form
+            <h2 class="card-title">New Here?</h2>
+            <p class="card-subtitle">Browse our courses and enroll — you'll set a password during signup and be logged in immediately after submitting.</p>
+            <a href="courses.html" class="btn-primary" style="display:block;text-decoration:none;box-sizing:border-box;">
+              <i class="fas fa-arrow-right"></i> Browse Courses
             </a>
           </div>
-          <div class="link-row">Already applied? <a href="#" onclick="switchTab('login')">Sign in</a></div>
+          <div class="link-row">Already enrolled? <a href="#" onclick="switchTab('login')">Sign in</a></div>
         </div>
 
       </div>
@@ -156,7 +156,7 @@ footer{background:var(--charcoal);text-align:center;padding:1.5rem;color:var(--n
       document.getElementById('login-alert').style.display = 'none';
 
       try {
-        const data = await API.mentorshipLogin(email, password);
+        const data = await API.enrollmentLogin(email, password);
         setToken(data.token);
         setUser(data.user);
         showAlert('login-alert', 'Login successful! Redirecting...', 'success');
