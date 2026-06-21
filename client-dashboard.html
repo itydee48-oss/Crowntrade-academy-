@@ -255,7 +255,11 @@ let activeModuleId = null;
 document.addEventListener('DOMContentLoaded', async () => {
   const token = getToken();
   const user = getUser();
-  if (!token || !user) { window.location.href = 'login.html'; return; }
+  if (!token || !user || (!user.full_name && !user.email)) {
+    logout();
+    window.location.href = 'login.html';
+    return;
+  }
 
   try {
     const res = await fetch(`${API_BASE}/auth/verify-token`, { headers: { Authorization: `Bearer ${token}` } });
@@ -263,8 +267,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!data.ok) { logout(); window.location.href = 'login.html'; return; }
   } catch { /* server sleeping — allow through */ }
 
-  document.getElementById('userName').textContent = user.full_name || user.email;
-  document.getElementById('userAvatar').textContent = (user.full_name || user.email).charAt(0).toUpperCase();
+  const displayName = user.full_name || user.email || 'Member';
+  document.getElementById('userName').textContent = displayName;
+  document.getElementById('userAvatar').textContent = displayName.charAt(0).toUpperCase();
   document.getElementById('userMemberTag').textContent = `Member #${user.member_number || '—'}`;
 
   document.querySelectorAll('.nav-item').forEach(item => {
