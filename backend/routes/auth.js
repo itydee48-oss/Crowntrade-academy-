@@ -148,7 +148,14 @@ router.get('/me', authenticateToken, (req, res) => {
       user = db.prepare('SELECT id, full_name, email, phone, referral_code, status, earnings FROM referral_applications WHERE id = ?').get(req.user.id);
       if (user) user.role = 'referral';
     } else {
-      user = db.prepare('SELECT id, full_name, email, phone, role, status, referral_code FROM users WHERE id = ?').get(req.user.id);
+      // client role — check enrollments table first (new system), then users table (legacy)
+      user = db.prepare('SELECT id, full_name, email, phone, member_number FROM enrollments WHERE id = ?').get(req.user.id);
+      if (user) {
+        user.role = 'client';
+      } else {
+        // Legacy fallback: old users table
+        user = db.prepare('SELECT id, full_name, email, phone, role, status FROM users WHERE id = ?').get(req.user.id);
+      }
     }
 
     if (!user) return res.status(404).json({ error: 'User not found' });
