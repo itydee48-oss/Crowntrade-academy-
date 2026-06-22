@@ -254,23 +254,32 @@ let activeModuleId = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   const token = getToken();
-  const user = getUser();
-  if (!token || !user || (!user.full_name && !user.email)) {
+  if (!token) { window.location.href = 'login.html'; return; }
+
+  // Always fetch fresh user data from the server — never trust stale localStorage
+  let liveUser = null;
+  try {
+    const res = await fetch(`${API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
+    if (res.status === 401 || res.status === 403) { logout(); window.location.href = 'login.html'; return; }
+    const data = await res.json();
+    liveUser = data.user;
+    if (liveUser) { setUser(liveUser); } // refresh localStorage with latest data
+  } catch {
+    // Server sleeping — fall back to cached user but guard carefully
+    liveUser = getUser();
+  }
+
+  // If we still have no usable user, clear and redirect
+  if (!liveUser || (!liveUser.full_name && !liveUser.email)) {
     logout();
     window.location.href = 'login.html';
     return;
   }
 
-  try {
-    const res = await fetch(`${API_BASE}/auth/verify-token`, { headers: { Authorization: `Bearer ${token}` } });
-    const data = await res.json();
-    if (!data.ok) { logout(); window.location.href = 'login.html'; return; }
-  } catch { /* server sleeping — allow through */ }
-
-  const displayName = user.full_name || user.email || 'Member';
+  const displayName = String(liveUser.full_name || liveUser.email || 'Member');
   document.getElementById('userName').textContent = displayName;
   document.getElementById('userAvatar').textContent = displayName.charAt(0).toUpperCase();
-  document.getElementById('userMemberTag').textContent = `Member #${user.member_number || '—'}`;
+  document.getElementById('userMemberTag').textContent = `Member #${liveUser.member_number || '—'}`;
 
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', e => {
