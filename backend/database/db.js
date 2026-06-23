@@ -216,6 +216,46 @@ function initDB() {
         console.log('✅ Default admin created. Password:', defaultPassword);
       }
 
+      // ── DEMO ACCOUNTS (for testing — remove in production) ──────────────────
+      const bcrypt = require('bcryptjs');
+
+      // Demo client account — pre-approved on Elite Trading Mentorship
+      const demoClient = database.prepare("SELECT id FROM enrollments WHERE email = 'demo@crowntest.com'").get();
+      if (!demoClient) {
+        const demoHash = bcrypt.hashSync('Demo1234!', 10);
+        // Get the flagship course id
+        const flagship = database.prepare("SELECT id FROM courses WHERE is_flagship = 1 LIMIT 1").get();
+        if (flagship) {
+          database.prepare(`
+            INSERT INTO enrollments (full_name, email, phone, password_hash, course_id, member_number, amount, payment_status, status, welcomed)
+            VALUES ('Demo Client', 'demo@crowntest.com', '+254700000001', ?, ?, 9001, 3500, 'verified', 'approved', 1)
+          `).run(demoHash, flagship.id);
+          console.log('✅ Demo client account seeded: demo@crowntest.com / Demo1234!');
+        }
+      }
+
+      // Demo referral agent — pre-approved Crown Partner with sample earnings
+      const demoReferral = database.prepare("SELECT id FROM referral_applications WHERE email = 'referral@crowntest.com'").get();
+      if (!demoReferral) {
+        const refHash = bcrypt.hashSync('Demo1234!', 10);
+        const refResult = database.prepare(`
+          INSERT INTO referral_applications
+            (member_number, full_name, email, phone, password_hash, referral_code, referral_link, amount, payment_status, status, tier, welcomed)
+          VALUES (9002, 'Demo Partner', 'referral@crowntest.com', '+254700000002', ?, 'DEMO9999', 'https://itydee48-oss.github.io/crowntraders-academy/referral-register.html?ref=DEMO9999', 500, 'verified', 'approved', 'gold', 1)
+        `).run(refHash);
+        // Add sample earnings
+        if (refResult.lastInsertRowid) {
+          const stmt = database.prepare("INSERT INTO referral_earnings (referrer_id, referred_email, amount, status) VALUES (?, ?, ?, ?)");
+          stmt.run(refResult.lastInsertRowid, 'client1@example.com', 200, 'paid');
+          stmt.run(refResult.lastInsertRowid, 'client2@example.com', 200, 'paid');
+          stmt.run(refResult.lastInsertRowid, 'client3@example.com', 250, 'pending');
+          database.prepare('UPDATE referral_applications SET earnings = 400, tier = ? WHERE id = ?')
+            .run('gold', refResult.lastInsertRowid);
+        }
+        console.log('✅ Demo referral account seeded: referral@crowntest.com / Demo1234!');
+      }
+      // ── END DEMO ACCOUNTS ─────────────────────────────────────────────────────
+
       console.log('✅ Database initialized');
       resolve(database);
     } catch (err) {
