@@ -8,147 +8,190 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="api.js"></script>
 <style>
-:root{--nude-light:#F9F6F2;--nude-med:#E8DFD6;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#1C1C1E;--muted:#7A7A7A;--success:#10B981;--danger:#EF4444;}
+:root{--nude-light:#F9F6F2;--nude-med:#E8DFD6;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#1C1C1E;--muted:#7A7A7A;--success:#10B981;--danger:#EF4444;--pending:#F59E0B;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Montserrat',sans-serif;background:#F0EDE8;color:var(--charcoal);min-height:100vh;}
 h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:700;}
 
-/* ── PENDING STATE (full screen) ── */
+/* ── PENDING SCREEN ── */
 .pending-screen{display:none;min-height:100vh;align-items:center;justify-content:center;padding:2rem;background:linear-gradient(135deg,#1C1C1E 0%,#2d2d35 100%);}
 .pending-screen.show{display:flex;}
-.pending-card{background:var(--nude-light);max-width:520px;width:100%;padding:3rem;text-align:center;border-radius:4px;box-shadow:0 30px 80px rgba(0,0,0,0.4);position:relative;}
+.pending-card{background:var(--nude-light);max-width:520px;width:100%;padding:3rem;text-align:center;position:relative;box-shadow:0 30px 80px rgba(0,0,0,0.4);}
 .pending-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-dark));}
 .pending-icon{font-size:3.5rem;color:var(--gold);margin-bottom:1.2rem;}
 .member-tag{display:inline-block;background:var(--nude-med);padding:6px 16px;border-radius:20px;font-size:0.8rem;font-weight:700;color:var(--charcoal);margin-bottom:1.2rem;}
-.pending-status{background:#FEF3C7;color:#92400E;padding:10px 18px;border-radius:30px;font-weight:700;font-size:0.85rem;display:inline-block;margin:1rem 0;}
-.pending-status.rejected{background:#FEE2E2;color:#991B1B;}
+.pending-status{padding:10px 18px;border-radius:30px;font-weight:700;font-size:0.85rem;display:inline-block;margin:1rem 0;}
+.status-pending{background:#FEF3C7;color:#92400E;}
+.status-rejected{background:#FEE2E2;color:#991B1B;}
 
 /* ── WELCOME OVERLAY ── */
 .welcome-overlay{display:none;position:fixed;inset:0;background:linear-gradient(135deg,#1C1C1E 0%,#2d2d35 100%);z-index:9999;align-items:center;justify-content:center;padding:2rem;}
-.welcome-overlay.show{display:flex;animation:fadeIn 0.6s ease;}
+.welcome-overlay.show{display:flex;animation:fadeIn 0.5s ease;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 .welcome-content{text-align:center;max-width:560px;color:#fff;}
-.welcome-crown{font-size:5rem;color:var(--gold);margin-bottom:1.5rem;animation:dropIn 0.8s cubic-bezier(0.34,1.56,0.64,1);}
-@keyframes dropIn{from{opacity:0;transform:translateY(-40px) scale(0.5);}to{opacity:1;transform:translateY(0) scale(1);}}
-.welcome-content h1{font-size:2.8rem;margin-bottom:1rem;}
+.welcome-crown{font-size:5rem;color:var(--gold);margin-bottom:1.5rem;animation:drop 0.8s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes drop{from{opacity:0;transform:translateY(-40px) scale(0.5);}to{opacity:1;transform:translateY(0) scale(1);}}
+.welcome-content h1{font-family:'Cormorant Garamond',serif;font-size:2.6rem;margin-bottom:1rem;}
 .welcome-content h1 span{color:var(--gold);}
-.welcome-content p{color:rgba(255,255,255,0.7);font-size:1.05rem;margin-bottom:2rem;line-height:1.7;}
+.welcome-content p{color:rgba(255,255,255,0.7);font-size:1rem;margin-bottom:2rem;line-height:1.7;}
 .welcome-member-id{display:inline-block;background:rgba(200,169,126,0.15);border:1px solid rgba(200,169,126,0.4);padding:14px 28px;border-radius:8px;margin-bottom:2rem;}
 .welcome-member-id .label{font-size:0.72rem;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.5);margin-bottom:4px;}
-.welcome-member-id .value{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--gold);font-weight:700;}
-.btn-welcome{background:var(--gold);color:#fff;border:none;padding:1rem 2.5rem;font-size:0.95rem;font-weight:700;letter-spacing:0.5px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s;}
-.btn-welcome:hover{background:var(--gold-dark);transform:translateY(-2px);}
+.welcome-member-id .value{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold);font-weight:700;}
+.btn-welcome{background:var(--gold);color:#fff;border:none;padding:1rem 2.5rem;font-size:0.92rem;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s;}
+.btn-welcome:hover{background:var(--gold-dark);}
 
-/* ── MAIN APP (approved state) ── */
-.app{display:none;grid-template-columns:260px 1fr;min-height:100vh;}
-.app.show{display:grid;}
+/* ── LAYOUT ── */
+.app{display:none;}
+.app.show{display:grid;grid-template-columns:250px 1fr;min-height:100vh;}
 .sidebar{background:#1C1C1E;color:#E0D8CF;display:flex;flex-direction:column;}
-.sidebar-logo{padding:26px 20px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.07);}
 .brand{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold);font-weight:700;}
-.brand-sub{font-size:0.76rem;color:#666;margin-top:2px;}
-.sidebar-member{padding:18px 20px;border-bottom:1px solid rgba(255,255,255,0.07);}
-.tier-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(200,169,126,0.15);border:1px solid rgba(200,169,126,0.3);padding:4px 12px;border-radius:20px;font-size:0.74rem;font-weight:700;color:var(--gold);margin-bottom:10px;}
-.member-id-display{font-size:0.78rem;color:#888;margin-bottom:4px;}
-.member-name{font-weight:700;font-size:0.95rem;color:#E0D8CF;}
-.sidebar-nav{flex:1;padding:14px 12px;display:flex;flex-direction:column;gap:3px;}
-.nav-section{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#444;padding:12px 10px 5px;}
-.nav-item{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;cursor:pointer;font-weight:500;font-size:0.87rem;color:#999;border:1px solid transparent;text-decoration:none;transition:all 0.2s;}
+.brand-sub{font-size:0.74rem;color:#555;margin-top:2px;}
+.sidebar-member{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.tier-crown{font-size:1.4rem;margin-bottom:4px;}
+.tier-name{font-size:0.8rem;font-weight:700;margin-bottom:2px;}
+.member-id{font-size:0.72rem;color:#666;}
+.member-name-display{font-weight:700;font-size:0.92rem;color:#E0D8CF;margin-top:4px;}
+.sidebar-nav{flex:1;padding:12px 10px;display:flex;flex-direction:column;gap:3px;}
+.nav-section{font-size:0.66rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#444;padding:12px 10px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:500;font-size:0.86rem;color:#999;text-decoration:none;transition:all 0.2s;}
 .nav-item:hover{background:rgba(255,255,255,0.05);color:#E0D8CF;}
 .nav-item.active{background:var(--gold);color:#fff;font-weight:700;}
 .nav-item i{width:16px;text-align:center;}
-.sidebar-footer{padding:14px 12px;border-top:1px solid rgba(255,255,255,0.07);}
-.logout-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(239,68,68,0.12);color:#EF4444;border:1px solid rgba(239,68,68,0.2);border-radius:9px;cursor:pointer;font-weight:600;font-size:0.87rem;width:100%;font-family:'Montserrat',sans-serif;}
+.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,0.07);}
+.logout-btn{display:flex;align-items:center;gap:9px;padding:10px 12px;background:rgba(239,68,68,0.12);color:#EF4444;border:1px solid rgba(239,68,68,0.2);border-radius:8px;cursor:pointer;font-weight:600;font-size:0.86rem;width:100%;font-family:'Montserrat',sans-serif;}
 .logout-btn:hover{background:var(--danger);color:#fff;}
 
+/* ── MAIN ── */
 .main{display:flex;flex-direction:column;}
-.topbar{background:#fff;border-bottom:1px solid rgba(212,200,188,0.4);padding:16px 28px;display:flex;justify-content:space-between;align-items:center;}
-.topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold-dark);}
-.content{flex:1;padding:24px 28px;overflow-y:auto;}
+.topbar{background:#fff;border-bottom:1px solid rgba(212,200,188,0.4);padding:15px 26px;display:flex;justify-content:space-between;align-items:center;}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold-dark);font-weight:700;}
+.content{flex:1;padding:22px 26px;overflow-y:auto;}
 
-.tab-content{display:none;}
-.tab-content.active{display:block;animation:fadeInUp 0.3s ease;}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
-.stat{background:#fff;border-radius:12px;padding:18px 16px;border:1px solid rgba(212,200,188,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
-.stat-icon{font-size:1.5rem;margin-bottom:8px;}
-.stat-value{font-size:1.7rem;font-weight:700;color:var(--gold-dark);margin-bottom:3px;}
-.stat-label{color:var(--muted);font-size:0.76rem;font-weight:600;text-transform:uppercase;}
+/* ── WALLET CARD ── */
+.wallet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.wallet-stat{background:#fff;border-radius:12px;padding:18px 16px;border:1px solid rgba(212,200,188,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.wallet-stat-icon{font-size:1.4rem;margin-bottom:7px;}
+.wallet-stat-value{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;margin-bottom:3px;}
+.wallet-stat-label{color:var(--muted);font-size:0.76rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+.val-available{color:var(--success);}
+.val-pending{color:var(--pending);}
+.val-lifetime{color:var(--gold-dark);}
+.val-withdrawn{color:var(--muted);}
 
-.card{background:#fff;border-radius:14px;padding:22px;margin-bottom:18px;border:1px solid rgba(212,200,188,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
-.card-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--gold-dark);margin-bottom:16px;}
+/* ── CARD ── */
+.card{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;border:1px solid rgba(212,200,188,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--gold-dark);font-weight:700;}
 
-/* Tier progress */
-.tier-progress-box{background:linear-gradient(135deg,#1C1C1E 0%,#2d2d35 100%);border-radius:14px;padding:24px;margin-bottom:18px;color:#fff;}
-.tier-current{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
-.tier-icon-large{font-size:2.6rem;}
-.tier-name-large{font-size:1.4rem;font-weight:700;color:var(--gold);}
-.tier-rate-large{font-size:0.85rem;color:rgba(255,255,255,0.6);}
-.tier-progress-bar{height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;margin-bottom:8px;}
-.tier-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-dark));border-radius:4px;transition:width 1s ease;}
-.tier-progress-label{font-size:0.8rem;color:rgba(255,255,255,0.6);}
+/* ── TIER PROGRESS ── */
+.tier-progress-card{background:linear-gradient(135deg,#1C1C1E 0%,#2d2d35 100%);border-radius:12px;padding:22px;margin-bottom:16px;color:#fff;}
+.tier-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.tier-icon-large{font-size:2.4rem;}
+.tier-name-large{font-size:1.3rem;font-weight:700;margin-bottom:2px;}
+.tier-rate-sub{font-size:0.82rem;color:rgba(255,255,255,0.55);}
+.tier-bar{height:7px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;margin-bottom:7px;}
+.tier-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-dark));border-radius:4px;transition:width 1s ease;}
+.tier-bar-label{font-size:0.78rem;color:rgba(255,255,255,0.5);}
 
-.link-box{background:var(--nude-light);border:2px dashed var(--gold);border-radius:10px;padding:18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.link-box code{flex:1;font-size:0.86rem;word-break:break-all;font-family:monospace;background:#fff;padding:8px 12px;border-radius:6px;border:1px solid rgba(212,200,188,0.4);}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.85rem;border:1px solid transparent;font-family:'Montserrat',sans-serif;transition:all 0.2s;}
+/* ── LINK BOX ── */
+.link-box{background:var(--nude-light);border:2px dashed var(--gold);border-radius:10px;padding:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.link-box code{flex:1;font-size:0.84rem;word-break:break-all;font-family:monospace;background:#fff;padding:8px 12px;border-radius:6px;border:1px solid rgba(212,200,188,0.4);}
+
+/* ── WITHDRAWAL FORM ── */
+.withdraw-form{background:var(--nude-light);border-radius:10px;padding:20px;margin-top:16px;}
+.form-row{margin-bottom:14px;}
+.form-row label{display:block;font-weight:600;font-size:0.84rem;margin-bottom:6px;}
+.form-row input{width:100%;padding:10px 12px;border:1px solid rgba(212,200,188,0.6);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:0.9rem;}
+.form-row input:focus{outline:none;border-color:var(--gold);}
+.form-row .hint{font-size:0.76rem;color:var(--muted);margin-top:4px;}
+.withdraw-info{background:rgba(245,158,11,0.08);border-left:3px solid var(--pending);padding:12px 14px;border-radius:0 8px 8px 0;font-size:0.84rem;margin-bottom:14px;}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:0.84rem;}
+th{background:var(--nude-light);padding:10px 12px;text-align:left;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--nude-med);}
+td{padding:11px 12px;border-bottom:1px solid rgba(212,200,188,0.25);}
+tr:hover td{background:#FDFAF7;}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.73rem;font-weight:700;}
+.badge-pending{background:#FEF3C7;color:#92400E;}
+.badge-available{background:#D1FAE5;color:#065F46;}
+.badge-paid{background:#DBEAFE;color:#1E40AF;}
+.badge-first{background:rgba(200,169,126,0.15);color:var(--gold-dark);border:1px solid var(--gold);}
+
+/* ── LEADERBOARD ── */
+.leaderboard-list{display:flex;flex-direction:column;gap:8px;}
+.lb-item{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:10px;background:var(--nude-light);border:1px solid rgba(212,200,188,0.3);transition:all 0.2s;}
+.lb-item.is-me{background:rgba(200,169,126,0.08);border-color:var(--gold);}
+.lb-rank{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--muted);width:36px;text-align:center;flex-shrink:0;}
+.lb-rank.top{color:var(--gold-dark);}
+.lb-info{flex:1;}
+.lb-label{font-weight:700;font-size:0.88rem;}
+.lb-sub{font-size:0.78rem;color:var(--muted);}
+.lb-amount{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--gold-dark);}
+
+/* ── BTNS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.84rem;border:1px solid transparent;font-family:'Montserrat',sans-serif;transition:all 0.2s;}
 .btn-gold{background:var(--gold);color:#fff;}
-.btn-gold:hover{background:var(--gold-dark);}
+.btn-gold:hover:not(:disabled){background:var(--gold-dark);}
+.btn-gold:disabled{opacity:0.5;cursor:not-allowed;}
 .btn-ghost{background:transparent;border-color:var(--gold);color:var(--gold-dark);}
 .btn-ghost:hover{background:var(--gold);color:#fff;}
 
-.table-wrap{overflow-x:auto;}
-table{width:100%;border-collapse:collapse;font-size:0.85rem;}
-th{background:var(--nude-light);padding:10px 12px;text-align:left;font-weight:700;font-size:0.76rem;text-transform:uppercase;border-bottom:2px solid var(--nude-med);}
-td{padding:12px;border-bottom:1px solid rgba(212,200,188,0.25);}
-.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.74rem;font-weight:700;}
-.badge-pending{background:#FEF3C7;color:#92400E;}
-.badge-paid{background:#D1FAE5;color:#065F46;}
-
-.spinner-wrap{text-align:center;padding:30px;color:var(--muted);}
+.spinner-wrap{text-align:center;padding:36px;color:var(--muted);}
 .spin{display:inline-block;width:24px;height:24px;border:3px solid var(--nude-med);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-.toast{position:fixed;bottom:20px;right:20px;padding:12px 16px;border-radius:9px;color:#fff;font-weight:600;font-size:0.87rem;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,0.13);}
+.toast{position:fixed;bottom:22px;right:22px;padding:12px 16px;border-radius:9px;color:#fff;font-weight:600;font-size:0.86rem;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,0.13);}
 .toast-success{background:var(--success);}
+.toast-error{background:var(--danger);}
+.toast-info{background:var(--gold);}
 
-@media(max-width:900px){.app.show{grid-template-columns:1fr;}.sidebar{display:none;}.stats{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:900px){.app.show{grid-template-columns:1fr;}.sidebar{display:none;}.wallet-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.wallet-grid{grid-template-columns:1fr;}.content{padding:14px;}}
 </style>
 </head>
 <body>
 
-<!-- ══ PENDING STATE ══ -->
+<!-- ── PENDING SCREEN ── -->
 <div class="pending-screen" id="pendingScreen">
   <div class="pending-card">
     <div class="pending-icon"><i class="fas fa-hourglass-half"></i></div>
     <div class="member-tag" id="pendingMemberTag">Member #—</div>
-    <h2 style="font-size:1.8rem;margin-bottom:0.6rem;">Application Under Review</h2>
-    <p style="color:var(--muted);margin-bottom:1rem;">Welcome, <strong id="pendingName">—</strong>. Our team is reviewing your Crown Partner application.</p>
-    <div class="pending-status" id="pendingStatusBadge">⏳ Pending Review</div>
-    <div style="background:var(--nude-med);border-radius:8px;padding:16px;margin:1.5rem 0;text-align:left;font-size:0.86rem;">
-      <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:var(--muted);">Email</span><strong id="pendingEmail">—</strong></div>
-      <div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid rgba(212,200,188,0.4);"><span style="color:var(--muted);">Estimated Review Time</span><strong>24-48 hours</strong></div>
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;margin-bottom:0.6rem;">Application Under Review</h2>
+    <p style="color:var(--muted);margin-bottom:1rem;">Welcome, <strong id="pendingName">—</strong>. We're reviewing your Crown Partner application.</p>
+    <div class="pending-status status-pending" id="pendingBadge">⏳ Pending Review</div>
+    <div style="background:var(--nude-med);border-radius:8px;padding:14px;margin:1.4rem 0;text-align:left;font-size:0.85rem;">
+      <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="color:var(--muted);">Email</span><strong id="pendingEmail">—</strong></div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid rgba(212,200,188,0.4);"><span style="color:var(--muted);">Review Time</span><strong>24–48 hours</strong></div>
     </div>
-    <p style="color:var(--muted);font-size:0.85rem;margin-bottom:1.5rem;">This page checks your status automatically. You can also close this and come back anytime — just log in again.</p>
-    <button class="btn-welcome" style="width:100%;" onclick="checkStatus()"><i class="fas fa-sync"></i> Check Status Now</button>
-    <button id="logoutFromPending" style="width:100%;background:none;border:none;color:var(--muted);margin-top:12px;cursor:pointer;font-size:0.85rem;text-decoration:underline;">Logout</button>
+    <p style="color:var(--muted);font-size:0.84rem;margin-bottom:1.2rem;">Come back anytime — just log in with your email and password to check status.</p>
+    <button class="btn-welcome" style="width:100%;margin-bottom:10px;" onclick="loadDashboard()"><i class="fas fa-sync"></i> Check Status Now</button>
+    <button onclick="logout(); window.location.href='referral-login.html';" style="width:100%;background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.84rem;text-decoration:underline;">Logout</button>
   </div>
 </div>
 
-<!-- ══ WELCOME OVERLAY (shown once on first approved login) ══ -->
+<!-- ── WELCOME OVERLAY ── -->
 <div class="welcome-overlay" id="welcomeOverlay">
   <div class="welcome-content">
     <div class="welcome-crown"><i class="fas fa-crown"></i></div>
     <h1>Welcome to the <span>Crown Circle</span></h1>
-    <p>Your application has been approved. You're now an official Crown Partner — start sharing your link and building your income.</p>
+    <p>Your application has been approved. You're now an official Crown Partner — share your link and start building your income.</p>
     <div class="welcome-member-id">
       <div class="label">Your Member ID</div>
       <div class="value" id="welcomeMemberNum">#—</div>
     </div>
-    <div><button class="btn-welcome" onclick="closeWelcome()">Enter Dashboard <i class="fas fa-arrow-right"></i></button></div>
+    <button class="btn-welcome" onclick="closeWelcome()">Enter Dashboard <i class="fas fa-arrow-right"></i></button>
   </div>
 </div>
 
-<!-- ══ MAIN DASHBOARD (approved state) ══ -->
+<!-- ── MAIN APP ── -->
 <div class="app" id="mainApp">
   <aside class="sidebar">
     <div class="sidebar-logo">
@@ -156,16 +199,18 @@ td{padding:12px;border-bottom:1px solid rgba(212,200,188,0.25);}
       <div class="brand-sub">Partner Portal</div>
     </div>
     <div class="sidebar-member">
-      <div class="tier-badge" id="sidebarTierBadge"><i class="fas fa-medal"></i> <span>Bronze Partner</span></div>
-      <div class="member-id-display" id="sidebarMemberId">Member #—</div>
-      <div class="member-name" id="sidebarName">—</div>
+      <div class="tier-crown" id="sidebarTierIcon" style="color:var(--gold);">👑</div>
+      <div class="tier-name" id="sidebarTierName" style="color:var(--gold);">Bronze Partner</div>
+      <div class="member-id" id="sidebarMemberId">Member #—</div>
+      <div class="member-name-display" id="sidebarName">—</div>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Main</div>
       <a href="#" class="nav-item active" data-tab="overview"><i class="fas fa-chart-pie"></i> Overview</a>
+      <a href="#" class="nav-item" data-tab="wallet"><i class="fas fa-wallet"></i> Wallet & Payouts</a>
       <a href="#" class="nav-item" data-tab="mylink"><i class="fas fa-link"></i> My Referral Link</a>
-      <a href="#" class="nav-item" data-tab="earnings"><i class="fas fa-coins"></i> Earnings</a>
-      <a href="#" class="nav-item" data-tab="tiers"><i class="fas fa-medal"></i> Partner Tiers</a>
+      <a href="#" class="nav-item" data-tab="earnings"><i class="fas fa-coins"></i> Earnings History</a>
+      <a href="#" class="nav-item" data-tab="leaderboard"><i class="fas fa-trophy"></i> Leaderboard</a>
     </nav>
     <div class="sidebar-footer">
       <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -178,77 +223,120 @@ td{padding:12px;border-bottom:1px solid rgba(212,200,188,0.25);}
     </div>
     <div class="content">
 
-      <!-- OVERVIEW -->
-      <div id="overview" class="tab-content active">
-        <div class="stats">
-          <div class="stat"><div class="stat-icon">👥</div><div class="stat-value" id="totalReferrals">0</div><div class="stat-label">Total Referrals</div></div>
-          <div class="stat"><div class="stat-icon">💰</div><div class="stat-value" id="totalEarnings">KES 0</div><div class="stat-label">Total Earned</div></div>
-          <div class="stat"><div class="stat-icon">⏳</div><div class="stat-value" id="pendingEarnings">KES 0</div><div class="stat-label">Pending</div></div>
-          <div class="stat"><div class="stat-icon">💎</div><div class="stat-value" id="currentRate">KES 0</div><div class="stat-label">Per Referral</div></div>
+      <!-- ── OVERVIEW ── -->
+      <div id="overview" class="tab-panel active">
+        <div class="wallet-grid">
+          <div class="wallet-stat"><div class="wallet-stat-icon">💰</div><div class="wallet-stat-value val-available" id="walletAvailable">KES 0</div><div class="wallet-stat-label">Available</div></div>
+          <div class="wallet-stat"><div class="wallet-stat-icon">⏳</div><div class="wallet-stat-value val-pending" id="walletPending">KES 0</div><div class="wallet-stat-label">Pending</div></div>
+          <div class="wallet-stat"><div class="wallet-stat-icon">👥</div><div class="wallet-stat-value val-lifetime" id="totalReferrals">0</div><div class="wallet-stat-label">Referrals</div></div>
+          <div class="wallet-stat"><div class="wallet-stat-icon">🏆</div><div class="wallet-stat-value val-lifetime" id="myRank">—</div><div class="wallet-stat-label">My Rank</div></div>
         </div>
-
-        <div class="tier-progress-box">
-          <div class="tier-current">
-            <div class="tier-icon-large" id="overviewTierIcon">🥉</div>
+        <div class="tier-progress-card">
+          <div class="tier-row">
+            <div class="tier-icon-large" id="overviewTierIcon">👑</div>
             <div>
               <div class="tier-name-large" id="overviewTierName">Bronze Partner</div>
-              <div class="tier-rate-large" id="overviewTierRate">KES 200 per referral</div>
+              <div class="tier-rate-sub" id="overviewTierRate">KES 200 per referral</div>
             </div>
           </div>
-          <div id="tierProgressWrap">
-            <div class="tier-progress-bar"><div class="tier-progress-fill" id="tierProgressFill" style="width:0%"></div></div>
-            <div class="tier-progress-label" id="tierProgressLabel">0 referrals to next tier</div>
-          </div>
+          <div class="tier-bar"><div class="tier-bar-fill" id="tierBarFill" style="width:0%"></div></div>
+          <div class="tier-bar-label" id="tierBarLabel">—</div>
         </div>
-
         <div class="card">
-          <div class="card-title">Quick Share</div>
+          <div class="card-header"><div class="card-title">Quick Share</div></div>
           <div class="link-box">
             <code id="quickRefLink">Loading…</code>
             <button class="btn btn-gold" onclick="copyLink()"><i class="fas fa-copy"></i> Copy</button>
+            <button class="btn btn-ghost" onclick="shareWhatsApp()"><i class="fab fa-whatsapp"></i></button>
           </div>
         </div>
-
         <div class="card">
-          <div class="card-title">Recent Activity</div>
-          <div id="recentEarnings"><div class="spinner-wrap"><div class="spin"></div></div></div>
+          <div class="card-header"><div class="card-title">Recent Activity</div></div>
+          <div id="recentActivity"><div class="spinner-wrap"><div class="spin"></div></div></div>
         </div>
       </div>
 
-      <!-- MY LINK -->
-      <div id="mylink" class="tab-content">
+      <!-- ── WALLET & PAYOUTS ── -->
+      <div id="wallet" class="tab-panel">
+        <div class="wallet-grid">
+          <div class="wallet-stat"><div class="wallet-stat-icon">💰</div><div class="wallet-stat-value val-available" id="w-available">KES 0</div><div class="wallet-stat-label">Available to Withdraw</div></div>
+          <div class="wallet-stat"><div class="wallet-stat-icon">⏳</div><div class="wallet-stat-value val-pending" id="w-pending">KES 0</div><div class="wallet-stat-label">Pending (48hr hold)</div></div>
+          <div class="wallet-stat"><div class="wallet-stat-icon">📈</div><div class="wallet-stat-value val-lifetime" id="w-lifetime">KES 0</div><div class="wallet-stat-label">Lifetime Earned</div></div>
+          <div class="wallet-stat"><div class="wallet-stat-icon">✅</div><div class="wallet-stat-value val-withdrawn" id="w-withdrawn">KES 0</div><div class="wallet-stat-label">Total Withdrawn</div></div>
+        </div>
         <div class="card">
-          <div class="card-title">Your Crown Partner Link</div>
+          <div class="card-header"><div class="card-title">Request Withdrawal</div></div>
+          <div class="withdraw-info">
+            <i class="fas fa-info-circle" style="color:var(--pending);margin-right:6px;"></i>
+            Minimum withdrawal is <strong>KES 500</strong>. Processed within <strong>48 hours</strong> via M-Pesa. Only approved commissions (48hr+ old) are available.
+          </div>
+          <div class="withdraw-form">
+            <div id="withdraw-alert" style="display:none;background:#FEF2F2;border-left:3px solid var(--danger);padding:10px 12px;border-radius:0 8px 8px 0;font-size:0.86rem;color:#991B1B;margin-bottom:12px;"></div>
+            <div class="form-row">
+              <label>Amount (KES) *</label>
+              <input type="number" id="withdrawAmount" placeholder="Min. 500" min="500">
+              <div class="hint">Available balance: <strong id="availableHint">KES 0</strong></div>
+            </div>
+            <div class="form-row">
+              <label>M-Pesa Number *</label>
+              <input type="tel" id="withdrawMpesa" placeholder="e.g. 0712345678">
+            </div>
+            <div class="form-row">
+              <label>M-Pesa Registered Name</label>
+              <input type="text" id="withdrawName" placeholder="Name on your M-Pesa account">
+            </div>
+            <button class="btn btn-gold" id="withdrawBtn" onclick="requestWithdrawal()" style="width:100%;justify-content:center;">
+              <i class="fas fa-paper-plane"></i> Request Withdrawal
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Withdrawal History</div></div>
+          <div class="table-wrap" id="withdrawalHistory"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── MY LINK ── -->
+      <div id="mylink" class="tab-panel">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Your Crown Partner Link</div></div>
           <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;">
-            <div style="flex:1;min-width:160px;background:var(--nude-light);padding:18px;border-radius:10px;text-align:center;">
-              <div style="color:var(--muted);font-size:0.8rem;margin-bottom:6px;font-weight:600;">YOUR CODE</div>
+            <div style="flex:1;min-width:160px;background:var(--nude-light);padding:16px;border-radius:10px;text-align:center;">
+              <div style="color:var(--muted);font-size:0.78rem;margin-bottom:6px;font-weight:700;">YOUR CODE</div>
               <div id="myCode" style="font-size:1.5rem;font-weight:700;color:var(--gold-dark);letter-spacing:2px;">—</div>
             </div>
-            <div style="flex:3;min-width:220px;background:var(--nude-light);padding:18px;border-radius:10px;">
-              <div style="color:var(--muted);font-size:0.8rem;margin-bottom:8px;font-weight:600;">FULL LINK</div>
+            <div style="flex:3;min-width:200px;background:var(--nude-light);padding:16px;border-radius:10px;">
+              <div style="color:var(--muted);font-size:0.78rem;margin-bottom:8px;font-weight:700;">FULL LINK</div>
               <code id="fullLink" style="font-size:0.82rem;word-break:break-all;display:block;margin-bottom:10px;"></code>
-              <button class="btn btn-gold" onclick="copyLink()"><i class="fas fa-copy"></i> Copy Link</button>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-gold" onclick="copyLink()"><i class="fas fa-copy"></i> Copy</button>
+                <button class="btn btn-ghost" onclick="shareWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+              </div>
             </div>
           </div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="btn btn-gold" onclick="shareWhatsApp()"><i class="fab fa-whatsapp"></i> Share on WhatsApp</button>
+          <div style="background:rgba(200,169,126,0.08);border-left:3px solid var(--gold);padding:12px 14px;font-size:0.84rem;border-radius:0 8px 8px 0;">
+            <i class="fas fa-crown" style="color:var(--gold);margin-right:6px;"></i>
+            <strong>First referral earns KES 300</strong>, then your tier rate applies. Commissions are released 48hrs after enrollment approval.
           </div>
         </div>
       </div>
 
-      <!-- EARNINGS -->
-      <div id="earnings" class="tab-content">
+      <!-- ── EARNINGS HISTORY ── -->
+      <div id="earnings" class="tab-panel">
         <div class="card">
-          <div class="card-title">Earnings History</div>
+          <div class="card-header"><div class="card-title">All Earnings</div></div>
           <div class="table-wrap" id="earningsTable"><div class="spinner-wrap"><div class="spin"></div></div></div>
         </div>
       </div>
 
-      <!-- TIERS -->
-      <div id="tiers" class="tab-content">
+      <!-- ── LEADERBOARD ── -->
+      <div id="leaderboard" class="tab-panel">
         <div class="card">
-          <div class="card-title">Partner Tiers</div>
-          <div id="tiersList"></div>
+          <div class="card-header">
+            <div class="card-title">Crown Partner Rankings</div>
+          </div>
+          <p style="color:var(--muted);font-size:0.84rem;margin-bottom:16px;">Rankings show earnings only — identities are kept private.</p>
+          <div class="leaderboard-list" id="leaderboardList"><div class="spinner-wrap"><div class="spin"></div></div></div>
         </div>
       </div>
 
@@ -257,82 +345,60 @@ td{padding:12px;border-bottom:1px solid rgba(212,200,188,0.25);}
 </div>
 
 <script>
-let agentData = null;
-let earningsData = [];
-let allTiers = [];
+let dashData = null;
 
-const TIER_ICONS = { bronze: '🥉', silver: '🥈', gold: '🥇', crown: '👑' };
+const TIER_COLORS = { bronze: '#CD7F32', silver: '#A8A8A8', crown: '#C8A97E' };
 
 document.addEventListener('DOMContentLoaded', async () => {
   const token = getToken();
-  const user = getUser();
-  if (!token || !user || user.role !== 'referral') { window.location.href = 'referral-login.html'; return; }
+  if (!token) { window.location.href = 'referral-login.html'; return; }
 
-  await loadDashboard();
-
-  document.getElementById('logoutBtn')?.addEventListener('click', () => { logout(); window.location.href = 'referral-login.html'; });
-  document.getElementById('logoutFromPending')?.addEventListener('click', () => { logout(); window.location.href = 'referral-login.html'; });
+  try {
+    const res = await fetch(`${API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
+    if (res.status === 401 || res.status === 403) { logout(); window.location.href = 'referral-login.html'; return; }
+  } catch {}
 
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', e => {
       e.preventDefault();
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-      item.classList.add('active');
-      document.getElementById(item.dataset.tab).classList.add('active');
-      document.getElementById('pageTitle').textContent = item.textContent.trim();
+      switchTab(item.dataset.tab);
     });
   });
+
+  document.getElementById('logoutBtn').addEventListener('click', () => { logout(); window.location.href = 'referral-login.html'; });
+
+  await loadDashboard();
 });
 
 async function loadDashboard() {
   try {
     const data = await API.getReferralDashboard();
-    agentData = data.agent;
-    earningsData = data.earnings || [];
-    allTiers = data.all_tiers || [];
+    dashData = data;
+    const a = data.agent;
 
-    if (agentData.status === 'pending') {
-      showPendingState();
-    } else if (agentData.status === 'rejected') {
-      showPendingState(true);
-    } else if (agentData.status === 'approved') {
-      if (agentData.show_welcome) {
-        showWelcome();
-      } else {
-        showMainApp();
-      }
-    }
+    if (a.status === 'pending') { showPending(a); return; }
+    if (a.status === 'rejected') { showPending(a, true); return; }
+    if (a.show_welcome) { showWelcome(a); }
+    else { showMainApp(); }
   } catch (err) {
-    console.error('Dashboard load failed:', err);
+    showToast('Failed to load dashboard: ' + err.message, 'error');
   }
 }
 
-async function checkStatus() {
-  await loadDashboard();
-  showToast('Status refreshed', 'success');
-}
-
-function showPendingState(rejected = false) {
+function showPending(a, rejected = false) {
   document.getElementById('pendingScreen').classList.add('show');
   document.getElementById('mainApp').classList.remove('show');
-  document.getElementById('pendingMemberTag').textContent = `Member #${agentData.member_number || '—'}`;
-  document.getElementById('pendingName').textContent = agentData.full_name;
-  document.getElementById('pendingEmail').textContent = agentData.email;
-
-  const badge = document.getElementById('pendingStatusBadge');
-  if (rejected) {
-    badge.className = 'pending-status rejected';
-    badge.innerHTML = '❌ Not Approved';
-  } else {
-    badge.className = 'pending-status';
-    badge.innerHTML = '⏳ Pending Review';
-  }
+  document.getElementById('pendingMemberTag').textContent = `Member #${a.member_number || '—'}`;
+  document.getElementById('pendingName').textContent = a.full_name;
+  document.getElementById('pendingEmail').textContent = a.email;
+  const badge = document.getElementById('pendingBadge');
+  badge.className = `pending-status ${rejected ? 'status-rejected' : 'status-pending'}`;
+  badge.textContent = rejected ? '❌ Not Approved' : '⏳ Pending Review';
 }
 
-function showWelcome() {
+function showWelcome(a) {
   document.getElementById('welcomeOverlay').classList.add('show');
-  document.getElementById('welcomeMemberNum').textContent = `#${agentData.member_number || '—'}`;
+  document.getElementById('welcomeMemberNum').textContent = `#${a.member_number || '—'}`;
 }
 
 function closeWelcome() {
@@ -343,77 +409,90 @@ function closeWelcome() {
 function showMainApp() {
   document.getElementById('pendingScreen').classList.remove('show');
   document.getElementById('mainApp').classList.add('show');
-  renderDashboard();
+  renderAll();
 }
 
-function renderDashboard() {
-  const a = agentData;
+function renderAll() {
+  const { agent: a, earnings, withdrawals, leaderboard, min_withdrawal } = dashData;
+  const tierColor = TIER_COLORS[a.tier] || TIER_COLORS.bronze;
 
-  document.getElementById('sidebarName').textContent = a.full_name;
+  // Sidebar
+  document.getElementById('sidebarTierIcon').style.color = tierColor;
+  document.getElementById('sidebarTierName').textContent = a.tier_label;
+  document.getElementById('sidebarTierName').style.color = tierColor;
   document.getElementById('sidebarMemberId').textContent = `Member #${a.member_number}`;
-  document.getElementById('sidebarTierBadge').innerHTML = `<i class="fas fa-medal"></i> <span>${a.tier_label}</span>`;
+  document.getElementById('sidebarName').textContent = a.full_name;
 
-  document.getElementById('totalReferrals').textContent = a.total_referrals || 0;
-  document.getElementById('totalEarnings').textContent = `KES ${(a.total_earnings||0).toLocaleString()}`;
-  document.getElementById('pendingEarnings').textContent = `KES ${(a.pending_earnings||0).toLocaleString()}`;
-  document.getElementById('currentRate').textContent = `KES ${a.tier_rate}`;
+  // Overview stats
+  document.getElementById('walletAvailable').textContent = `KES ${(a.wallet.available).toLocaleString()}`;
+  document.getElementById('walletPending').textContent = `KES ${(a.wallet.pending).toLocaleString()}`;
+  document.getElementById('totalReferrals').textContent = a.total_referrals;
+  document.getElementById('myRank').textContent = a.rank ? `#${a.rank}` : '—';
 
-  document.getElementById('overviewTierIcon').textContent = TIER_ICONS[a.tier] || '🥉';
+  // Tier progress bar
+  document.getElementById('overviewTierIcon').textContent = '👑';
+  document.getElementById('overviewTierIcon').style.color = tierColor;
   document.getElementById('overviewTierName').textContent = a.tier_label;
+  document.getElementById('overviewTierName').style.color = tierColor;
   document.getElementById('overviewTierRate').textContent = `KES ${a.tier_rate} per referral`;
 
   if (a.next_tier) {
-    const progress = Math.min(100, (a.total_referrals / a.next_tier.min) * 100);
-    document.getElementById('tierProgressFill').style.width = progress + '%';
-    const remaining = a.next_tier.min - a.total_referrals;
-    document.getElementById('tierProgressLabel').textContent = `${remaining} more referral${remaining!==1?'s':''} to reach ${a.next_tier.label}`;
+    const pct = Math.min(100, (a.total_referrals / a.next_tier.min) * 100);
+    document.getElementById('tierBarFill').style.width = pct + '%';
+    const rem = a.next_tier.min - a.total_referrals;
+    document.getElementById('tierBarLabel').textContent = `${rem} more referral${rem !== 1 ? 's' : ''} to reach ${a.next_tier.label}`;
   } else {
-    document.getElementById('tierProgressFill').style.width = '100%';
-    document.getElementById('tierProgressLabel').textContent = "You've reached the highest tier! 👑";
+    document.getElementById('tierBarFill').style.width = '100%';
+    document.getElementById('tierBarLabel').textContent = '👑 You have reached the highest tier!';
   }
 
+  // Links
   const link = a.referral_link || `${window.location.origin}/referral-register.html?ref=${a.referral_code}`;
   document.getElementById('quickRefLink').textContent = link;
   document.getElementById('fullLink').textContent = link;
   document.getElementById('myCode').textContent = a.referral_code;
 
-  renderRecentEarnings();
-  renderEarningsTable();
-  renderTiersList();
+  // Wallet tab
+  document.getElementById('w-available').textContent = `KES ${(a.wallet.available).toLocaleString()}`;
+  document.getElementById('w-pending').textContent = `KES ${(a.wallet.pending).toLocaleString()}`;
+  document.getElementById('w-lifetime').textContent = `KES ${(a.wallet.lifetime_earned).toLocaleString()}`;
+  document.getElementById('w-withdrawn').textContent = `KES ${(a.wallet.total_withdrawn).toLocaleString()}`;
+  document.getElementById('availableHint').textContent = `KES ${(a.wallet.available).toLocaleString()}`;
+
+  renderRecentActivity(earnings);
+  renderEarningsTable(earnings);
+  renderWithdrawalHistory(withdrawals);
+  renderLeaderboard(leaderboard);
 }
 
-function renderRecentEarnings() {
-  const container = document.getElementById('recentEarnings');
-  if (!earningsData.length) {
-    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No referral activity yet. Share your link to start earning!</p>';
-    return;
-  }
-  container.innerHTML = earningsData.slice(0, 5).map(e => `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(212,200,188,0.3);">
+function renderRecentActivity(earnings) {
+  const c = document.getElementById('recentActivity');
+  if (!earnings.length) { c.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No activity yet. Share your link to start earning!</p>'; return; }
+  c.innerHTML = earnings.slice(0, 5).map(e => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid rgba(212,200,188,0.3);">
       <div>
-        <div style="font-weight:600;font-size:0.9rem;">${e.referred_email}</div>
-        <div style="color:var(--muted);font-size:0.8rem;">${new Date(e.created_at).toLocaleDateString()}</div>
+        <div style="font-weight:700;font-size:0.88rem;">${e.referred_name || e.referred_email}</div>
+        <div style="color:var(--muted);font-size:0.78rem;">${new Date(e.created_at).toLocaleDateString()}</div>
       </div>
       <div style="text-align:right;">
         <div style="font-weight:700;color:var(--gold-dark);">KES ${e.amount}</div>
-        <span class="badge badge-${e.status}">${cap(e.status)}</span>
+        ${e.commission_type === 'first_referral' ? '<span class="badge badge-first">🎉 First Bonus</span>' : `<span class="badge badge-${e.status}">${cap(e.status)}</span>`}
       </div>
     </div>`).join('');
 }
 
-function renderEarningsTable() {
-  const container = document.getElementById('earningsTable');
-  if (!earningsData.length) {
-    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:30px;">No earnings yet.</p>';
-    return;
-  }
-  container.innerHTML = `
+function renderEarningsTable(earnings) {
+  const c = document.getElementById('earningsTable');
+  if (!earnings.length) { c.innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No earnings yet.</p>'; return; }
+  c.innerHTML = `
     <table>
-      <thead><tr><th>#</th><th>Referred Email</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
-      <tbody>${earningsData.map((e, i) => `
+      <thead><tr><th>#</th><th>Referred</th><th>Amount</th><th>Type</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>${earnings.map((e, i) => `
         <tr>
-          <td>${i + 1}</td><td>${e.referred_email}</td>
+          <td>${i + 1}</td>
+          <td>${e.referred_name || e.referred_email}</td>
           <td style="font-weight:700;color:var(--gold-dark);">KES ${e.amount}</td>
+          <td>${e.commission_type === 'first_referral' ? '<span class="badge badge-first">🎉 First</span>' : 'Standard'}</td>
           <td><span class="badge badge-${e.status}">${cap(e.status)}</span></td>
           <td>${new Date(e.created_at).toLocaleDateString()}</td>
         </tr>`).join('')}
@@ -421,41 +500,98 @@ function renderEarningsTable() {
     </table>`;
 }
 
-function renderTiersList() {
-  const container = document.getElementById('tiersList');
-  container.innerHTML = allTiers.slice().reverse().map(t => {
-    const isCurrent = t.name === agentData.tier;
-    return `
-      <div style="display:flex;align-items:center;gap:16px;padding:16px;border:1px solid ${isCurrent ? 'var(--gold)' : 'rgba(212,200,188,0.4)'};background:${isCurrent ? 'rgba(200,169,126,0.06)' : '#fff'};border-radius:10px;margin-bottom:10px;">
-        <div style="font-size:2rem;">${TIER_ICONS[t.name]}</div>
-        <div style="flex:1;">
-          <div style="font-weight:700;">${t.label} ${isCurrent ? '<span style="color:var(--gold-dark);font-size:0.78rem;">(Current)</span>' : ''}</div>
-          <div style="color:var(--muted);font-size:0.84rem;">${t.min}+ approved referrals</div>
-        </div>
-        <div style="font-weight:700;color:var(--gold-dark);">KES ${t.rate}/referral</div>
-      </div>`;
-  }).join('');
+function renderWithdrawalHistory(withdrawals) {
+  const c = document.getElementById('withdrawalHistory');
+  if (!withdrawals.length) { c.innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No withdrawal requests yet.</p>'; return; }
+  c.innerHTML = `
+    <table>
+      <thead><tr><th>Amount</th><th>M-Pesa</th><th>Status</th><th>M-Pesa Code</th><th>Requested</th><th>Processed</th></tr></thead>
+      <tbody>${withdrawals.map(w => `
+        <tr>
+          <td style="font-weight:700;">KES ${w.amount.toLocaleString()}</td>
+          <td>${w.mpesa_number}</td>
+          <td><span class="badge badge-${w.status}">${cap(w.status)}</span></td>
+          <td>${w.mpesa_code || '—'}</td>
+          <td>${new Date(w.requested_at).toLocaleDateString()}</td>
+          <td>${w.processed_at ? new Date(w.processed_at).toLocaleDateString() : '—'}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function renderLeaderboard(lb) {
+  const c = document.getElementById('leaderboardList');
+  if (!lb.length) { c.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No rankings yet.</p>'; return; }
+  c.innerHTML = lb.map(l => `
+    <div class="lb-item ${l.is_me ? 'is-me' : ''}">
+      <div class="lb-rank ${l.rank <= 3 ? 'top' : ''}">${l.rank <= 3 ? ['🥇','🥈','🥉'][l.rank - 1] : `#${l.rank}`}</div>
+      <div class="lb-info">
+        <div class="lb-label">${l.is_me ? 'You' : `Partner #${l.rank}`}</div>
+        <div class="lb-sub">${l.is_me ? 'Your current ranking' : 'Crown Partner'}</div>
+      </div>
+      <div class="lb-amount">KES ${(l.total_earned || 0).toLocaleString()}</div>
+    </div>`).join('');
+}
+
+async function requestWithdrawal() {
+  const amount = Number(document.getElementById('withdrawAmount').value);
+  const mpesa_number = document.getElementById('withdrawMpesa').value.trim();
+  const mpesa_name = document.getElementById('withdrawName').value.trim();
+  const alertEl = document.getElementById('withdraw-alert');
+  alertEl.style.display = 'none';
+
+  if (!amount || amount < 500) { alertEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Minimum withdrawal is KES 500'; alertEl.style.display = 'block'; return; }
+  if (!mpesa_number) { alertEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> M-Pesa number is required'; alertEl.style.display = 'block'; return; }
+
+  const btn = document.getElementById('withdrawBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+
+  try {
+    await API.requestWithdrawal({ amount, mpesa_number, mpesa_name });
+    showToast('Withdrawal request submitted! Admin will process within 48 hours.', 'success');
+    document.getElementById('withdrawAmount').value = '';
+    document.getElementById('withdrawMpesa').value = '';
+    document.getElementById('withdrawName').value = '';
+    await loadDashboard();
+  } catch (err) {
+    alertEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${err.message}`;
+    alertEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Withdrawal';
+  }
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(t => t.classList.remove('active'));
+  const item = document.querySelector(`[data-tab="${tab}"]`);
+  if (item) item.classList.add('active');
+  document.getElementById(tab).classList.add('active');
+  const titles = { overview:'Overview', wallet:'Wallet & Payouts', mylink:'My Referral Link', earnings:'Earnings History', leaderboard:'Leaderboard' };
+  document.getElementById('pageTitle').textContent = titles[tab] || tab;
 }
 
 function copyLink() {
-  const link = agentData?.referral_link || document.getElementById('quickRefLink').textContent;
-  navigator.clipboard.writeText(link).then(() => showToast('Link copied!', 'success'));
+  const link = dashData?.agent?.referral_link || document.getElementById('quickRefLink').textContent;
+  navigator.clipboard.writeText(link).then(() => showToast('Referral link copied!', 'success'));
 }
 
 function shareWhatsApp() {
-  const link = agentData?.referral_link || document.getElementById('quickRefLink').textContent;
-  const msg = encodeURIComponent(`Join Crown Trade Academy — the premier trading mentorship in Kenya! ${link}`);
+  const link = dashData?.agent?.referral_link || document.getElementById('quickRefLink').textContent;
+  const msg = encodeURIComponent(`Join Crown Trade Academy — an elite trading & financial education platform in Kenya!\n\n${link}`);
   window.open(`https://wa.me/?text=${msg}`, '_blank');
 }
 
-function cap(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : '—'; }
+function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : '—'; }
 
-function showToast(msg, type='success') {
+function showToast(msg, type = 'info') {
   const t = document.createElement('div');
   t.className = `toast toast-${type}`;
-  t.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
+  t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
+  setTimeout(() => t.remove(), 3500);
 }
 </script>
 </body>
