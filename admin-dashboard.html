@@ -165,7 +165,9 @@ tr:hover td{background:#FDFAF7;}
       <a href="#" class="sidebar-item" data-tab="mentorship"><i class="fas fa-graduation-cap"></i> Mentorship (Legacy)</a>
       <a href="#" class="sidebar-item" data-tab="referral"><i class="fas fa-users"></i> Referral Agents</a>
       <div class="sidebar-section">Finance</div>
-      <a href="#" class="sidebar-item" data-tab="earnings"><i class="fas fa-coins"></i> Earnings Payouts</a>
+      <a href="#" class="sidebar-item" data-tab="capital"><i class="fas fa-chart-pie"></i> Capital Overview</a>
+      <a href="#" class="sidebar-item" data-tab="withdrawals"><i class="fas fa-money-bill-wave"></i> Withdrawals</a>
+      <a href="#" class="sidebar-item" data-tab="earnings"><i class="fas fa-coins"></i> Earnings</a>
       <div class="sidebar-section">System</div>
       <a href="#" class="sidebar-item" data-tab="users"><i class="fas fa-user"></i> Users</a>
     </nav>
@@ -242,6 +244,46 @@ tr:hover td{background:#FDFAF7;}
             </select>
           </div>
           <div class="table-wrap" id="enrollmentsTable"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── CAPITAL OVERVIEW TAB ── -->
+      <div id="capital" class="tab-content">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Capital Overview</div>
+            <button class="btn btn-primary" onclick="loadCapital()"><i class="fas fa-sync"></i> Refresh</button>
+          </div>
+          <!-- Summary stats -->
+          <div id="capitalStats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;"></div>
+          <!-- Partner breakdown -->
+          <div class="panel-header" style="margin-top:20px;">
+            <div class="panel-title" style="font-size:1.1rem;">Partner Balances</div>
+          </div>
+          <div class="table-wrap" id="partnerBalancesTable"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Client Roster</div>
+          </div>
+          <div class="table-wrap" id="clientRosterTable"></div>
+        </div>
+      </div>
+
+      <!-- ── WITHDRAWALS TAB ── -->
+      <div id="withdrawals" class="tab-content">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Withdrawal Requests</div>
+            <button class="btn btn-primary" onclick="loadWithdrawals()"><i class="fas fa-sync"></i> Refresh</button>
+          </div>
+          <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterWithdrawals('')">All</button>
+            <button class="filter-btn" onclick="filterWithdrawals('pending')">Pending</button>
+            <button class="filter-btn" onclick="filterWithdrawals('paid')">Paid</button>
+            <button class="filter-btn" onclick="filterWithdrawals('rejected')">Rejected</button>
+          </div>
+          <div class="table-wrap" id="withdrawalsTable"></div>
         </div>
       </div>
 
@@ -483,7 +525,7 @@ function switchTab(tab) {
   const item = document.querySelector(`[data-tab="${tab}"]`);
   if (item) item.classList.add('active');
   document.getElementById(tab).classList.add('active');
-  document.getElementById('pageTitle').textContent = { overview:'Overview', courses:'Manage Courses', enrollments:'Course Enrollments', mentorship:'Mentorship Applications (Legacy)', referral:'Referral Agents', earnings:'Earnings Payouts', users:'Users' }[tab] || tab;
+  document.getElementById('pageTitle').textContent = { overview:'Overview', courses:'Manage Courses', enrollments:'Course Enrollments', capital:'Capital Overview', withdrawals:'Withdrawal Requests', mentorship:'Mentorship (Legacy)', referral:'Referral Agents', earnings:'Earnings', users:'Users' }[tab] || tab;
 
   if (tab === 'mentorship') loadMentorship();
   else if (tab === 'referral') loadReferral();
@@ -491,6 +533,8 @@ function switchTab(tab) {
   else if (tab === 'users') loadUsers();
   else if (tab === 'courses') loadCourses();
   else if (tab === 'enrollments') loadEnrollments();
+  else if (tab === 'capital') loadCapital();
+  else if (tab === 'withdrawals') loadWithdrawals();
 }
 
 // ─── OVERVIEW ────────────────────────────────────────────────────────────────
@@ -774,8 +818,168 @@ function showToast(msg, type = 'info') {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// COURSES MANAGEMENT
+// CAPITAL OVERVIEW
 // ═══════════════════════════════════════════════════════════════════════════
+
+async function loadCapital() {
+  document.getElementById('capitalStats').innerHTML = '<div class="spinner-wrap" style="grid-column:span 4"><div class="spin"></div></div>';
+  document.getElementById('partnerBalancesTable').innerHTML = '<div class="spinner-wrap"><div class="spin"></div></div>';
+  document.getElementById('clientRosterTable').innerHTML = '<div class="spinner-wrap"><div class="spin"></div></div>';
+  try {
+    const data = await API.getCapitalOverview();
+    renderCapitalStats(data.capital);
+    renderPartnerBalances(data.partners);
+    renderClientRoster(data.client_roster);
+  } catch (err) { showToast('Failed to load capital data: ' + err.message, 'error'); }
+}
+
+function renderCapitalStats(c) {
+  document.getElementById('capitalStats').innerHTML = `
+    <div class="stat-card"><div class="stat-card-icon">💰</div><div class="stat-card-value" style="color:var(--success);">KES ${(c.total_available||0).toLocaleString()}</div><div class="stat-card-label">Available (owed now)</div></div>
+    <div class="stat-card"><div class="stat-card-icon">⏳</div><div class="stat-card-value" style="color:var(--warning);">KES ${(c.total_pending||0).toLocaleString()}</div><div class="stat-card-label">Pending (48hr hold)</div></div>
+    <div class="stat-card"><div class="stat-card-icon">📤</div><div class="stat-card-value" style="color:var(--info);">KES ${(c.total_paid_out||0).toLocaleString()}</div><div class="stat-card-label">Total Paid Out</div></div>
+    <div class="stat-card"><div class="stat-card-icon">⚠️</div><div class="stat-card-value" style="color:var(--danger);">KES ${(c.total_liability||0).toLocaleString()}</div><div class="stat-card-label">Net Liability</div></div>`;
+}
+
+function renderPartnerBalances(partners) {
+  const c = document.getElementById('partnerBalancesTable');
+  if (!partners.length) { c.innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No approved partners yet.</p>'; return; }
+  c.innerHTML = `
+    <table>
+      <thead><tr><th>#</th><th>Partner</th><th>Tier</th><th>Referrals</th><th>Available</th><th>Pending</th><th>Lifetime</th><th>Withdrawn</th><th>Action</th></tr></thead>
+      <tbody>${partners.map((p, i) => `
+        <tr>
+          <td style="font-weight:700;color:var(--gold-dark);">#${p.member_number}</td>
+          <td><strong>${p.full_name}</strong><br><span style="font-size:0.76rem;color:var(--muted);">${p.email}</span></td>
+          <td><span style="font-weight:700;text-transform:capitalize;">${p.tier}</span></td>
+          <td>${p.total_referrals}</td>
+          <td style="font-weight:700;color:var(--success);">KES ${(p.available_balance||0).toLocaleString()}</td>
+          <td style="color:var(--warning);">KES ${(p.pending_balance||0).toLocaleString()}</td>
+          <td>KES ${(p.lifetime_earned||0).toLocaleString()}</td>
+          <td style="color:var(--muted);">KES ${(p.total_withdrawn||0).toLocaleString()}</td>
+          <td>
+            <button class="btn btn-verify" style="font-size:0.74rem;padding:5px 10px;" onclick="upgradeTierPrompt(${p.id}, '${p.tier}', '${p.full_name}')">
+              <i class="fas fa-level-up-alt"></i> Tier
+            </button>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function renderClientRoster(clients) {
+  const c = document.getElementById('clientRosterTable');
+  if (!clients.length) { c.innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No clients yet.</p>'; return; }
+  c.innerHTML = `
+    <table>
+      <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Course</th><th>Amount</th><th>Status</th><th>Payment</th><th>Referred By</th><th>Joined</th></tr></thead>
+      <tbody>${clients.map(cl => `
+        <tr>
+          <td style="font-weight:700;color:var(--gold-dark);">#${cl.member_number||'—'}</td>
+          <td><strong>${cl.full_name}</strong></td>
+          <td style="font-size:0.82rem;">${cl.email}</td>
+          <td style="font-size:0.82rem;">${cl.course_title}</td>
+          <td style="font-weight:700;">KES ${(cl.amount||0).toLocaleString()}</td>
+          <td><span class="badge badge-${cl.status}">${cap(cl.status)}</span></td>
+          <td><span class="badge badge-${cl.payment_status||'unpaid'}">${cap(cl.payment_status||'unpaid')}</span></td>
+          <td style="font-size:0.8rem;">${cl.referred_by_code||'—'}</td>
+          <td style="font-size:0.8rem;">${fmt(cl.submitted_at)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+async function upgradeTierPrompt(partnerId, currentTier, name) {
+  const tiers = ['bronze', 'silver', 'crown'];
+  const next = tiers[tiers.indexOf(currentTier) + 1];
+  if (!next) { showToast(`${name} is already at Crown tier`, 'info'); return; }
+  if (!confirm(`Upgrade ${name} from ${currentTier} to ${next}?`)) return;
+  try {
+    await API.updateReferralApp(partnerId, { tier: next });
+    showToast(`${name} upgraded to ${next}!`, 'success');
+    loadCapital();
+  } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// WITHDRAWALS MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════
+
+let withdrawalFilter = '';
+
+async function loadWithdrawals(status = withdrawalFilter) {
+  withdrawalFilter = status;
+  document.getElementById('withdrawalsTable').innerHTML = '<div class="spinner-wrap"><div class="spin"></div></div>';
+  try {
+    const data = await API.getWithdrawals(status);
+    renderWithdrawalsTable(data.withdrawals);
+  } catch (err) { showToast('Failed to load withdrawals: ' + err.message, 'error'); }
+}
+
+function filterWithdrawals(status) {
+  document.querySelectorAll('#withdrawals .filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  loadWithdrawals(status);
+}
+
+function renderWithdrawalsTable(withdrawals) {
+  const c = document.getElementById('withdrawalsTable');
+  if (!withdrawals.length) { c.innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No withdrawal requests found.</p>'; return; }
+  c.innerHTML = `
+    <table>
+      <thead><tr><th>#</th><th>Partner</th><th>Amount</th><th>M-Pesa No.</th><th>M-Pesa Name</th><th>Status</th><th>M-Pesa Code</th><th>Requested</th><th>Action</th></tr></thead>
+      <tbody>${withdrawals.map(w => `
+        <tr>
+          <td>${w.id}</td>
+          <td>
+            <strong>${w.full_name}</strong><br>
+            <span style="font-size:0.76rem;color:var(--muted);">${w.email} · #${w.member_number}</span>
+          </td>
+          <td style="font-weight:700;font-size:1.05rem;">KES ${w.amount.toLocaleString()}</td>
+          <td><strong>${w.mpesa_number}</strong></td>
+          <td>${w.mpesa_name||'—'}</td>
+          <td><span class="badge badge-${w.status}">${cap(w.status)}</span></td>
+          <td style="font-family:monospace;">${w.mpesa_code||'—'}</td>
+          <td>${fmt(w.requested_at)}</td>
+          <td>
+            ${w.status === 'pending' ? `
+              <button class="btn btn-approve" style="font-size:0.76rem;padding:5px 10px;margin-bottom:4px;" onclick="openPayWithdrawal(${w.id}, ${w.amount}, '${w.full_name}')">
+                <i class="fas fa-check"></i> Pay
+              </button>
+              <button class="btn btn-reject" style="font-size:0.76px;padding:5px 10px;" onclick="rejectWithdrawal(${w.id})">
+                <i class="fas fa-times"></i>
+              </button>` : '—'}
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function openPayWithdrawal(id, amount, name) {
+  const code = prompt(`You're paying KES ${amount.toLocaleString()} to ${name}.\n\nAfter sending via M-Pesa, enter the M-Pesa confirmation code below:`);
+  if (code === null) return; // cancelled
+  if (!code.trim()) { showToast('M-Pesa code is required to confirm payment', 'error'); return; }
+  processWithdrawal(id, code.trim());
+}
+
+async function processWithdrawal(id, mpesa_code) {
+  try {
+    await API.updateWithdrawal(id, { status: 'paid', mpesa_code });
+    showToast('Withdrawal marked as paid!', 'success');
+    loadWithdrawals();
+    loadCapital();
+  } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+}
+
+async function rejectWithdrawal(id) {
+  const reason = prompt('Reason for rejection (optional):');
+  if (reason === null) return;
+  try {
+    await API.updateWithdrawal(id, { status: 'rejected', admin_notes: reason });
+    showToast('Withdrawal rejected', 'error');
+    loadWithdrawals();
+  } catch (err) { showToast('Failed: ' + err.message, 'error'); }
+}
 
 async function loadCourses() {
   document.getElementById('coursesGrid').innerHTML = '<div class="spinner-wrap"><div class="spin"></div></div>';
@@ -1062,6 +1266,12 @@ async function updateEnrollmentStatus(status) {
   const { app } = modalContext;
   try {
     await API.updateEnrollment(app.id, { status, admin_notes: notes });
+
+    // If approving — start the 48hr commission release timer for the referrer
+    if (status === 'approved') {
+      try { await API.releaseCommission(app.id); } catch {}
+    }
+
     showToast(`Enrollment ${status}!`, status === 'approved' ? 'success' : 'error');
     closeModal();
     loadEnrollments();
