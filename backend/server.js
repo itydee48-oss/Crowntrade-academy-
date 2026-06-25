@@ -6,7 +6,7 @@ require('dotenv').config();
 const { initDB } = require('./database/db');
 const authRoutes = require('./routes/auth');
 const mentorshipRoutes = require('./routes/mentorship');
-const referralRoutes = require('./routes/referral');
+const { router: referralRoutes } = require('./routes/referral');
 const adminRoutes = require('./routes/admin');
 const uploadRoutes = require('./routes/upload');
 const coursesRoutes = require('./routes/courses');
