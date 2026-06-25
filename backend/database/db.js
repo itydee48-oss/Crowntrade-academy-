@@ -91,11 +91,28 @@ function initDB() {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           referrer_id INTEGER NOT NULL,
           referred_email TEXT NOT NULL,
+          referred_name TEXT,
           amount INTEGER DEFAULT 200,
+          commission_type TEXT DEFAULT 'standard',
           status TEXT DEFAULT 'pending',
-          source_type TEXT DEFAULT 'mentorship',
+          available_after DATETIME,
+          source_type TEXT DEFAULT 'enrollment',
           source_id INTEGER,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (referrer_id) REFERENCES referral_applications(id)
+        );
+
+        CREATE TABLE IF NOT EXISTS withdrawal_requests (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          referrer_id INTEGER NOT NULL,
+          amount INTEGER NOT NULL,
+          mpesa_number TEXT NOT NULL,
+          mpesa_name TEXT,
+          status TEXT DEFAULT 'pending',
+          admin_notes TEXT,
+          mpesa_code TEXT,
+          requested_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          processed_at DATETIME,
           FOREIGN KEY (referrer_id) REFERENCES referral_applications(id)
         );
 
@@ -177,6 +194,22 @@ function initDB() {
       try { database.exec(`ALTER TABLE mentorship_applications ADD COLUMN member_number INTEGER`); } catch {}
       try { database.exec(`ALTER TABLE mentorship_applications ADD COLUMN welcomed INTEGER DEFAULT 0`); } catch {}
       try { database.exec(`ALTER TABLE referral_applications ADD COLUMN password_hash TEXT`); } catch {}
+      try { database.exec(`ALTER TABLE referral_earnings ADD COLUMN commission_type TEXT DEFAULT 'standard'`); } catch {}
+      try { database.exec(`ALTER TABLE referral_earnings ADD COLUMN available_after DATETIME`); } catch {}
+      try { database.exec(`ALTER TABLE referral_earnings ADD COLUMN referred_name TEXT`); } catch {}
+      try { database.exec(`CREATE TABLE IF NOT EXISTS withdrawal_requests (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        referrer_id INTEGER NOT NULL,
+        amount INTEGER NOT NULL,
+        mpesa_number TEXT NOT NULL,
+        mpesa_name TEXT,
+        status TEXT DEFAULT 'pending',
+        admin_notes TEXT,
+        mpesa_code TEXT,
+        requested_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        processed_at DATETIME,
+        FOREIGN KEY (referrer_id) REFERENCES referral_applications(id)
+      )`); } catch {}
       try { database.exec(`ALTER TABLE referral_applications ADD COLUMN member_number INTEGER`); } catch {}
       try { database.exec(`ALTER TABLE referral_applications ADD COLUMN motivation TEXT`); } catch {}
       try { database.exec(`ALTER TABLE referral_applications ADD COLUMN tier TEXT DEFAULT 'bronze'`); } catch {}
