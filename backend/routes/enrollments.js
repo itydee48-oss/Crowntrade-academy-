@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const router = express.Router();
 const { getDB } = require('../database/db');
 const { authenticateToken, generateToken } = require('../middleware/auth');
+const { getTier, calcCommission, FIRST_REFERRAL_BONUS, COMMISSION_RELEASE_HOURS } = require('./referral');
 
 // ─── ENROLL IN A COURSE (creates account if new, or adds enrollment if existing) ──
 router.post('/enroll', async (req, res) => {
@@ -50,17 +51,27 @@ router.post('/enroll', async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `).run(full_name, email, phone, password_hash, course_id, member_number, referred_by_code || null, course.price);
 
-    // Credit referrer if valid code used
+    // Credit referrer if valid code used — only after admin approves enrollment
+    // Earnings are inserted in PENDING state here, moved to AVAILABLE by admin on approval
     if (referred_by_code) {
       const referrer = db.prepare(
-        'SELECT id FROM referral_applications WHERE referral_code = ? AND status = ?'
+        'SELECT * FROM referral_applications WHERE referral_code = ? AND status = ?'
       ).get(referred_by_code, 'approved');
 
       if (referrer) {
+        // Count how many successful referrals this agent already has
+        const priorCount = db.prepare(
+          "SELECT COUNT(*) as c FROM referral_earnings WHERE referrer_id = ?"
+        ).get(referrer.id).c;
+
+        const isFirst = priorCount === 0;
+        const commission = isFirst ? FIRST_REFERRAL_BONUS : getTier(priorCount).rate;
+        const commissionType = isFirst ? 'first_referral' : 'standard';
+
         db.prepare(`
-          INSERT INTO referral_earnings (referrer_id, referred_email, amount, status, source_type, source_id)
-          VALUES (?, ?, ?, 'pending', 'course', ?)
-        `).run(referrer.id, email, course.referral_commission || 200, result.lastInsertRowid);
+          INSERT INTO referral_earnings (referrer_id, referred_email, referred_name, amount, commission_type, status, source_type, source_id)
+          VALUES (?, ?, ?, ?, ?, 'pending', 'enrollment', ?)
+        `).run(referrer.id, email, full_name, commission, commissionType, result.lastInsertRowid);
       }
     }
 
