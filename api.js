@@ -128,12 +128,37 @@ const API = {
     return await del(`/courses/admin/modules/${moduleId}`);
   },
 
+  // ─── REFERRAL WALLET ───────────────────────────────────────────────────────
+  async requestWithdrawal(data) {
+    return await post('/referral/withdraw', data);
+  },
+
   // ─── ADMIN: ENROLLMENTS ────────────────────────────────────────────────────
   async getAdminEnrollments(status = '', course_id = '', page = 1) {
     return await get(`/admin/enrollments?status=${status}&course_id=${course_id}&page=${page}`);
   },
   async updateEnrollment(id, data) {
     return await patch(`/admin/enrollments/${id}`, data);
+  },
+
+  // ─── ADMIN: CAPITAL ────────────────────────────────────────────────────────
+  async getCapitalOverview() {
+    return await get('/admin/capital');
+  },
+  async getWithdrawals(status = '') {
+    return await get(`/admin/withdrawals?status=${status}`);
+  },
+  async updateWithdrawal(id, data) {
+    return await patch(`/admin/withdrawals/${id}`, data);
+  },
+  async releaseCommission(enrollmentId) {
+    return await post(`/admin/release-commission/${enrollmentId}`, {});
+  },
+  async releaseEarning(id) {
+    return await patch(`/admin/earnings/${id}/release`, {});
+  },
+  async updateSpots(total_spots) {
+    return await patch('/admin/spots', { total_spots });
   },
 
   // ─── ADMIN ─────────────────────────────────────────────────────────────────
