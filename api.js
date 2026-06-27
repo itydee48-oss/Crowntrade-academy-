@@ -141,6 +141,17 @@ const API = {
     return await patch(`/admin/enrollments/${id}`, data);
   },
 
+  // ─── LEDGER ────────────────────────────────────────────────────────────────
+  async getLedgerOverview() {
+    return await get('/ledger/overview');
+  },
+  async getLedgerMonthly(months = 6) {
+    return await get(`/ledger/monthly?months=${months}`);
+  },
+  async seedTestData() {
+    return await post('/ledger/seed-test-data', {});
+  },
+
   // ─── ADMIN: CAPITAL ────────────────────────────────────────────────────────
   async getCapitalOverview() {
     return await get('/admin/capital');
