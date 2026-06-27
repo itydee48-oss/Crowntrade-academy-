@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Ledger — Crown Trade Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="api.js"></script>
+<style>
+:root{--nude-light:#F9F6F2;--nude-med:#E8DFD6;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#1C1C1E;--muted:#7A7A7A;--success:#10B981;--danger:#EF4444;--info:#3B82F6;--warning:#F59E0B;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Montserrat',sans-serif;background:#F0EDE8;color:var(--charcoal);min-height:100vh;}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:700;}
+
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
+
+/* Sidebar */
+.sidebar{background:#1C1C1E;color:#E0D8CF;padding:0;display:flex;flex-direction:column;}
+.sidebar-logo{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.brand{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold);font-weight:700;}
+.brand-sub{font-size:0.74rem;color:#555;margin-top:2px;}
+.sidebar-nav{flex:1;padding:16px 12px;}
+.nav-section{font-size:0.66rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#444;padding:12px 10px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:500;font-size:0.86rem;color:#999;text-decoration:none;transition:all 0.2s;margin-bottom:2px;}
+.nav-item:hover{background:rgba(255,255,255,0.05);color:#E0D8CF;}
+.nav-item.active{background:var(--gold);color:#fff;font-weight:700;}
+.nav-item i{width:16px;text-align:center;}
+.sidebar-footer{padding:14px 12px;border-top:1px solid rgba(255,255,255,0.07);}
+.back-link{display:flex;align-items:center;gap:8px;padding:10px 12px;color:#888;font-size:0.84rem;text-decoration:none;border-radius:8px;transition:all 0.2s;}
+.back-link:hover{background:rgba(255,255,255,0.05);color:#E0D8CF;}
+
+/* Main */
+.main{display:flex;flex-direction:column;}
+.topbar{background:#fff;border-bottom:1px solid rgba(212,200,188,0.4);padding:16px 28px;display:flex;justify-content:space-between;align-items:center;}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold-dark);font-weight:700;}
+.topbar-actions{display:flex;gap:10px;align-items:center;}
+
+.content{flex:1;padding:24px 28px;}
+
+/* Summary cards */
+.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.summary-card{background:#fff;border-radius:12px;padding:20px 18px;border:1px solid rgba(212,200,188,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.04);position:relative;overflow:hidden;transition:all 0.2s;}
+.summary-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.08);}
+.summary-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;}
+.card-revenue::before{background:var(--success);}
+.card-liability::before{background:var(--warning);}
+.card-profit::before{background:var(--gold);}
+.card-info::before{background:var(--info);}
+.summary-icon{font-size:1.6rem;margin-bottom:10px;}
+.summary-value{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:700;margin-bottom:4px;line-height:1;}
+.summary-label{color:var(--muted);font-size:0.76rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+.summary-sub{font-size:0.78rem;color:var(--muted);margin-top:6px;}
+.val-green{color:var(--success);}
+.val-gold{color:var(--gold-dark);}
+.val-red{color:var(--danger);}
+.val-orange{color:var(--warning);}
+.val-blue{color:var(--info);}
+
+/* Revenue breakdown */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px;}
+
+/* Panel */
+.panel{background:#fff;border-radius:14px;padding:22px;margin-bottom:18px;border:1px solid rgba(212,200,188,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--nude-med);}
+.panel-title{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--gold-dark);font-weight:700;}
+
+/* Chart */
+.chart-wrap{position:relative;height:280px;}
+.chart-wrap-sm{position:relative;height:200px;}
+
+/* Ledger table */
+.ledger-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(212,200,188,0.3);font-size:0.88rem;}
+.ledger-row:last-child{border-bottom:none;}
+.ledger-row.total{border-top:2px solid var(--nude-med);margin-top:4px;padding-top:14px;font-weight:700;}
+.ledger-label{color:var(--charcoal);font-weight:500;}
+.ledger-sub{color:var(--muted);font-size:0.76rem;margin-top:2px;}
+.ledger-amount{font-weight:700;font-size:0.95rem;}
+
+/* Breakdown table */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:0.84rem;}
+th{background:var(--nude-light);padding:10px 12px;text-align:left;font-weight:700;font-size:0.75rem;text-transform:uppercase;border-bottom:2px solid var(--nude-med);}
+td{padding:11px 12px;border-bottom:1px solid rgba(212,200,188,0.25);}
+tr:hover td{background:#FDFAF7;}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.83rem;border:1px solid transparent;font-family:'Montserrat',sans-serif;transition:all 0.2s;}
+.btn-gold{background:var(--gold);color:#fff;}
+.btn-gold:hover:not(:disabled){background:var(--gold-dark);}
+.btn-gold:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-outline{background:transparent;border-color:var(--gold);color:var(--gold-dark);}
+.btn-outline:hover{background:var(--gold);color:#fff;}
+.btn-danger{background:rgba(239,68,68,0.1);color:var(--danger);border-color:rgba(239,68,68,0.3);}
+.btn-danger:hover{background:var(--danger);color:#fff;}
+.btn-sm{padding:6px 12px;font-size:0.78rem;}
+
+/* Month selector */
+.month-selector{display:flex;gap:6px;}
+.month-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--nude-med);background:#fff;cursor:pointer;font-size:0.78rem;font-weight:600;color:var(--muted);font-family:'Montserrat',sans-serif;}
+.month-btn.active{background:var(--gold);color:#fff;border-color:var(--gold);}
+
+/* Test data panel */
+.test-panel{background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.2);border-radius:12px;padding:20px;margin-bottom:18px;}
+.test-panel-title{font-weight:700;color:var(--info);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.test-result{background:#fff;border-radius:8px;padding:14px;margin-top:12px;font-size:0.84rem;display:none;}
+.test-result.show{display:block;}
+
+.spinner-wrap{text-align:center;padding:40px;color:var(--muted);}
+.spin{display:inline-block;width:24px;height:24px;border:3px solid var(--nude-med);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.toast{position:fixed;bottom:22px;right:22px;padding:12px 16px;border-radius:9px;color:#fff;font-weight:600;font-size:0.86rem;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,0.13);}
+.toast-success{background:var(--success);}
+.toast-error{background:var(--danger);}
+.toast-info{background:var(--gold);}
+
+.tab-panel{display:none;}
+.tab-panel.active{display:block;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+
+@media(max-width:1000px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.summary-grid{grid-template-columns:repeat(2,1fr);}.two-col,.three-col{grid-template-columns:1fr;}}
+@media(max-width:600px){.summary-grid{grid-template-columns:1fr;}.content{padding:14px;}}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="brand">Crown Trade</div>
+      <div class="brand-sub">Business Ledger</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Ledger</div>
+      <a href="#" class="nav-item active" data-tab="overview"><i class="fas fa-chart-pie"></i> Overview</a>
+      <a href="#" class="nav-item" data-tab="charts"><i class="fas fa-chart-line"></i> Charts</a>
+      <a href="#" class="nav-item" data-tab="breakdown"><i class="fas fa-table"></i> Breakdown</a>
+      <a href="#" class="nav-item" data-tab="testing"><i class="fas fa-flask"></i> Test Data</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="admin-dashboard.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Admin</a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">📊 Business Ledger</div>
+      <div class="topbar-actions">
+        <button class="btn btn-outline btn-sm" onclick="loadAll()"><i class="fas fa-sync"></i> Refresh</button>
+        <a href="admin-dashboard.html" class="btn btn-outline btn-sm"><i class="fas fa-arrow-left"></i> Admin Panel</a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── OVERVIEW TAB ── -->
+      <div id="overview" class="tab-panel active">
+
+        <!-- Big summary numbers -->
+        <div class="summary-grid" id="summaryGrid">
+          <div class="spinner-wrap" style="grid-column:span 4"><div class="spin"></div></div>
+        </div>
+
+        <div class="two-col">
+          <!-- P&L Statement -->
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">P&L Statement</div></div>
+            <div id="plStatement"><div class="spinner-wrap"><div class="spin"></div></div></div>
+          </div>
+
+          <!-- Liability Breakdown -->
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Liability Breakdown</div></div>
+            <div id="liabilityBreakdown"><div class="spinner-wrap"><div class="spin"></div></div></div>
+          </div>
+        </div>
+
+        <!-- Course performance mini table -->
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Revenue by Course</div></div>
+          <div class="table-wrap" id="courseRevenueTable"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        </div>
+
+      </div>
+
+      <!-- ── CHARTS TAB ── -->
+      <div id="charts" class="tab-panel">
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Monthly Revenue vs Commissions vs Profit</div>
+            <div class="month-selector">
+              <button class="month-btn" onclick="changeMonths(3)">3M</button>
+              <button class="month-btn active" onclick="changeMonths(6)">6M</button>
+              <button class="month-btn" onclick="changeMonths(12)">12M</button>
+            </div>
+          </div>
+          <div class="chart-wrap"><canvas id="revenueChart"></canvas></div>
+        </div>
+
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Monthly Enrollments</div></div>
+            <div class="chart-wrap-sm"><canvas id="enrollmentChart"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Revenue Sources</div></div>
+            <div class="chart-wrap-sm"><canvas id="sourceChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── BREAKDOWN TAB ── -->
+      <div id="breakdown" class="tab-panel">
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Monthly Breakdown Table</div></div>
+          <div class="table-wrap" id="monthlyTable"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── TESTING TAB ── -->
+      <div id="testing" class="tab-panel">
+        <div class="test-panel">
+          <div class="test-panel-title"><i class="fas fa-flask"></i> Test Data Generator</div>
+          <p style="color:var(--muted);font-size:0.86rem;margin-bottom:14px;">
+            Generates 12 test client enrollments spread across the last 6 months, plus commission earnings and paid withdrawals — so all charts and ledger numbers have real data to display.
+          </p>
+          <button class="btn btn-gold" id="seedBtn" onclick="generateTestData()">
+            <i class="fas fa-magic"></i> Generate Test Data
+          </button>
+          <div class="test-result" id="testResult"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Test Accounts</div></div>
+          <table>
+            <thead><tr><th>Role</th><th>Email</th><th>Password</th><th>What to test</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Client</strong></td>
+                <td>demo@crowntest.com</td>
+                <td>Demo1234!</td>
+                <td>Full client dashboard, course player, My Courses, Discover tab</td>
+              </tr>
+              <tr>
+                <td><strong>Crown Partner</strong></td>
+                <td>referral@crowntest.com</td>
+                <td>Demo1234!</td>
+                <td>Referral dashboard, wallet, withdrawal request, leaderboard</td>
+              </tr>
+              <tr>
+                <td><strong>Test Agent</strong></td>
+                <td>testagent@crowntest.com</td>
+                <td>Demo1234!</td>
+                <td>Generated after clicking "Generate Test Data" above</td>
+              </tr>
+              <tr>
+                <td><strong>Admin</strong></td>
+                <td>admin</td>
+                <td>(your ADMIN_PASSWORD env var)</td>
+                <td>Full admin panel, capital overview, withdrawals, ledger</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Full Flow Test Checklist</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            ${[
+              ['Client enrollment flow', 'Go to courses.html → pick Elite Trading Mentorship → enroll.html → fill form → upload screenshot → submit → login → client-dashboard.html'],
+              ['Admin approves enrollment', 'admin-dashboard.html → Enrollments → find the test enrollment → Review → Verify Payment → Approve → system starts 48hr commission timer'],
+              ['Commission release', 'After 48hrs (or manually via API), commission moves from Pending to Available on referral-dashboard.html'],
+              ['Withdrawal request', 'referral-login.html → dashboard → Wallet & Payouts → enter amount + M-Pesa number → submit'],
+              ['Admin processes payout', 'admin-dashboard.html → Withdrawals → click Pay → enter M-Pesa code → confirm'],
+              ['Ledger updates', 'Refresh admin-ledger.html → all numbers and charts update to reflect the completed transaction'],
+              ['Referral flow', 'Share link from referral-dashboard.html → new user signs up via that link → enroll → admin approves → commission credited to referrer'],
+            ].map(([title, desc]) => `
+              <div style="display:flex;gap:12px;padding:13px;background:var(--nude-light);border-radius:8px;border:1px solid rgba(212,200,188,0.4);">
+                <div style="width:20px;height:20px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+                  <i class="fas fa-check" style="font-size:0.6rem;color:#fff;"></i>
+                </div>
+                <div>
+                  <div style="font-weight:700;font-size:0.88rem;margin-bottom:3px;">${title}</div>
+                  <div style="font-size:0.8rem;color:var(--muted);">${desc}</div>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let overviewData = null;
+let chartData = null;
+let currentMonths = 6;
+let revenueChart, enrollmentChart, sourceChart;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAdminAuth()) return;
+
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', e => {
+      e.preventDefault();
+      switchTab(item.dataset.tab);
+    });
+  });
+
+  await loadAll();
+});
+
+function switchTab(tab) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(t => t.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById(tab).classList.add('active');
+  if (tab === 'charts' && chartData) renderCharts(chartData);
+}
+
+async function loadAll() {
+  try {
+    const [overview, monthly] = await Promise.all([
+      API.getLedgerOverview(),
+      API.getLedgerMonthly(currentMonths)
+    ]);
+    overviewData = overview;
+    chartData = monthly.chart_data;
+    renderOverview(overview);
+    renderCharts(chartData);
+    renderMonthlyTable(chartData);
+  } catch (err) {
+    showToast('Failed to load ledger: ' + err.message, 'error');
+  }
+}
+
+async function changeMonths(m) {
+  currentMonths = m;
+  document.querySelectorAll('.month-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  try {
+    const data = await API.getLedgerMonthly(m);
+    chartData = data.chart_data;
+    renderCharts(chartData);
+    renderMonthlyTable(chartData);
+  } catch (err) { showToast('Failed to reload charts', 'error'); }
+}
+
+// ── OVERVIEW RENDERING ────────────────────────────────────────────────────────
+function renderOverview(d) {
+  const { revenue, commissions, profit, counts, course_breakdown } = d;
+
+  document.getElementById('summaryGrid').innerHTML = `
+    <div class="summary-card card-revenue">
+      <div class="summary-icon">💰</div>
+      <div class="summary-value val-green">KES ${revenue.total.toLocaleString()}</div>
+      <div class="summary-label">Total Revenue</div>
+      <div class="summary-sub">${revenue.enrollment_count} enrollments · ${revenue.agent_count} agents</div>
+    </div>
+    <div class="summary-card card-liability">
+      <div class="summary-icon">⚠️</div>
+      <div class="summary-value val-orange">KES ${commissions.total_owed.toLocaleString()}</div>
+      <div class="summary-label">Total Owed to Partners</div>
+      <div class="summary-sub">Available + pending commissions</div>
+    </div>
+    <div class="summary-card card-profit">
+      <div class="summary-icon">📈</div>
+      <div class="summary-value ${profit.gross >= 0 ? 'val-gold' : 'val-red'}">KES ${profit.gross.toLocaleString()}</div>
+      <div class="summary-label">Net Profit (Cash)</div>
+      <div class="summary-sub">After paid commissions only</div>
+    </div>
+    <div class="summary-card card-info">
+      <div class="summary-icon">👥</div>
+      <div class="summary-value val-blue">${counts.total_clients}</div>
+      <div class="summary-label">Active Clients</div>
+      <div class="summary-sub">${counts.total_partners} Crown Partners</div>
+    </div>`;
+
+  // P&L Statement
+  document.getElementById('plStatement').innerHTML = `
+    <div class="ledger-row">
+      <div><div class="ledger-label">Enrollment Fees Collected</div><div class="ledger-sub">${revenue.enrollment_count} approved clients</div></div>
+      <div class="ledger-amount val-green">+ KES ${revenue.enrollment_fees.toLocaleString()}</div>
+    </div>
+    <div class="ledger-row">
+      <div><div class="ledger-label">Agent Entry Fees</div><div class="ledger-sub">${revenue.agent_count} approved partners</div></div>
+      <div class="ledger-amount val-green">+ KES ${revenue.agent_entry_fees.toLocaleString()}</div>
+    </div>
+    <div class="ledger-row total">
+      <div class="ledger-label">Gross Revenue</div>
+      <div class="ledger-amount val-green">KES ${revenue.total.toLocaleString()}</div>
+    </div>
+    <div class="ledger-row" style="margin-top:8px;">
+      <div><div class="ledger-label">Commissions Paid Out</div><div class="ledger-sub">Settled withdrawal payments</div></div>
+      <div class="ledger-amount val-red">− KES ${commissions.paid.toLocaleString()}</div>
+    </div>
+    <div class="ledger-row total">
+      <div class="ledger-label">Net Profit (Realised)</div>
+      <div class="ledger-amount ${profit.gross >= 0 ? 'val-gold' : 'val-red'}">KES ${profit.gross.toLocaleString()}</div>
+    </div>
+    <div class="ledger-row" style="margin-top:8px;background:rgba(245,158,11,0.05);padding:10px;border-radius:6px;border-bottom:none;">
+      <div><div class="ledger-label" style="color:var(--warning);">Projected Profit</div><div class="ledger-sub">After all pending commissions paid</div></div>
+      <div class="ledger-amount val-orange">KES ${profit.projected.toLocaleString()}</div>
+    </div>
+    <div style="margin-top:14px;padding:10px 12px;background:var(--nude-light);border-radius:8px;font-size:0.8rem;color:var(--muted);">
+      Commission ratio: <strong style="color:var(--charcoal);">${profit.commission_ratio}%</strong> of revenue goes to partners
+    </div>`;
+
+  // Liability breakdown
+  document.getElementById('liabilityBreakdown').innerHTML = `
+    <div class="ledger-row">
+      <div><div class="ledger-label">Available (owed now)</div><div class="ledger-sub">48hr hold expired, not withdrawn</div></div>
+      <div class="ledger-amount val-green">KES ${commissions.available.toLocaleString()}</div>
+    </div>
+    <div class="ledger-row">
+      <div><div class="ledger-label">Pending (in 48hr hold)</div><div class="ledger-sub">Will become available soon</div></div>
+      <div class="ledger-amount val-orange">KES ${commissions.pending.toLocaleString()}</div>
+    </div>
+    <div class="ledger-row">
+      <div><div class="ledger-label">Withdrawal Requests</div><div class="ledger-sub">Partners have formally requested</div></div>
+      <div class="ledger-amount val-orange">KES ${commissions.pending_withdrawals.toLocaleString()}</div>
+    </div>
+    <div class="ledger-row total">
+      <div class="ledger-label">Total Liability</div>
+      <div class="ledger-amount val-red">KES ${commissions.total_owed.toLocaleString()}</div>
+    </div>
+    <div class="ledger-row">
+      <div><div class="ledger-label">Already Paid Out</div><div class="ledger-sub">Settled, no longer owed</div></div>
+      <div class="ledger-amount val-blue">KES ${commissions.paid.toLocaleString()}</div>
+    </div>`;
+
+  // Course revenue table
+  const cTable = document.getElementById('courseRevenueTable');
+  if (!course_breakdown.length) { cTable.innerHTML = '<p style="color:var(--muted);padding:16px;text-align:center;">No course data yet.</p>'; return; }
+  cTable.innerHTML = `
+    <table>
+      <thead><tr><th>Course</th><th>Price</th><th>Enrollments</th><th>Revenue</th><th>% of Total</th></tr></thead>
+      <tbody>${course_breakdown.map(c => {
+        const pct = revenue.total > 0 ? ((c.revenue / revenue.total) * 100).toFixed(1) : 0;
+        return `<tr>
+          <td><strong>${c.title}</strong></td>
+          <td>KES ${c.price.toLocaleString()}</td>
+          <td>${c.enrollments}</td>
+          <td style="font-weight:700;color:var(--gold-dark);">KES ${c.revenue.toLocaleString()}</td>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="flex:1;height:6px;background:var(--nude-med);border-radius:3px;overflow:hidden;">
+                <div style="width:${pct}%;height:100%;background:var(--gold);border-radius:3px;"></div>
+              </div>
+              <span style="font-size:0.78rem;font-weight:700;color:var(--muted);white-space:nowrap;">${pct}%</span>
+            </div>
+          </td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+}
+
+// ── CHARTS ────────────────────────────────────────────────────────────────────
+function renderCharts(data) {
+  const labels = data.map(d => d.label);
+  const revenues = data.map(d => d.revenue);
+  const commissions = data.map(d => d.commissions_paid);
+  const profits = data.map(d => d.profit);
+  const enrollments = data.map(d => d.enrollments);
+  const enrollRev = data.map(d => d.enrollment_revenue);
+  const agentRev = data.map(d => d.agent_revenue);
+
+  const gridColor = 'rgba(212,200,188,0.3)';
+  const defaults = { tension: 0.4, pointRadius: 4, pointHoverRadius: 6, borderWidth: 2 };
+
+  // Revenue vs commissions vs profit line chart
+  if (revenueChart) revenueChart.destroy();
+  revenueChart = new Chart(document.getElementById('revenueChart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Revenue', data: revenues, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.08)', fill: true, ...defaults },
+        { label: 'Commissions Paid', data: commissions, borderColor: '#EF4444', backgroundColor: 'rgba(239,68,68,0.05)', fill: true, ...defaults },
+        { label: 'Net Profit', data: profits, borderColor: '#C8A97E', backgroundColor: 'rgba(200,169,126,0.08)', fill: true, borderDash: [5,3], ...defaults }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', labels: { font: { family: 'Montserrat', size: 11 }, boxWidth: 12 } } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { font: { family: 'Montserrat', size: 11 } } },
+        y: { grid: { color: gridColor }, ticks: { font: { family: 'Montserrat', size: 11 }, callback: v => `KES ${v.toLocaleString()}` } }
+      }
+    }
+  });
+
+  // Enrollment bar chart
+  if (enrollmentChart) enrollmentChart.destroy();
+  enrollmentChart = new Chart(document.getElementById('enrollmentChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: 'Enrollments', data: enrollments, backgroundColor: 'rgba(200,169,126,0.7)', borderColor: '#C8A97E', borderWidth: 1, borderRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'Montserrat', size: 10 } } },
+        y: { grid: { color: gridColor }, ticks: { font: { family: 'Montserrat', size: 10 }, stepSize: 1 } }
+      }
+    }
+  });
+
+  // Revenue sources donut
+  const latestEnrollRev = enrollRev.reduce((a, b) => a + b, 0);
+  const latestAgentRev = agentRev.reduce((a, b) => a + b, 0);
+  if (sourceChart) sourceChart.destroy();
+  sourceChart = new Chart(document.getElementById('sourceChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Course Enrollments', 'Agent Entry Fees'],
+      datasets: [{ data: [latestEnrollRev, latestAgentRev], backgroundColor: ['#C8A97E','#10B981'], borderWidth: 0, hoverOffset: 6 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '65%',
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { family: 'Montserrat', size: 11 }, boxWidth: 12 } },
+        tooltip: { callbacks: { label: ctx => ` KES ${ctx.raw.toLocaleString()}` } }
+      }
+    }
+  });
+}
+
+// ── MONTHLY TABLE ─────────────────────────────────────────────────────────────
+function renderMonthlyTable(data) {
+  const c = document.getElementById('monthlyTable');
+  if (!data.length) { c.innerHTML = '<p style="color:var(--muted);padding:20px;text-align:center;">No data yet.</p>'; return; }
+  c.innerHTML = `
+    <table>
+      <thead><tr><th>Month</th><th>Enrollments</th><th>New Partners</th><th>Enrollment Rev.</th><th>Agent Fees</th><th>Total Revenue</th><th>Commissions Paid</th><th>Net Profit</th></tr></thead>
+      <tbody>${data.map(d => `
+        <tr>
+          <td><strong>${d.label}</strong></td>
+          <td>${d.enrollments}</td>
+          <td>${d.new_agents}</td>
+          <td>KES ${d.enrollment_revenue.toLocaleString()}</td>
+          <td>KES ${d.agent_revenue.toLocaleString()}</td>
+          <td style="font-weight:700;color:var(--gold-dark);">KES ${d.revenue.toLocaleString()}</td>
+          <td style="color:var(--danger);">KES ${d.commissions_paid.toLocaleString()}</td>
+          <td style="font-weight:700;color:${d.profit >= 0 ? 'var(--success)' : 'var(--danger)'};">KES ${d.profit.toLocaleString()}</td>
+        </tr>`).join('')}
+        <tr style="background:var(--nude-light);font-weight:700;">
+          <td>TOTAL</td>
+          <td>${data.reduce((s,d)=>s+d.enrollments,0)}</td>
+          <td>${data.reduce((s,d)=>s+d.new_agents,0)}</td>
+          <td>KES ${data.reduce((s,d)=>s+d.enrollment_revenue,0).toLocaleString()}</td>
+          <td>KES ${data.reduce((s,d)=>s+d.agent_revenue,0).toLocaleString()}</td>
+          <td style="color:var(--gold-dark);">KES ${data.reduce((s,d)=>s+d.revenue,0).toLocaleString()}</td>
+          <td style="color:var(--danger);">KES ${data.reduce((s,d)=>s+d.commissions_paid,0).toLocaleString()}</td>
+          <td style="color:var(--success);">KES ${data.reduce((s,d)=>s+d.profit,0).toLocaleString()}</td>
+        </tr>
+      </tbody>
+    </table>`;
+}
+
+// ── TEST DATA ─────────────────────────────────────────────────────────────────
+async function generateTestData() {
+  const btn = document.getElementById('seedBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
+  try {
+    const result = await API.seedTestData();
+    const el = document.getElementById('testResult');
+    el.className = 'test-result show';
+    el.style.borderLeft = '3px solid var(--success)';
+    el.innerHTML = `
+      <div style="font-weight:700;color:var(--success);margin-bottom:8px;"><i class="fas fa-check-circle"></i> Test data generated!</div>
+      <div style="font-size:0.82rem;color:var(--muted);">
+        • ${result.enrollments_created} test enrollments created across the last 6 months<br>
+        • ${result.commissions_created} commission records generated<br>
+        • Test agent: <strong>${result.test_accounts?.agent}</strong><br>
+        • 2 paid withdrawal records created
+      </div>
+      <div style="margin-top:10px;font-size:0.82rem;color:var(--charcoal);">
+        <strong>Refresh the ledger</strong> to see updated charts and numbers.
+      </div>`;
+    showToast('Test data generated! Refreshing…', 'success');
+    setTimeout(loadAll, 1000);
+  } catch (err) {
+    const el = document.getElementById('testResult');
+    el.className = 'test-result show';
+    el.style.borderLeft = '3px solid var(--danger)';
+    el.innerHTML = `<div style="color:var(--danger);font-weight:700;"><i class="fas fa-times-circle"></i> ${err.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-magic"></i> Generate Test Data';
+  }
+}
+
+function showToast(msg, type = 'info') {
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+</script>
+</body>
+</html>
