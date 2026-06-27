@@ -11,6 +11,7 @@ const adminRoutes = require('./routes/admin');
 const uploadRoutes = require('./routes/upload');
 const coursesRoutes = require('./routes/courses');
 const enrollmentsRoutes = require('./routes/enrollments');
+const ledgerRoutes = require('./routes/ledger');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -59,6 +60,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/courses', coursesRoutes);
 app.use('/api/enrollments', enrollmentsRoutes);
+app.use('/api/ledger', ledgerRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
