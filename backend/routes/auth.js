@@ -1,175 +1,106 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
-const { getDB } = require('../database/db');
+const { query } = require('../database/db');
 const { generateToken, authenticateToken } = require('../middleware/auth');
+const { findOrCreateUser } = require('../database/identity');
 
-// ─── CLIENT REGISTER ─────────────────────────────────────────────────────────
 router.post('/register', async (req, res) => {
   try {
     const { full_name, email, phone, password, referred_by } = req.body;
+    if (!full_name || !email || !phone || !password) return res.status(400).json({ error: 'All fields are required' });
+    if (password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' });
 
-    if (!full_name || !email || !phone || !password) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters' });
-    }
+    const existing = await query('SELECT id FROM users WHERE email = $1', [email]);
+    if (existing.rows.length > 0) return res.status(409).json({ error: 'Email already registered. Try logging in.' });
 
-    const db = getDB();
-    const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-    if (existing) {
-      return res.status(409).json({ error: 'Email already registered' });
-    }
+    const { user } = await findOrCreateUser({ full_name, email, phone, password });
+    if (referred_by) await query('UPDATE users SET referred_by_code=$1 WHERE id=$2', [referred_by, user.id]);
 
-    const password_hash = await bcrypt.hash(password, 10);
-    const referral_code = generateReferralCode(full_name);
-
-    const result = db.prepare(`
-      INSERT INTO users (full_name, email, phone, password_hash, role, status, referral_code, referred_by)
-      VALUES (?, ?, ?, ?, 'client', 'active', ?, ?)
-    `).run(full_name, email, phone, password_hash, referral_code, referred_by || null);
-
-    const token = generateToken({ id: result.lastInsertRowid, email, role: 'client' });
-
-    res.status(201).json({
-      message: 'Registration successful',
-      token,
-      user: { id: result.lastInsertRowid, full_name, email, role: 'client', referral_code }
-    });
+    const token = generateToken({ id: user.id, email: user.email, type: 'user' });
+    res.status(201).json({ message: 'Registration successful', token, user: safe(user) });
   } catch (err) {
     console.error('Register error:', err);
     res.status(500).json({ error: 'Registration failed' });
   }
 });
 
-// ─── CLIENT LOGIN ─────────────────────────────────────────────────────────────
+// Unified login — works for every user regardless of registration path
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
-    }
+    if (!email || !password) return res.status(400).json({ error: 'Email and password are required' });
 
-    const db = getDB();
-    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+    const result = await query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = result.rows[0];
+    if (!user || !(await bcrypt.compare(password, user.password_hash))) return res.status(401).json({ error: 'Invalid email or password' });
+    if (user.status === 'suspended') return res.status(403).json({ error: 'Account suspended. Contact support.' });
 
-    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
-      return res.status(401).json({ error: 'Invalid email or password' });
-    }
-    if (user.status === 'suspended') {
-      return res.status(403).json({ error: 'Account suspended. Contact support.' });
-    }
-
-    const token = generateToken({ id: user.id, email: user.email, role: user.role });
-
-    res.json({
-      message: 'Login successful',
-      token,
-      user: { id: user.id, full_name: user.full_name, email: user.email, role: user.role, status: user.status }
-    });
+    const token = generateToken({ id: user.id, email: user.email, type: 'user' }, '30d');
+    res.json({ message: 'Login successful', token, user: safe(user) });
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ error: 'Login failed' });
   }
 });
 
-// ─── ADMIN LOGIN ──────────────────────────────────────────────────────────────
 router.post('/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password are required' });
-    }
+    if (!username || !password) return res.status(400).json({ error: 'Username and password are required' });
 
-    const db = getDB();
-    const admin = db.prepare('SELECT * FROM admin_users WHERE username = ?').get(username);
+    const result = await query('SELECT * FROM admin_users WHERE username = $1', [username]);
+    const admin = result.rows[0];
+    if (!admin || !(await bcrypt.compare(password, admin.password_hash))) return res.status(401).json({ error: 'Invalid credentials' });
 
-    if (!admin || !(await bcrypt.compare(password, admin.password_hash))) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    const token = generateToken({ id: admin.id, username: admin.username, role: 'admin' }, '30d');
-
-    res.json({
-      message: 'Admin login successful',
-      token,
-      user: { id: admin.id, username: admin.username, role: 'admin' }
-    });
+    const token = generateToken({ id: admin.id, username: admin.username, type: 'admin' }, '30d');
+    res.json({ message: 'Admin login successful', token, user: { id: admin.id, username: admin.username, type: 'admin' } });
   } catch (err) {
     console.error('Admin login error:', err);
     res.status(500).json({ error: 'Login failed' });
   }
 });
 
-// ─── REFERRAL AGENT LOGIN ─────────────────────────────────────────────────────
+// Kept as a separate endpoint for referral-login.html compatibility
 router.post('/referral/login', async (req, res) => {
   try {
-    const { email, referral_code } = req.body;
-    if (!email || !referral_code) {
-      return res.status(400).json({ error: 'Email and referral code are required' });
-    }
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: 'Email and password are required' });
 
-    const db = getDB();
-    const agent = db.prepare(
-      'SELECT * FROM referral_applications WHERE email = ? AND referral_code = ?'
-    ).get(email, referral_code);
+    const result = await query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = result.rows[0];
+    if (!user || !(await bcrypt.compare(password, user.password_hash))) return res.status(401).json({ error: 'Invalid email or password' });
+    if (!user.has_partner_status) return res.status(403).json({ error: 'This account does not have an active Crown Partner application.' });
 
-    if (!agent) {
-      return res.status(401).json({ error: 'Invalid email or referral code' });
-    }
-    if (agent.status !== 'approved') {
-      return res.status(403).json({ error: 'Your referral account is pending approval' });
-    }
-
-    const token = generateToken({ id: agent.id, email: agent.email, role: 'referral' }, '7d');
-
-    res.json({
-      message: 'Login successful',
-      token,
-      user: { id: agent.id, full_name: agent.full_name, email: agent.email, referral_code: agent.referral_code, role: 'referral' }
-    });
+    const token = generateToken({ id: user.id, email: user.email, type: 'user' }, '30d');
+    res.json({ message: 'Login successful', token, user: safe(user) });
   } catch (err) {
     console.error('Referral login error:', err);
     res.status(500).json({ error: 'Login failed' });
   }
 });
 
-// ─── GET CURRENT USER ─────────────────────────────────────────────────────────
-router.get('/me', authenticateToken, (req, res) => {
+router.get('/me', authenticateToken, async (req, res) => {
   try {
-    const db = getDB();
-    let user;
-
-    if (req.user.role === 'admin') {
-      user = db.prepare('SELECT id, username, email FROM admin_users WHERE id = ?').get(req.user.id);
-      if (user) user.role = 'admin';
-    } else if (req.user.role === 'referral') {
-      user = db.prepare('SELECT id, full_name, email, phone, referral_code, status, earnings FROM referral_applications WHERE id = ?').get(req.user.id);
-      if (user) user.role = 'referral';
-    } else {
-      // client role — check enrollments table first (new system), then users table (legacy)
-      user = db.prepare('SELECT id, full_name, email, phone, member_number FROM enrollments WHERE id = ?').get(req.user.id);
-      if (user) {
-        user.role = 'client';
-      } else {
-        // Legacy fallback: old users table
-        user = db.prepare('SELECT id, full_name, email, phone, role, status FROM users WHERE id = ?').get(req.user.id);
-      }
+    if (req.user.type === 'admin') {
+      const result = await query('SELECT id, username, email FROM admin_users WHERE id = $1', [req.user.id]);
+      const admin = result.rows[0];
+      if (!admin) return res.status(404).json({ error: 'User not found' });
+      return res.json({ user: { ...admin, type: 'admin' } });
     }
-
+    const result = await query('SELECT * FROM users WHERE id = $1', [req.user.id]);
+    const user = result.rows[0];
     if (!user) return res.status(404).json({ error: 'User not found' });
-    res.json({ user });
+    res.json({ user: safe(user) });
   } catch (err) {
+    console.error('Me error:', err);
     res.status(500).json({ error: 'Failed to get user' });
   }
 });
 
-// ─── HELPER ───────────────────────────────────────────────────────────────────
-function generateReferralCode(name) {
-  const base = name.replace(/\s+/g, '').toUpperCase().slice(0, 4);
-  const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
-  return `${base}${rand}`;
+function safe(user) {
+  const { password_hash, ...rest } = user;
+  return rest;
 }
 
 module.exports = router;
