@@ -3,165 +3,392 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Crown Trade Academy — My Courses</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Crown Trade Academy — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="api.js"></script>
 <style>
-:root{--nude-light:#F9F6F2;--nude-med:#E8DFD6;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#1C1C1E;--muted:#7A7A7A;--success:#10B981;--danger:#EF4444;--info:#3B82F6;}
+:root {
+  --nude-light: #F9F6F2;
+  --nude-med: #E8DFD6;
+  --nude-dark: #D4C8BB;
+  --gold: #C8A97E;
+  --gold-dark: #B89463;
+  --gold-glow: rgba(200,169,126,0.15);
+  --charcoal: #1C1C1E;
+  --charcoal-2: #2d2d35;
+  --muted: #7A7A7A;
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --info: #3B82F6;
+  --sidebar-w: 250px;
+}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Montserrat',sans-serif;background:#F0EDE8;color:var(--charcoal);min-height:100vh;}
-h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:700;}
+body{font-family:'Montserrat',sans-serif;background:#EDEAE5;color:var(--charcoal);min-height:100vh;}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',serif;font-weight:700;}
+a{text-decoration:none;color:inherit;}
+button{font-family:'Montserrat',sans-serif;cursor:pointer;}
 
-/* ── WELCOME OVERLAY ── */
+/* ── WELCOME OVERLAY ──────────────────────────────────────────────────────── */
 .welcome-overlay{display:none;position:fixed;inset:0;background:linear-gradient(135deg,#1C1C1E 0%,#2d2d35 100%);z-index:9999;align-items:center;justify-content:center;padding:2rem;}
-.welcome-overlay.show{display:flex;animation:fadeInOv 0.6s ease;}
-@keyframes fadeInOv{from{opacity:0;}to{opacity:1;}}
-.welcome-content{text-align:center;max-width:560px;color:#fff;}
-.welcome-crown{font-size:5rem;color:var(--gold);margin-bottom:1.5rem;animation:dropInOv 0.8s cubic-bezier(0.34,1.56,0.64,1);}
-@keyframes dropInOv{from{opacity:0;transform:translateY(-40px) scale(0.5);}to{opacity:1;transform:translateY(0) scale(1);}}
-.welcome-content h1{font-size:2.6rem;margin-bottom:1rem;}
-.welcome-content h1 span{color:var(--gold);}
-.welcome-content p{color:rgba(255,255,255,0.7);font-size:1.02rem;margin-bottom:2rem;line-height:1.7;}
-.welcome-member-id{display:inline-block;background:rgba(200,169,126,0.15);border:1px solid rgba(200,169,126,0.4);padding:14px 28px;border-radius:8px;margin-bottom:2rem;}
-.welcome-member-id .label{font-size:0.72rem;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.5);margin-bottom:4px;}
-.welcome-member-id .value{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold);font-weight:700;}
-.btn-welcome{background:var(--gold);color:#fff;border:none;padding:1rem 2.5rem;font-size:0.92rem;font-weight:700;letter-spacing:0.5px;cursor:pointer;font-family:'Montserrat',sans-serif;transition:all 0.3s;}
+.welcome-overlay.show{display:flex;animation:fadeIn 0.5s ease;}
+.welcome-box{text-align:center;max-width:520px;color:#fff;}
+.welcome-crown{font-size:4.5rem;color:var(--gold);margin-bottom:1.2rem;animation:dropIn 0.8s cubic-bezier(.34,1.56,.64,1);}
+@keyframes dropIn{from{opacity:0;transform:translateY(-30px) scale(.6);}to{opacity:1;transform:translateY(0) scale(1);}}
+.welcome-box h1{font-size:2.4rem;margin-bottom:.8rem;}
+.welcome-box h1 span{color:var(--gold);}
+.welcome-box p{color:rgba(255,255,255,.65);font-size:.95rem;line-height:1.7;margin-bottom:1.6rem;}
+.welcome-member{display:inline-block;background:rgba(200,169,126,.12);border:1px solid rgba(200,169,126,.35);padding:12px 28px;border-radius:8px;margin-bottom:1.8rem;}
+.welcome-member .lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.45);margin-bottom:3px;}
+.welcome-member .val{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold);font-weight:700;}
+.btn-welcome{background:var(--gold);color:#fff;border:none;padding:.9rem 2.2rem;font-size:.88rem;font-weight:700;letter-spacing:.5px;transition:all .25s;}
 .btn-welcome:hover{background:var(--gold-dark);transform:translateY(-2px);}
 
-/* ── LAYOUT ── */
-.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
-.sidebar{background:#1C1C1E;color:#E0D8CF;display:flex;flex-direction:column;}
-.sidebar-logo{padding:28px 22px 20px;border-bottom:1px solid rgba(255,255,255,0.07);}
-.brand{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold);font-weight:700;}
-.brand-sub{font-size:0.76rem;color:#666;margin-top:2px;}
-.sidebar-user{padding:18px 22px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:12px;}
-.user-avatar{width:42px;height:42px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1rem;flex-shrink:0;}
-.user-name{font-weight:600;font-size:0.9rem;color:#E0D8CF;}
-.member-id-tag{font-size:0.74rem;color:#888;margin-top:2px;}
-.sidebar-nav{flex:1;padding:14px 12px;display:flex;flex-direction:column;gap:3px;}
-.nav-section{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#444;padding:12px 10px 5px;}
-.nav-item{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;cursor:pointer;font-weight:500;font-size:0.87rem;color:#999;border:1px solid transparent;text-decoration:none;transition:all 0.2s;}
-.nav-item:hover{background:rgba(255,255,255,0.05);color:#E0D8CF;}
+/* ── LAYOUT ───────────────────────────────────────────────────────────────── */
+.app{display:flex;min-height:100vh;}
+.sidebar{width:var(--sidebar-w);background:var(--charcoal);color:#E0D8CF;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sidebar-logo{padding:24px 18px 16px;border-bottom:1px solid rgba(255,255,255,.06);}
+.brand{font-family:'Cormorant Garamond',serif;font-size:1.55rem;color:var(--gold);font-weight:700;}
+.brand-sub{font-size:.7rem;color:#555;margin-top:2px;letter-spacing:1px;}
+.sidebar-user{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;}
+.user-avatar{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.95rem;flex-shrink:0;}
+.user-name{font-weight:600;font-size:.85rem;color:#E0D8CF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.member-tag{font-size:.7rem;color:#666;margin-top:1px;}
+.sidebar-nav{flex:1;padding:10px 10px;display:flex;flex-direction:column;gap:2px;}
+.nav-section{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#3a3a3a;padding:10px 10px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:500;font-size:.82rem;color:#888;border:1px solid transparent;transition:all .18s;}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#E0D8CF;}
 .nav-item.active{background:var(--gold);color:#fff;font-weight:700;}
-.nav-item i{width:16px;text-align:center;}
-.sidebar-footer{padding:14px 12px;border-top:1px solid rgba(255,255,255,0.07);}
-.logout-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(239,68,68,0.12);color:#EF4444;border:1px solid rgba(239,68,68,0.2);border-radius:9px;cursor:pointer;font-weight:600;font-size:0.87rem;width:100%;font-family:'Montserrat',sans-serif;}
+.nav-item i{width:15px;text-align:center;font-size:.85rem;}
+.nav-item .badge{background:var(--danger);color:#fff;border-radius:20px;padding:1px 6px;font-size:.6rem;font-weight:700;margin-left:auto;}
+.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,.06);}
+.logout-btn{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(239,68,68,.1);color:#EF4444;border:1px solid rgba(239,68,68,.2);border-radius:8px;cursor:pointer;font-weight:600;font-size:.82rem;width:100%;}
 .logout-btn:hover{background:var(--danger);color:#fff;}
 
-.main{display:flex;flex-direction:column;overflow:hidden;}
-.topbar{background:#fff;border-bottom:1px solid rgba(212,200,188,0.4);padding:16px 28px;display:flex;justify-content:space-between;align-items:center;}
-.topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold-dark);font-weight:700;}
-.content{flex:1;padding:24px 28px;overflow-y:auto;}
+/* ── MAIN ─────────────────────────────────────────────────────────────────── */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;}
+.topbar{background:#fff;border-bottom:1px solid rgba(212,200,188,.35);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.55rem;color:var(--gold-dark);font-weight:700;}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.status-badge{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:20px;background:var(--gold-glow);color:var(--gold-dark);border:1px solid rgba(200,169,126,.3);}
+.content{flex:1;padding:22px 24px;overflow-y:auto;}
 
+/* ── TABS ─────────────────────────────────────────────────────────────────── */
 .tab-panel{display:none;}
-.tab-panel.active{display:block;animation:fadeIn 0.3s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.tab-panel.active{display:block;animation:fadeIn .25s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
 
-/* ── CONTINUE STRIP ── */
-.continue-strip{background:linear-gradient(135deg,#1C1C1E 0%,#2d2d35 100%);border-radius:14px;padding:22px 26px;margin-bottom:22px;color:#fff;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
-.continue-strip-icon{width:54px;height:54px;background:rgba(200,169,126,0.15);border:1px solid rgba(200,169,126,0.3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--gold);flex-shrink:0;}
-.continue-strip-info{flex:1;min-width:180px;}
-.continue-strip-label{font-size:0.74rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.5);margin-bottom:4px;}
-.continue-strip-title{font-weight:700;font-size:1.05rem;}
-.continue-strip-sub{font-size:0.82rem;color:rgba(255,255,255,0.5);margin-top:2px;}
-.btn-continue{background:var(--gold);color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-size:0.86rem;font-weight:700;white-space:nowrap;transition:all 0.2s;}
-.btn-continue:hover{background:var(--gold-dark);}
-
-/* ── COURSE CARDS (My Courses) ── */
-.section-label{font-size:0.78rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700;margin-bottom:14px;}
-.my-courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:30px;}
-.my-course-card{background:#fff;border-radius:14px;overflow:hidden;border:1px solid rgba(212,200,188,0.3);box-shadow:0 2px 10px rgba(0,0,0,0.04);transition:all 0.25s;cursor:pointer;}
-.my-course-card:hover{transform:translateY(-5px);box-shadow:0 12px 28px rgba(0,0,0,0.09);}
-.my-course-card-top{padding:20px 20px 14px;}
-.course-icon-ring-wrap{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
-.progress-ring{position:relative;width:56px;height:56px;flex-shrink:0;}
-.progress-ring svg{transform:rotate(-90deg);}
-.progress-ring-bg{fill:none;stroke:var(--nude-med);stroke-width:5;}
-.progress-ring-fill{fill:none;stroke:var(--gold);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1s ease;}
-.progress-ring-icon{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--gold);}
-.my-course-title{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;line-height:1.25;}
-.my-course-meta{font-size:0.78rem;color:var(--muted);margin-top:2px;}
-.my-course-status-badge{display:inline-block;font-size:0.7rem;padding:3px 10px;border-radius:20px;font-weight:700;margin-top:8px;}
+/* ── COMMON COMPONENTS ────────────────────────────────────────────────────── */
+.section-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700;margin-bottom:12px;}
+.card{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);box-shadow:0 2px 8px rgba(0,0,0,.03);}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.82rem;border:1px solid transparent;font-family:'Montserrat',sans-serif;transition:all .2s;}
+.btn-gold{background:var(--gold);color:#fff;}
+.btn-gold:hover:not(:disabled){background:var(--gold-dark);}
+.btn-gold:disabled{opacity:.5;cursor:not-allowed;}
+.btn-ghost{background:transparent;border-color:var(--gold);color:var(--gold-dark);}
+.btn-ghost:hover{background:var(--gold);color:#fff;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-sm{padding:6px 12px;font-size:.76rem;}
+.spinner{display:inline-block;width:22px;height:22px;border:3px solid var(--nude-med);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner-wrap{text-align:center;padding:36px;color:var(--muted);}
+.empty-state{text-align:center;padding:44px 20px;color:var(--muted);}
+.empty-state i{font-size:2.2rem;color:var(--gold);margin-bottom:12px;display:block;}
+.badge{display:inline-block;font-size:.68rem;padding:3px 9px;border-radius:20px;font-weight:700;}
 .badge-pending{background:#FEF3C7;color:#92400E;}
 .badge-approved{background:#D1FAE5;color:#065F46;}
 .badge-rejected{background:#FEE2E2;color:#991B1B;}
 .badge-payment{background:#DBEAFE;color:#1E40AF;}
-.my-course-card-bottom{padding:14px 20px;border-top:1px solid rgba(212,200,188,0.3);background:var(--nude-light);font-size:0.82rem;font-weight:700;color:var(--gold-dark);display:flex;justify-content:space-between;align-items:center;}
+.badge-gold{background:var(--gold-glow);color:var(--gold-dark);border:1px solid rgba(200,169,126,.3);}
+.upgrade-card{background:linear-gradient(135deg,var(--charcoal) 0%,var(--charcoal-2) 100%);border-radius:14px;padding:28px;text-align:center;color:#fff;}
+.upgrade-card h3{font-size:1.5rem;margin-bottom:.6rem;}
+.upgrade-card p{color:rgba(255,255,255,.6);font-size:.88rem;line-height:1.7;margin-bottom:1.4rem;}
+.upgrade-card .price{font-family:'Cormorant Garamond',serif;font-size:2.4rem;color:var(--gold);font-weight:700;margin-bottom:1.2rem;}
 
-/* ── CATALOG TEASER (Discover More) ── */
-.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
-.catalog-card{background:#fff;border:1px dashed var(--nude-med);border-radius:12px;padding:18px;text-align:center;transition:all 0.2s;}
-.catalog-card:hover{border-color:var(--gold);border-style:solid;transform:translateY(-3px);}
-.catalog-card-icon{width:44px;height:44px;background:var(--nude-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--gold);margin:0 auto 10px;}
-.catalog-card-title{font-weight:700;font-size:0.95rem;margin-bottom:4px;}
-.catalog-card-price{color:var(--gold-dark);font-weight:700;font-size:0.85rem;margin-bottom:12px;}
-.btn-enroll-small{background:var(--gold);color:#fff;padding:7px 16px;border-radius:7px;text-decoration:none;font-size:0.78rem;font-weight:700;display:inline-block;}
-.btn-enroll-small:hover{background:var(--gold-dark);}
+/* ── HOME TAB ─────────────────────────────────────────────────────────────── */
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.streak-card{padding:20px;display:flex;align-items:center;gap:16px;}
+.streak-icon{font-size:2.4rem;flex-shrink:0;}
+.streak-num{font-family:'Cormorant Garamond',serif;font-size:2.6rem;color:var(--gold);font-weight:700;line-height:1;}
+.streak-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;margin-top:2px;}
+.streak-sub{font-size:.75rem;color:var(--muted);margin-top:4px;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat-card{padding:16px 14px;text-align:center;}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--charcoal);font-weight:700;}
+.stat-lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;margin-top:3px;}
+.continue-strip{background:linear-gradient(135deg,var(--charcoal) 0%,var(--charcoal-2) 100%);border-radius:12px;padding:20px 22px;margin-bottom:20px;color:#fff;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.continue-icon{width:50px;height:50px;background:rgba(200,169,126,.15);border:1px solid rgba(200,169,126,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--gold);flex-shrink:0;}
+.continue-info{flex:1;min-width:140px;}
+.continue-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.45);margin-bottom:3px;}
+.continue-title{font-weight:700;font-size:1rem;}
+.continue-sub{font-size:.78rem;color:rgba(255,255,255,.5);margin-top:2px;}
+.tv-widget-wrap{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);overflow:hidden;}
+.tv-widget-header{padding:14px 18px;border-bottom:1px solid rgba(212,200,188,.3);display:flex;align-items:center;gap:8px;font-weight:700;font-size:.88rem;color:var(--charcoal);}
+.tv-widget-header i{color:var(--gold);}
 
-.empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
-.empty-state i{font-size:2.5rem;color:var(--gold);margin-bottom:14px;}
+/* ── COURSES TAB ──────────────────────────────────────────────────────────── */
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:24px;}
+.course-card{overflow:hidden;border-radius:12px;cursor:pointer;transition:all .25s;}
+.course-card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.08);}
+.course-card-top{padding:18px 18px 12px;}
+.ring-name-wrap{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.progress-ring{position:relative;width:52px;height:52px;flex-shrink:0;}
+.progress-ring svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--nude-med);stroke-width:5;}
+.ring-fill{fill:none;stroke:var(--gold);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1s ease;}
+.ring-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.05rem;color:var(--gold);}
+.course-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;line-height:1.25;}
+.course-meta{font-size:.75rem;color:var(--muted);margin-top:1px;}
+.course-card-foot{padding:12px 18px;border-top:1px solid rgba(212,200,188,.3);background:var(--nude-light);font-size:.8rem;font-weight:700;color:var(--gold-dark);display:flex;justify-content:space-between;align-items:center;}
 
-/* ── COURSE PLAYER ── */
+/* ── COURSE PLAYER ────────────────────────────────────────────────────────── */
 .player-view{display:none;}
 .player-view.show{display:block;}
-.player-header{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
-.back-btn{display:flex;align-items:center;gap:6px;color:var(--gold-dark);cursor:pointer;font-weight:600;font-size:0.88rem;background:none;border:none;font-family:'Montserrat',sans-serif;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--gold-dark);cursor:pointer;font-weight:600;font-size:.85rem;background:none;border:none;margin-bottom:16px;}
 .back-btn:hover{color:var(--gold);}
-.player-layout{display:grid;grid-template-columns:1fr 320px;gap:20px;}
-.video-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;background:#000;margin-bottom:16px;}
-.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
-.video-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);flex-direction:column;gap:10px;}
-.video-info-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;margin-bottom:6px;}
-.video-info-desc{color:var(--muted);font-size:0.88rem;line-height:1.6;margin-bottom:16px;}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:0.85rem;border:1px solid transparent;font-family:'Montserrat',sans-serif;transition:all 0.2s;}
-.btn-gold{background:var(--gold);color:#fff;}
-.btn-gold:hover:not(:disabled){background:var(--gold-dark);}
-.btn-gold:disabled{opacity:0.5;cursor:not-allowed;}
-.btn-ghost{background:transparent;border-color:var(--gold);color:var(--gold-dark);}
-.btn-ghost:hover{background:var(--gold);color:#fff;}
-
-.module-sidebar{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,0.3);padding:16px;max-height:560px;overflow-y:auto;}
-.module-sidebar-title{font-weight:700;font-size:0.85rem;margin-bottom:12px;color:var(--charcoal);}
-.module-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;cursor:pointer;margin-bottom:4px;transition:all 0.15s;}
+.player-layout{display:grid;grid-template-columns:1fr 300px;gap:18px;}
+.video-wrap{position:relative;padding-bottom:56.25%;height:0;border-radius:10px;background:#000;overflow:hidden;margin-bottom:14px;}
+.video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
+.video-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:rgba(255,255,255,.4);}
+.video-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px;}
+.video-desc{color:var(--muted);font-size:.85rem;line-height:1.6;margin-bottom:14px;}
+.module-sidebar{border-radius:10px;padding:14px;max-height:520px;overflow-y:auto;}
+.module-sidebar-title{font-weight:700;font-size:.82rem;margin-bottom:10px;}
+.module-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:7px;cursor:pointer;margin-bottom:3px;transition:all .15s;}
 .module-item:hover{background:var(--nude-light);}
-.module-item.active{background:rgba(200,169,126,0.1);}
-.mod-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.74rem;font-weight:700;flex-shrink:0;}
-.mod-num.done{background:var(--success);color:#fff;}
-.mod-num.current{background:var(--gold);color:#fff;}
-.mod-num.todo{background:var(--nude-med);color:var(--muted);}
-.mod-item-title{font-size:0.82rem;font-weight:600;}
-.mod-item-dur{font-size:0.72rem;color:var(--muted);}
+.module-item.active{background:var(--gold-glow);}
+.module-item.locked{opacity:.5;cursor:not-allowed;}
+.mod-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;}
+.mod-done{background:var(--success);color:#fff;}
+.mod-current{background:var(--gold);color:#fff;}
+.mod-todo{background:var(--nude-med);color:var(--muted);}
+.mod-locked{background:#ddd;color:#999;}
+.mod-title{font-size:.8rem;font-weight:600;}
+.mod-dur{font-size:.7rem;color:var(--muted);}
+.materials-section{margin-top:16px;padding-top:14px;border-top:1px solid var(--nude-med);}
+.material-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--nude-light);border-radius:7px;margin-bottom:6px;font-size:.8rem;}
+.material-item a{color:var(--gold-dark);font-weight:600;}
+.material-item a:hover{color:var(--gold);}
 
-.empty-modules{text-align:center;padding:40px 20px;color:var(--muted);}
+/* ── QUIZ PANEL ───────────────────────────────────────────────────────────── */
+.quiz-panel{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);padding:24px;margin-top:16px;}
+.quiz-panel h3{font-size:1.3rem;color:var(--charcoal);margin-bottom:4px;}
+.quiz-panel .quiz-sub{font-size:.8rem;color:var(--muted);margin-bottom:18px;}
+.question-block{margin-bottom:20px;}
+.question-text{font-weight:600;font-size:.92rem;margin-bottom:10px;line-height:1.5;}
+.option-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 14px;border-radius:8px;border:1px solid var(--nude-med);background:var(--nude-light);font-family:'Montserrat',sans-serif;font-size:.82rem;cursor:pointer;margin-bottom:6px;transition:all .2s;}
+.option-btn:hover:not(.selected):not(.correct):not(.wrong){border-color:var(--gold);background:var(--gold-glow);}
+.option-btn.selected{border-color:var(--gold);background:var(--gold-glow);}
+.option-btn.correct{border-color:var(--success);background:rgba(16,185,129,.1);color:#065F46;}
+.option-btn.wrong{border-color:var(--danger);background:rgba(239,68,68,.08);color:#991B1B;}
+.quiz-result{text-align:center;padding:24px;border-radius:10px;margin-top:16px;}
+.quiz-result.pass{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);}
+.quiz-result.fail{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);}
+.quiz-score{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;}
+.quiz-score.pass{color:var(--success);}
+.quiz-score.fail{color:var(--danger);}
 
-.spinner-wrap{text-align:center;padding:40px;color:var(--muted);}
-.spin{display:inline-block;width:26px;height:26px;border:3px solid var(--nude-med);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
+/* ── MY MENTOR TAB ────────────────────────────────────────────────────────── */
+.mentor-card{padding:22px;}
+.mentor-avatar-lg{width:72px;height:72px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.8rem;font-weight:700;margin:0 auto 12px;}
+.mentor-name{font-size:1.3rem;text-align:center;margin-bottom:4px;}
+.mentor-bio{color:var(--muted);font-size:.84rem;text-align:center;line-height:1.6;margin-bottom:16px;}
+.availability-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:16px;}
+.slot-btn{padding:8px 10px;border-radius:7px;border:1px solid var(--nude-med);background:var(--nude-light);font-size:.76rem;font-weight:600;cursor:pointer;text-align:center;transition:all .2s;}
+.slot-btn:hover{border-color:var(--gold);background:var(--gold-glow);}
+.slot-btn.selected{background:var(--gold);color:#fff;border-color:var(--gold);}
+.session-card{padding:16px 18px;display:flex;align-items:flex-start;gap:14px;margin-bottom:10px;}
+.session-icon{width:40px;height:40px;border-radius:10px;background:var(--gold-glow);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1rem;flex-shrink:0;}
+.session-date{font-weight:700;font-size:.92rem;}
+.session-meta{font-size:.78rem;color:var(--muted);margin-top:2px;}
+.session-contact{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 12px;background:var(--success);color:#fff;border-radius:6px;font-size:.75rem;font-weight:700;}
 
-.toast{position:fixed;bottom:24px;right:24px;padding:13px 18px;border-radius:10px;color:#fff;font-weight:600;font-size:0.88rem;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.15);font-family:'Montserrat',sans-serif;}
+/* ── TRADING TOOLS TAB ────────────────────────────────────────────────────── */
+.tools-subnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+.tool-tab{padding:8px 14px;border-radius:20px;border:1px solid var(--nude-med);background:#fff;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all .2s;}
+.tool-tab.active{background:var(--gold);color:#fff;border-color:var(--gold);}
+.tool-panel{display:none;}
+.tool-panel.active{display:block;}
+.calc-form{display:grid;gap:14px;max-width:500px;}
+.calc-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.calc-field label{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:5px;display:block;}
+.calc-field input,.calc-field select{width:100%;padding:10px 12px;border:1px solid var(--nude-med);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:.88rem;background:#fff;outline:none;transition:border .2s;}
+.calc-field input:focus,.calc-field select:focus{border-color:var(--gold);}
+.calc-result{background:linear-gradient(135deg,var(--charcoal),var(--charcoal-2));border-radius:12px;padding:20px 22px;color:#fff;margin-top:4px;}
+.calc-result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px;}
+.calc-result-item .val{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--gold);font-weight:700;}
+.calc-result-item .lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.5);margin-top:2px;}
+.rr-visual{display:flex;align-items:center;gap:0;height:40px;margin:16px 0;border-radius:6px;overflow:hidden;}
+.rr-sl{background:rgba(239,68,68,.35);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--danger);}
+.rr-entry{width:4px;background:var(--gold);}
+.rr-tp{background:rgba(16,185,129,.35);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--success);}
 
-@media(max-width:900px){.app{grid-template-columns:1fr;}.sidebar{display:none;}.content{padding:16px;}.player-layout{grid-template-columns:1fr;}}
-@media(max-width:480px){.my-courses-grid,.catalog-grid{grid-template-columns:1fr;}}
+/* ── JOURNAL ────────────────────────────────────────────────────────────────── */
+.journal-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:18px;}
+.journal-stat{padding:14px;text-align:center;}
+.journal-stat .val{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;}
+.journal-stat .lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-top:2px;}
+.trade-table{width:100%;border-collapse:collapse;font-size:.8rem;}
+.trade-table th{padding:9px 12px;text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--nude-med);background:var(--nude-light);}
+.trade-table td{padding:10px 12px;border-bottom:1px solid rgba(212,200,188,.25);}
+.trade-table tr:hover td{background:var(--nude-light);}
+.outcome-win{color:var(--success);font-weight:700;}
+.outcome-loss{color:var(--danger);font-weight:700;}
+.outcome-be{color:var(--muted);font-weight:700;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:14px;padding:24px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;}
+.modal h3{font-size:1.35rem;margin-bottom:16px;}
+.form-field{margin-bottom:14px;}
+.form-field label{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:5px;display:block;}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:10px 12px;border:1px solid var(--nude-med);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:.85rem;outline:none;transition:border .2s;}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--gold);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* ── CROWN PARTNER TAB ────────────────────────────────────────────────────── */
+.wallet-card{background:linear-gradient(135deg,var(--charcoal),var(--charcoal-2));border-radius:14px;padding:24px;color:#fff;margin-bottom:16px;}
+.wallet-title{font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.45);margin-bottom:4px;}
+.wallet-amount{font-family:'Cormorant Garamond',serif;font-size:3rem;color:var(--gold);font-weight:700;line-height:1;}
+.wallet-currency{font-size:1rem;color:rgba(255,255,255,.6);margin-left:4px;}
+.wallet-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);}
+.wallet-stat .lbl{font-size:.66rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.4);}
+.wallet-stat .val{font-weight:700;color:#fff;margin-top:2px;font-size:.95rem;}
+.tier-badge{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:20px;font-weight:700;font-size:.82rem;}
+.tier-bronze{background:rgba(205,127,50,.15);color:#CD7F32;border:1px solid rgba(205,127,50,.3);}
+.tier-silver{background:rgba(168,168,168,.15);color:#888;border:1px solid rgba(168,168,168,.3);}
+.tier-crown{background:rgba(200,169,126,.15);color:var(--gold-dark);border:1px solid rgba(200,169,126,.3);}
+.referral-link-box{background:var(--nude-light);border:1px solid var(--nude-med);border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.referral-link-box code{flex:1;font-size:.78rem;color:var(--charcoal);word-break:break-all;}
+.earnings-table{width:100%;border-collapse:collapse;font-size:.8rem;}
+.earnings-table th{padding:8px 12px;text-align:left;font-size:.67rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--nude-med);background:var(--nude-light);}
+.earnings-table td{padding:9px 12px;border-bottom:1px solid rgba(212,200,188,.25);}
+
+/* ── PAYMENTS TAB ─────────────────────────────────────────────────────────── */
+.payment-item{padding:16px 18px;display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+.payment-icon{width:40px;height:40px;border-radius:10px;background:var(--nude-light);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1rem;flex-shrink:0;}
+.payment-info{flex:1;}
+.payment-title{font-weight:700;font-size:.9rem;}
+.payment-meta{font-size:.76rem;color:var(--muted);margin-top:2px;}
+
+/* ── PROFILE TAB ──────────────────────────────────────────────────────────── */
+.profile-section{max-width:520px;}
+.profile-section h3{font-size:1.3rem;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--nude-med);}
+
+/* ── DISCOVER TAB ─────────────────────────────────────────────────────────── */
+.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;}
+.catalog-card{padding:18px;text-align:center;transition:all .2s;cursor:pointer;}
+.catalog-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.07);}
+.catalog-icon{width:42px;height:42px;background:var(--nude-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--gold);margin:0 auto 10px;}
+.catalog-title{font-weight:700;font-size:.92rem;margin-bottom:3px;}
+.catalog-price{color:var(--gold-dark);font-weight:700;font-size:.82rem;margin-bottom:10px;}
+
+/* ── TOAST ────────────────────────────────────────────────────────────────── */
+.toast{position:fixed;bottom:22px;right:22px;padding:11px 16px;border-radius:9px;color:#fff;font-weight:600;font-size:.84rem;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,.15);animation:slideUp .3s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  .sidebar{display:none;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .home-grid{grid-template-columns:1fr;}
+  .player-layout{grid-template-columns:1fr;}
+  .calc-row{grid-template-columns:1fr;}
+}
+@media(max-width:540px){
+  .content{padding:16px 14px;}
+  .courses-grid,.catalog-grid{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .wallet-stats{grid-template-columns:1fr 1fr;}
+}
 </style>
 </head>
 <body>
 
-<!-- ══ WELCOME OVERLAY ══ -->
+<!-- WELCOME OVERLAY -->
 <div class="welcome-overlay" id="welcomeOverlay">
-  <div class="welcome-content">
+  <div class="welcome-box">
     <div class="welcome-crown"><i class="fas fa-crown"></i></div>
     <h1>Welcome to <span>Crown Trade Academy</span></h1>
-    <p id="welcomeMsg">Your enrollment has been approved. Your course content is now unlocked.</p>
-    <div class="welcome-member-id">
-      <div class="label">Your Member ID</div>
-      <div class="value" id="welcomeMemberNum">#—</div>
+    <p id="welcomeMsg">Your enrollment has been approved. Your course is now unlocked.</p>
+    <div class="welcome-member">
+      <div class="lbl">Your Member ID</div>
+      <div class="val" id="welcomeMemberNum">#—</div>
     </div>
-    <div><button class="btn-welcome" onclick="closeWelcome()">Enter Dashboard <i class="fas fa-arrow-right"></i></button></div>
+    <button class="btn-welcome" onclick="closeWelcome()">Enter Dashboard <i class="fas fa-arrow-right"></i></button>
+  </div>
+</div>
+
+<!-- TRADE LOG MODAL -->
+<div class="modal-overlay" id="tradeModal">
+  <div class="modal">
+    <h3 id="tradeModalTitle">Log a Trade</h3>
+    <div class="form-row">
+      <div class="form-field">
+        <label>Pair</label>
+        <input type="text" id="tj_pair" placeholder="e.g. EURUSD" style="text-transform:uppercase;">
+      </div>
+      <div class="form-field">
+        <label>Direction</label>
+        <select id="tj_direction">
+          <option value="buy">Buy</option>
+          <option value="sell">Sell</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label>Entry Price</label><input type="number" id="tj_entry" step="0.00001" placeholder="1.12345"></div>
+      <div class="form-field"><label>Stop Loss</label><input type="number" id="tj_sl" step="0.00001" placeholder="1.12000"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label>Take Profit</label><input type="number" id="tj_tp" step="0.00001" placeholder="1.13000"></div>
+      <div class="form-field"><label>Setup Type</label><input type="text" id="tj_setup" placeholder="e.g. Supply Zone"></div>
+    </div>
+    <div class="form-field"><label>Notes</label><textarea id="tj_notes" rows="2" placeholder="Trade rationale..."></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px;">
+      <button class="btn btn-ghost" onclick="closeTradeModal()">Cancel</button>
+      <button class="btn btn-gold" onclick="saveTrade()"><i class="fas fa-save"></i> Save Trade</button>
+    </div>
+  </div>
+</div>
+
+<!-- WITHDRAW MODAL -->
+<div class="modal-overlay" id="withdrawModal">
+  <div class="modal">
+    <h3>Request Withdrawal</h3>
+    <div class="form-field"><label>Amount (KES)</label><input type="number" id="wd_amount" placeholder="500" min="500"></div>
+    <div class="form-field"><label>M-Pesa Number</label><input type="tel" id="wd_mpesa" placeholder="0712345678"></div>
+    <div class="form-field"><label>M-Pesa Name</label><input type="text" id="wd_name" placeholder="Your M-Pesa registered name"></div>
+    <p style="font-size:.76rem;color:var(--muted);margin-bottom:14px;">Minimum withdrawal: KES 500. Processed within 48 hours.</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="document.getElementById('withdrawModal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-gold" onclick="submitWithdrawal()"><i class="fas fa-paper-plane"></i> Submit Request</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOOK SESSION MODAL -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal">
+    <h3>Book a Session</h3>
+    <div class="form-field"><label>Date & Time</label><input type="datetime-local" id="book_datetime"></div>
+    <div class="form-field">
+      <label>Contact Method</label>
+      <select id="book_method">
+        <option value="whatsapp">WhatsApp</option>
+        <option value="zoom">Zoom</option>
+      </select>
+    </div>
+    <div class="form-field"><label>Notes for your mentor (optional)</label><textarea id="book_notes" rows="2" placeholder="Topics you want to cover..."></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="document.getElementById('bookModal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-gold" onclick="submitBooking()"><i class="fas fa-calendar-check"></i> Book Session</button>
+    </div>
   </div>
 </div>
 
 <div class="app">
+  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="brand">Crown Trade</div>
@@ -169,395 +396,1138 @@ h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:700;}
     </div>
     <div class="sidebar-user">
       <div class="user-avatar" id="userAvatar">C</div>
-      <div>
+      <div style="min-width:0;">
         <div class="user-name" id="userName">Loading…</div>
-        <div class="member-id-tag" id="userMemberTag">Member #—</div>
+        <div class="member-tag" id="userMemberTag">Member #—</div>
       </div>
     </div>
     <nav class="sidebar-nav">
-      <div class="nav-section">Main</div>
-      <a href="#" class="nav-item active" data-tab="mycourses"><i class="fas fa-play-circle"></i> My Courses</a>
-      <a href="#" class="nav-item" data-tab="discover"><i class="fas fa-compass"></i> Discover Courses</a>
-      <div class="nav-section">Support</div>
-      <a href="#" class="nav-item" data-tab="contact"><i class="fas fa-comments"></i> Contact Mentor</a>
+      <div class="nav-section">Overview</div>
+      <a href="#" class="nav-item active" data-tab="home"><i class="fas fa-home"></i> Home</a>
+      <div class="nav-section">Learning</div>
+      <a href="#" class="nav-item" data-tab="courses"><i class="fas fa-play-circle"></i> My Courses</a>
+      <a href="#" class="nav-item" data-tab="discover"><i class="fas fa-compass"></i> Discover</a>
+      <a href="#" class="nav-item" id="mentorNavItem" data-tab="mentor" style="display:none;"><i class="fas fa-user-tie"></i> My Mentor</a>
+      <div class="nav-section">Tools</div>
+      <a href="#" class="nav-item" data-tab="tools"><i class="fas fa-chart-line"></i> Trading Tools</a>
+      <div class="nav-section">Account</div>
+      <a href="#" class="nav-item" id="partnerNavItem" data-tab="partner"><i class="fas fa-crown"></i> Crown Partner</a>
+      <a href="#" class="nav-item" data-tab="payments"><i class="fas fa-receipt"></i> Payments</a>
+      <a href="#" class="nav-item" data-tab="profile"><i class="fas fa-user"></i> Profile</a>
     </nav>
     <div class="sidebar-footer">
       <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
   </aside>
 
+  <!-- MAIN -->
   <div class="main">
     <div class="topbar">
-      <div class="topbar-title" id="pageTitle">My Courses</div>
+      <div class="topbar-title" id="pageTitle">Home</div>
+      <div class="topbar-right">
+        <span class="status-badge" id="statusBadge"><i class="fas fa-circle" style="font-size:.5rem;"></i> Active</span>
+      </div>
     </div>
 
     <div class="content">
 
-      <!-- ══ MY COURSES TAB ══ -->
-      <div id="mycourses" class="tab-panel active">
+      <!-- ══ HOME TAB ══ -->
+      <div id="home" class="tab-panel active">
         <div id="continueStripWrap"></div>
+        <div class="home-grid">
+          <div class="card streak-card">
+            <div class="streak-icon">🔥</div>
+            <div>
+              <div class="streak-num" id="loginStreak">0</div>
+              <div class="streak-label">Login Streak</div>
+              <div class="streak-sub" id="loginStreakSub">Log in daily to keep it going</div>
+            </div>
+          </div>
+          <div class="card streak-card">
+            <div class="streak-icon">📚</div>
+            <div>
+              <div class="streak-num" id="moduleStreak">0</div>
+              <div class="streak-label">Learning Streak</div>
+              <div class="streak-sub" id="moduleStreakSub">Complete a module daily</div>
+            </div>
+          </div>
+        </div>
+        <div class="stats-row" id="statsRow">
+          <div class="card stat-card"><div class="stat-val" id="stat-enrolled">—</div><div class="stat-lbl">Courses</div></div>
+          <div class="card stat-card"><div class="stat-val" id="stat-modules">—</div><div class="stat-lbl">Modules Done</div></div>
+          <div class="card stat-card"><div class="stat-val" id="stat-session">—</div><div class="stat-lbl">Next Session</div></div>
+          <div class="card stat-card"><div class="stat-val" id="stat-earnings">—</div><div class="stat-lbl">Partner Earnings</div></div>
+        </div>
+        <div class="section-label">Live Market</div>
+        <div class="tv-widget-wrap" style="margin-bottom:20px;">
+          <div class="tv-widget-header"><i class="fas fa-chart-candlestick"></i> TradingView Chart</div>
+          <div class="tradingview-widget-container" style="height:400px;">
+            <div id="tradingview_chart"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ MY COURSES TAB ══ -->
+      <div id="courses" class="tab-panel">
         <div class="section-label">My Enrolled Courses</div>
-        <div id="myCoursesGrid" class="my-courses-grid"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        <div id="myCoursesGrid" class="courses-grid"><div class="spinner-wrap"><div class="spinner"></div></div></div>
+
+        <!-- COURSE PLAYER (nested inside courses tab) -->
+        <div id="playerView" class="player-view">
+          <button class="back-btn" onclick="closePlayer()"><i class="fas fa-arrow-left"></i> Back to My Courses</button>
+          <div class="player-layout">
+            <div>
+              <div class="video-wrap" id="videoWrap">
+                <iframe id="videoFrame" src="" allowfullscreen></iframe>
+              </div>
+              <div class="video-title" id="videoTitle">—</div>
+              <div class="video-desc" id="videoDesc">—</div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="btn btn-gold" id="markDoneBtn" onclick="handleMarkDone()"><i class="fas fa-check"></i> Mark Complete</button>
+                <button class="btn btn-ghost" onclick="goNextModule()"><i class="fas fa-forward"></i> Next Module</button>
+              </div>
+              <div class="materials-section" id="materialsSection" style="display:none;">
+                <div class="section-label" style="margin-bottom:8px;">Study Materials</div>
+                <div id="materialsList"></div>
+              </div>
+              <div id="quizPanel"></div>
+            </div>
+            <div class="card module-sidebar">
+              <div class="module-sidebar-title" id="moduleSidebarTitle">Modules</div>
+              <div id="moduleListPlayer"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- ══ DISCOVER TAB ══ -->
       <div id="discover" class="tab-panel">
         <div class="section-label">Available Courses</div>
-        <div id="catalogGrid" class="catalog-grid"><div class="spinner-wrap"><div class="spin"></div></div></div>
+        <div id="catalogGrid" class="catalog-grid"><div class="spinner-wrap"><div class="spinner"></div></div></div>
       </div>
 
-      <!-- ══ CONTACT TAB ══ -->
-      <div id="contact" class="tab-panel">
-        <div style="background:#fff;border-radius:14px;padding:24px;border:1px solid rgba(212,200,188,0.3);">
-          <h3 style="font-size:1.3rem;color:var(--gold-dark);margin-bottom:16px;">Contact Your Mentor</h3>
-          <a href="mailto:crowntradeacademy@gmail.com" style="display:flex;align-items:center;gap:12px;padding:16px;background:var(--nude-light);border-radius:10px;text-decoration:none;color:var(--charcoal);">
-            <div style="width:40px;height:40px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;"><i class="fas fa-envelope"></i></div>
-            <div><div style="font-weight:700;">Email</div><div style="color:var(--muted);font-size:0.84rem;">crowntradeacademy@gmail.com</div></div>
-          </a>
-        </div>
+      <!-- ══ MY MENTOR TAB ══ -->
+      <div id="mentor" class="tab-panel">
+        <div id="mentorContent"><div class="spinner-wrap"><div class="spinner"></div></div></div>
       </div>
 
-      <!-- ══ COURSE PLAYER (replaces tabs when open) ══ -->
-      <div id="playerView" class="player-view">
-        <div class="player-header">
-          <button class="back-btn" onclick="closePlayer()"><i class="fas fa-arrow-left"></i> Back to My Courses</button>
+      <!-- ══ TRADING TOOLS TAB ══ -->
+      <div id="tools" class="tab-panel">
+        <div class="tools-subnav">
+          <button class="tool-tab active" onclick="switchTool('calendar',this)"><i class="fas fa-calendar"></i> Economic Calendar</button>
+          <button class="tool-tab" onclick="switchTool('possize',this)"><i class="fas fa-calculator"></i> Position Size</button>
+          <button class="tool-tab" onclick="switchTool('rrcalc',this)"><i class="fas fa-balance-scale"></i> Risk/Reward</button>
+          <button class="tool-tab" onclick="switchTool('journal',this)"><i class="fas fa-book"></i> Trade Journal</button>
         </div>
-        <div class="player-layout">
-          <div>
-            <div class="video-wrap" id="videoWrap">
-              <iframe id="videoFrame" src="" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
-            </div>
-            <div class="video-info-title" id="videoTitle">—</div>
-            <div class="video-info-desc" id="videoDesc">—</div>
-            <div style="display:flex;gap:10px;">
-              <button class="btn btn-gold" id="markDoneBtn" onclick="markCurrentComplete()"><i class="fas fa-check"></i> Mark Complete</button>
-              <button class="btn btn-ghost" onclick="goNextModule()"><i class="fas fa-forward"></i> Next Module</button>
-            </div>
-          </div>
-          <div class="module-sidebar">
-            <div class="module-sidebar-title" id="moduleSidebarTitle">Course Modules</div>
-            <div id="moduleListPlayer"></div>
+
+        <!-- Economic Calendar -->
+        <div class="tool-panel active" id="tool-calendar">
+          <div class="tradingview-widget-container" style="height:500px;">
+            <div id="tv_calendar"></div>
           </div>
         </div>
+
+        <!-- Position Size Calculator -->
+        <div class="tool-panel" id="tool-possize">
+          <div class="card" style="padding:22px;max-width:560px;">
+            <h3 style="font-size:1.3rem;margin-bottom:4px;">Position Size Calculator</h3>
+            <p style="font-size:.82rem;color:var(--muted);margin-bottom:20px;">Calculate your exact lot size based on your risk parameters.</p>
+            <div class="calc-form">
+              <div class="calc-row">
+                <div class="calc-field"><label>Account Balance</label><input type="number" id="ps_balance" value="1000" min="1"></div>
+                <div class="calc-field"><label>Risk %</label><input type="number" id="ps_risk" value="1" min="0.1" max="100" step="0.1"></div>
+              </div>
+              <div class="calc-row">
+                <div class="calc-field"><label>Stop Loss (pips)</label><input type="number" id="ps_sl" value="20" min="1"></div>
+                <div class="calc-field">
+                  <label>Pair / Account Currency</label>
+                  <select id="ps_pair">
+                    <option value="standard">Standard (EUR/USD etc.)</option>
+                    <option value="jpy">JPY Pair (USD/JPY etc.)</option>
+                    <option value="usd">USD/KES Proxy</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-gold" onclick="calcPositionSize()"><i class="fas fa-calculator"></i> Calculate</button>
+              <div class="calc-result" id="ps_result" style="display:none;">
+                <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.45);">Result</div>
+                <div class="calc-result-grid">
+                  <div class="calc-result-item"><div class="val" id="ps_lots">—</div><div class="lbl">Lot Size</div></div>
+                  <div class="calc-result-item"><div class="val" id="ps_risk_amt">—</div><div class="lbl">$ at Risk</div></div>
+                  <div class="calc-result-item"><div class="val" id="ps_pip_val">—</div><div class="lbl">Pip Value</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- R:R Calculator -->
+        <div class="tool-panel" id="tool-rrcalc">
+          <div class="card" style="padding:22px;max-width:560px;">
+            <h3 style="font-size:1.3rem;margin-bottom:4px;">Risk/Reward Calculator</h3>
+            <p style="font-size:.82rem;color:var(--muted);margin-bottom:20px;">Visualise your trade setup before entering the market.</p>
+            <div class="calc-form">
+              <div class="calc-row">
+                <div class="calc-field"><label>Entry Price</label><input type="number" id="rr_entry" step="0.00001" placeholder="1.10000"></div>
+                <div class="calc-field">
+                  <label>Direction</label>
+                  <select id="rr_dir" onchange="calcRR()">
+                    <option value="buy">Buy (Long)</option>
+                    <option value="sell">Sell (Short)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="calc-row">
+                <div class="calc-field"><label>Stop Loss</label><input type="number" id="rr_sl" step="0.00001" placeholder="1.09500" oninput="calcRR()"></div>
+                <div class="calc-field"><label>Take Profit</label><input type="number" id="rr_tp" step="0.00001" placeholder="1.11000" oninput="calcRR()"></div>
+              </div>
+              <div class="calc-result" id="rr_result" style="display:none;">
+                <div class="rr-visual" id="rr_visual"></div>
+                <div class="calc-result-grid">
+                  <div class="calc-result-item"><div class="val" id="rr_ratio">—</div><div class="lbl">R:R Ratio</div></div>
+                  <div class="calc-result-item"><div class="val" id="rr_sl_pips">—</div><div class="lbl">SL Pips</div></div>
+                  <div class="calc-result-item"><div class="val" id="rr_tp_pips">—</div><div class="lbl">TP Pips</div></div>
+                </div>
+                <div id="rr_verdict" style="margin-top:10px;font-size:.8rem;color:rgba(255,255,255,.65);"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trade Journal -->
+        <div class="tool-panel" id="tool-journal">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div class="section-label" style="margin-bottom:0;">Trade Journal</div>
+            <button class="btn btn-gold btn-sm" onclick="openTradeModal()"><i class="fas fa-plus"></i> Log Trade</button>
+          </div>
+          <div class="journal-stats card" style="grid-template-columns:repeat(auto-fill,minmax(110px,1fr));margin-bottom:16px;" id="journalStats">
+            <div class="spinner-wrap"><div class="spinner"></div></div>
+          </div>
+          <div class="card" style="overflow:auto;">
+            <table class="trade-table" id="tradeTable">
+              <thead><tr>
+                <th>Pair</th><th>Dir</th><th>Entry</th><th>SL</th><th>TP</th><th>Exit</th><th>Pips</th><th>R:R</th><th>Outcome</th><th>Setup</th><th></th>
+              </tr></thead>
+              <tbody id="tradeTableBody"><tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">No trades logged yet</td></tr></tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
-    </div>
-  </div>
-</div>
+      <!-- ══ CROWN PARTNER TAB ══ -->
+      <div id="partner" class="tab-panel">
+        <div id="partnerContent"><div class="spinner-wrap"><div class="spinner"></div></div></div>
+      </div>
+
+      <!-- ══ PAYMENTS TAB ══ -->
+      <div id="payments" class="tab-panel">
+        <div class="section-label">Payment History</div>
+        <div id="paymentsContent"><div class="spinner-wrap"><div class="spinner"></div></div></div>
+      </div>
+
+      <!-- ══ PROFILE TAB ══ -->
+      <div id="profile" class="tab-panel">
+        <div class="profile-section">
+          <h3>My Profile</h3>
+          <div class="form-field"><label>Full Name</label><input type="text" id="pf_name"></div>
+          <div class="form-field"><label>Email (read-only)</label><input type="text" id="pf_email" readonly style="background:var(--nude-light);cursor:not-allowed;"></div>
+          <div class="form-field"><label>Phone</label><input type="tel" id="pf_phone"></div>
+          <div class="form-field"><label>Member Number</label><input type="text" id="pf_member" readonly style="background:var(--nude-light);cursor:not-allowed;"></div>
+          <button class="btn btn-gold" onclick="saveProfile()" style="margin-bottom:28px;"><i class="fas fa-save"></i> Save Changes</button>
+
+          <h3>Change Password</h3>
+          <div class="form-field"><label>Current Password</label><input type="password" id="pw_current"></div>
+          <div class="form-field"><label>New Password</label><input type="password" id="pw_new"></div>
+          <div class="form-field"><label>Confirm New Password</label><input type="password" id="pw_confirm"></div>
+          <button class="btn btn-gold" onclick="changePassword()"><i class="fas fa-lock"></i> Update Password</button>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- TradingView scripts -->
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 
 <script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+let USER = null;
 let myCourses = [];
-let catalogCourses = [];
 let activeEnrollment = null;
 let activeCourseDetail = null;
 let activeModuleId = null;
+let activeModules = [];
+let partnerData = null;
+let tvChartWidget = null;
+let journalData = null;
 
+// ── BOOT ───────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  const token = getToken();
-  if (!token) { window.location.href = 'login.html'; return; }
+  if (!getToken()) { window.location.href = 'login.html'; return; }
 
-  // Always fetch fresh user data from the server — never trust stale localStorage
-  let liveUser = null;
   try {
-    const res = await fetch(`${API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
-    if (res.status === 401 || res.status === 403) { logout(); window.location.href = 'login.html'; return; }
-    const data = await res.json();
-    liveUser = data.user;
-    if (liveUser) { setUser(liveUser); } // refresh localStorage with latest data
+    const data = await API.getMe();
+    USER = data.user;
+    setUser(USER);
   } catch {
-    // Server sleeping — fall back to cached user but guard carefully
-    liveUser = getUser();
+    const cached = getUser();
+    if (!cached) { logout(); window.location.href = 'login.html'; return; }
+    USER = cached;
   }
 
-  // If we still have no usable user, clear and redirect
-  if (!liveUser || (!liveUser.full_name && !liveUser.email)) {
-    logout();
-    window.location.href = 'login.html';
-    return;
-  }
+  initUI();
+  await Promise.all([loadHome(), loadMyCourses(), loadCatalog()]);
+  loadPartnerTab();
+  loadPaymentsTab();
+  loadMentorTab();
+  loadJournal();
+  initTradingViewChart();
+  initCalendarWidget();
+});
 
-  const displayName = String(liveUser.full_name || liveUser.email || 'Member');
-  document.getElementById('userName').textContent = displayName;
-  document.getElementById('userAvatar').textContent = displayName.charAt(0).toUpperCase();
-  document.getElementById('userMemberTag').textContent = `Member #${liveUser.member_number || '—'}`;
+function initUI() {
+  const name = USER.full_name || USER.email || 'Member';
+  document.getElementById('userName').textContent = name;
+  document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('userMemberTag').textContent = `Member #${USER.member_number || '—'}`;
 
+  // Role-aware nav visibility
+  if (USER.has_mentorship) document.getElementById('mentorNavItem').style.display = 'flex';
+
+  // Profile tab prefill
+  document.getElementById('pf_name').value = USER.full_name || '';
+  document.getElementById('pf_email').value = USER.email || '';
+  document.getElementById('pf_phone').value = USER.phone || '';
+  document.getElementById('pf_member').value = USER.member_number ? `#${USER.member_number}` : '—';
+
+  // Status badge
+  const badge = document.getElementById('statusBadge');
+  const roles = [];
+  if (USER.has_mentorship) roles.push('Student');
+  if (USER.has_partner_status) roles.push('Partner');
+  if (!roles.length) roles.push('Pending');
+  badge.innerHTML = `<i class="fas fa-circle" style="font-size:.4rem;color:var(--success);"></i> ${roles.join(' + ')}`;
+
+  // Nav clicks
   document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', e => {
-      e.preventDefault();
-      switchTab(item.dataset.tab);
-    });
+    item.addEventListener('click', e => { e.preventDefault(); switchTab(item.dataset.tab); });
   });
 
   document.getElementById('logoutBtn').addEventListener('click', () => { logout(); window.location.href = 'login.html'; });
+}
 
-  await loadMyCourses();
-  await loadCatalog();
-});
-
+// ── TAB SWITCHING ──────────────────────────────────────────────────────────
 function switchTab(tab) {
+  if (!tab) return;
   closePlayer(false);
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(t => t.classList.remove('active'));
-  const item = document.querySelector(`[data-tab="${tab}"]`);
-  if (item) item.classList.add('active');
-  document.getElementById(tab).classList.add('active');
-  const titles = { mycourses: 'My Courses', discover: 'Discover Courses', contact: 'Contact Mentor' };
+  const navItem = document.querySelector(`[data-tab="${tab}"]`);
+  if (navItem) navItem.classList.add('active');
+  const panel = document.getElementById(tab);
+  if (panel) panel.classList.add('active');
+  const titles = { home:'Home', courses:'My Courses', discover:'Discover', mentor:'My Mentor', tools:'Trading Tools', partner:'Crown Partner', payments:'Payments', profile:'Profile' };
   document.getElementById('pageTitle').textContent = titles[tab] || tab;
 }
 
-// ── LOAD MY COURSES ───────────────────────────────────────────────────────────
+// ── HOME TAB ───────────────────────────────────────────────────────────────
+async function loadHome() {
+  // Streaks
+  document.getElementById('loginStreak').textContent = USER.login_streak || 0;
+  document.getElementById('moduleStreak').textContent = USER.module_streak || 0;
+  const loginSub = USER.login_streak > 1 ? `${USER.login_streak} days in a row!` : 'Log in daily to keep it going';
+  const moduleSub = USER.module_streak > 1 ? `${USER.module_streak} days completing modules!` : 'Complete a module daily';
+  document.getElementById('loginStreakSub').textContent = loginSub;
+  document.getElementById('moduleStreakSub').textContent = moduleSub;
+}
+
+function updateHomeStats() {
+  const approved = myCourses.filter(e => e.status === 'approved');
+  const totalDone = approved.reduce((s,e) => s + (e.completed_modules||[]).length, 0);
+  document.getElementById('stat-enrolled').textContent = myCourses.length;
+  document.getElementById('stat-modules').textContent = totalDone;
+  if (!USER.has_partner_status) document.getElementById('stat-earnings').textContent = '—';
+}
+
+function updateNextSession(sessions) {
+  const upcoming = (sessions||[]).filter(s => s.status !== 'cancelled' && new Date(s.scheduled_at) > new Date());
+  if (upcoming.length) {
+    const next = upcoming.sort((a,b) => new Date(a.scheduled_at)-new Date(b.scheduled_at))[0];
+    document.getElementById('stat-session').textContent = new Date(next.scheduled_at).toLocaleDateString('en-KE',{month:'short',day:'numeric'});
+  } else {
+    document.getElementById('stat-session').textContent = 'None';
+  }
+}
+
+// ── TRADINGVIEW CHART ──────────────────────────────────────────────────────
+function initTradingViewChart() {
+  if (typeof TradingView === 'undefined') return;
+  new TradingView.widget({
+    container_id: 'tradingview_chart',
+    autosize: true,
+    symbol: 'FX:XAUUSD',
+    interval: 'H1',
+    timezone: 'Africa/Nairobi',
+    theme: 'light',
+    style: '1',
+    locale: 'en',
+    toolbar_bg: '#F9F6F2',
+    enable_publishing: false,
+    hide_side_toolbar: false,
+    allow_symbol_change: true,
+    studies: ['RSI@tv-basicstudies','MACD@tv-basicstudies'],
+    height: 400,
+  });
+}
+
+function initCalendarWidget() {
+  if (typeof TradingView === 'undefined') return;
+  new TradingView.widget({
+    colorTheme: 'light',
+    isTransparent: false,
+    width: '100%',
+    height: 500,
+    locale: 'en',
+    container_id: 'tv_calendar',
+    importanceFilter: '0,1',
+    countryFilter: 'us,eu,gb,jp',
+  });
+}
+
+// ── MY COURSES ─────────────────────────────────────────────────────────────
 async function loadMyCourses() {
   try {
     const data = await API.getMyCourses();
     myCourses = data.enrollments || [];
-
-    // Check for a fresh welcome moment
     const toWelcome = myCourses.find(e => e.show_welcome);
     if (toWelcome) {
-      document.getElementById('welcomeMemberNum').textContent = `#${toWelcome.member_number || '—'}`;
-      document.getElementById('welcomeMsg').textContent = `Your enrollment in "${toWelcome.course_title}" has been approved. Dive in whenever you're ready.`;
+      document.getElementById('welcomeMemberNum').textContent = `#${USER.member_number||'—'}`;
+      document.getElementById('welcomeMsg').textContent = `Your enrollment in "${toWelcome.course_title}" is approved. Dive in!`;
       document.getElementById('welcomeOverlay').classList.add('show');
     }
-
     renderContinueStrip();
     renderMyCoursesGrid();
-  } catch (err) {
-    document.getElementById('myCoursesGrid').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load your courses. Please refresh.</p></div>`;
+    updateHomeStats();
+  } catch {
+    document.getElementById('myCoursesGrid').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load courses. Refresh to try again.</p></div>`;
   }
 }
 
-function closeWelcome() {
-  document.getElementById('welcomeOverlay').classList.remove('show');
-}
+function closeWelcome() { document.getElementById('welcomeOverlay').classList.remove('show'); }
 
 function renderContinueStrip() {
   const wrap = document.getElementById('continueStripWrap');
-  const approved = myCourses.filter(e => e.status === 'approved');
+  const approved = myCourses.filter(e => e.status==='approved');
   if (!approved.length) { wrap.innerHTML = ''; return; }
-
-  // Find the most recently active approved course (first one with incomplete modules, else most recent)
-  const target = approved[0];
-  const completedCount = (target.completed_modules || []).length;
-
+  const t = approved[0];
+  const done = (t.completed_modules||[]).length;
   wrap.innerHTML = `
     <div class="continue-strip">
-      <div class="continue-strip-icon"><i class="fas ${target.course_icon || 'fa-graduation-cap'}"></i></div>
-      <div class="continue-strip-info">
-        <div class="continue-strip-label">Continue Learning</div>
-        <div class="continue-strip-title">${target.course_title}</div>
-        <div class="continue-strip-sub">${completedCount} module${completedCount!==1?'s':''} completed</div>
+      <div class="continue-icon"><i class="fas ${t.course_icon||'fa-graduation-cap'}"></i></div>
+      <div class="continue-info">
+        <div class="continue-lbl">Continue Learning</div>
+        <div class="continue-title">${t.course_title}</div>
+        <div class="continue-sub">${done} module${done!==1?'s':''} completed</div>
       </div>
-      <a href="#" class="btn-continue" onclick="openPlayer(${target.id}); return false;">Resume <i class="fas fa-play"></i></a>
+      <a href="#" class="btn btn-gold" onclick="switchTab('courses');setTimeout(()=>openPlayer(${t.id}),100);return false;">Resume <i class="fas fa-play"></i></a>
     </div>`;
 }
 
 function renderMyCoursesGrid() {
   const container = document.getElementById('myCoursesGrid');
   if (!myCourses.length) {
-    container.innerHTML = `<div class="empty-state"><i class="fas fa-book-open"></i><p>You haven't enrolled in any courses yet.</p><div style="margin-top:14px;"><a href="courses.html" class="btn-enroll-small">Browse Courses</a></div></div>`;
+    container.innerHTML = `<div class="empty-state"><i class="fas fa-book-open"></i><p>No enrollments yet.</p><a href="courses.html" class="btn btn-gold" style="margin-top:12px;">Browse Courses</a></div>`;
     return;
   }
-
   container.innerHTML = myCourses.map(e => {
-    const completed = (e.completed_modules || []).length;
-    const isApproved = e.status === 'approved';
-    const pct = 0; // total modules unknown until opened; ring shows status instead for locked states
-    const statusBadge = e.status === 'rejected' ? '<span class="my-course-status-badge badge-rejected">Not Approved</span>'
-      : e.status === 'pending' && (e.payment_status === 'unpaid' || !e.payment_proof) ? '<span class="my-course-status-badge badge-payment">Payment Needed</span>'
-      : e.status === 'pending' ? '<span class="my-course-status-badge badge-pending">Under Review</span>'
-      : '';
-
+    const done = (e.completed_modules||[]).length;
+    const isApproved = e.status==='approved';
+    const statusBadge = e.status==='rejected' ? '<span class="badge badge-rejected">Not Approved</span>'
+      : e.status==='pending' && (!e.payment_proof||e.payment_status==='unpaid') ? '<span class="badge badge-payment">Payment Needed</span>'
+      : e.status==='pending' ? '<span class="badge badge-pending">Under Review</span>' : '';
+    const circumference = 2*Math.PI*22;
+    const pct = isApproved && e.total_modules ? done/e.total_modules : 0;
+    const offset = circumference - pct*circumference;
     return `
-      <div class="my-course-card" onclick="${isApproved ? `openPlayer(${e.id})` : `handleLockedCourseClick(${e.id})`}">
-        <div class="my-course-card-top">
-          <div class="course-icon-ring-wrap">
+      <div class="card course-card" onclick="${isApproved?`openPlayer(${e.id})`:`handleLockedClick(${e.id})`}">
+        <div class="course-card-top">
+          <div class="ring-name-wrap">
             <div class="progress-ring">
-              <svg width="56" height="56">
-                <circle class="progress-ring-bg" cx="28" cy="28" r="24"></circle>
-                ${isApproved ? `<circle class="progress-ring-fill" cx="28" cy="28" r="24" stroke-dasharray="151" stroke-dashoffset="${151 - (completed/12)*151}"></circle>` : ''}
+              <svg width="52" height="52" viewBox="0 0 52 52">
+                <circle class="ring-bg" cx="26" cy="26" r="22"></circle>
+                ${isApproved?`<circle class="ring-fill" cx="26" cy="26" r="22" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle>`:''}
               </svg>
-              <div class="progress-ring-icon"><i class="fas ${isApproved ? (e.course_icon||'fa-graduation-cap') : 'fa-lock'}"></i></div>
+              <div class="ring-icon"><i class="fas ${isApproved?(e.course_icon||'fa-graduation-cap'):'fa-lock'}"></i></div>
             </div>
             <div>
-              <div class="my-course-title">${e.course_title}</div>
-              <div class="my-course-meta">${e.course_tagline || ''}</div>
+              <div class="course-title">${e.course_title}</div>
+              <div class="course-meta">${e.course_tagline||''}</div>
             </div>
           </div>
           ${statusBadge}
         </div>
-        <div class="my-course-card-bottom">
-          <span>${isApproved ? `${completed} modules done` : 'Locked'}</span>
-          <span>${isApproved ? 'Continue →' : (e.status === 'pending' && (e.payment_status === 'unpaid' || !e.payment_proof) ? 'Pay Now →' : 'View Status →')}</span>
+        <div class="course-card-foot">
+          <span>${isApproved?`${done} modules done`:'Locked'}</span>
+          <span>${isApproved?'Open →':e.status==='pending'&&(!e.payment_proof||e.payment_status==='unpaid')?'Pay Now →':'Status →'}</span>
         </div>
       </div>`;
   }).join('');
 }
 
-function handleLockedCourseClick(enrollmentId) {
-  const e = myCourses.find(x => x.id === enrollmentId);
+function handleLockedClick(id) {
+  const e = myCourses.find(x=>x.id===id);
   if (!e) return;
-  if (e.status === 'pending' && (e.payment_status === 'unpaid' || !e.payment_proof)) {
-    sessionStorage.setItem('applicant_email', e.email);
-    window.location.href = 'payment-instructions.html';
+  if (!e.payment_proof || e.payment_status==='unpaid') {
+    switchTab('payments');
   } else {
-    showToast(e.status === 'rejected' ? 'This enrollment was not approved. Contact support for details.' : 'Your enrollment is under review — check back soon!', 'info');
+    showToast(e.status==='rejected'?'Enrollment not approved. Contact support.':'Enrollment under review — check back soon.','info');
   }
 }
 
-// ── LOAD CATALOG (Discover tab) ───────────────────────────────────────────────
-async function loadCatalog() {
-  try {
-    const data = await API.getCourses();
-    const enrolledIds = new Set(myCourses.map(e => e.course_id));
-    catalogCourses = (data.courses || []).filter(c => !enrolledIds.has(c.id));
-    renderCatalog();
-  } catch (err) {
-    document.getElementById('catalogGrid').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load courses.</p></div>`;
-  }
-}
-
-function renderCatalog() {
-  const container = document.getElementById('catalogGrid');
-  if (!catalogCourses.length) {
-    container.innerHTML = `<div class="empty-state"><i class="fas fa-check-circle"></i><p>You're enrolled in everything available right now!</p></div>`;
-    return;
-  }
-  container.innerHTML = catalogCourses.map(c => `
-    <div class="catalog-card">
-      <div class="catalog-card-icon"><i class="fas ${c.icon || 'fa-graduation-cap'}"></i></div>
-      <div class="catalog-card-title">${c.title}</div>
-      <div class="catalog-card-price">KES ${c.price.toLocaleString()}</div>
-      <a href="enroll.html?course=${c.slug}" class="btn-enroll-small">Enroll Now</a>
-    </div>`).join('');
-}
-
-// ── COURSE PLAYER ──────────────────────────────────────────────────────────────
+// ── COURSE PLAYER ──────────────────────────────────────────────────────────
 async function openPlayer(enrollmentId) {
   try {
     const data = await API.getEnrollmentDetail(enrollmentId);
     activeEnrollment = data.enrollment;
     activeCourseDetail = data.course;
-    const modules = data.modules || [];
+    activeModules = data.modules || [];
 
     document.getElementById('moduleSidebarTitle').textContent = activeCourseDetail.title;
-    renderModuleListPlayer(modules);
-
-    if (modules.length) {
-      const nextMod = modules.find(m => !(activeEnrollment.completed_modules || []).includes(m.id)) || modules[0];
-      loadModuleIntoPlayer(nextMod, modules);
-    } else {
-      document.getElementById('videoTitle').textContent = activeCourseDetail.title;
-      document.getElementById('videoDesc').textContent = 'No modules have been added to this course yet. Check back soon!';
-      document.getElementById('videoWrap').innerHTML = `<div class="video-placeholder"><i class="fas fa-film" style="font-size:2.5rem;"></i><span>Content coming soon</span></div>`;
-      document.getElementById('markDoneBtn').disabled = true;
-    }
-
-    document.querySelectorAll('.tab-panel').forEach(t => t.classList.remove('active'));
+    renderModuleList();
+    document.getElementById('myCoursesGrid').style.display = 'none';
     document.getElementById('playerView').classList.add('show');
     document.getElementById('pageTitle').textContent = activeCourseDetail.title;
-  } catch (err) {
-    showToast(err.message || 'Could not open this course', 'error');
-  }
+
+    const completed = activeEnrollment.completed_modules||[];
+    const next = activeModules.find(m=>!completed.includes(m.id)) || activeModules[0];
+    if (next) loadModule(next);
+    else {
+      document.getElementById('videoTitle').textContent = activeCourseDetail.title;
+      document.getElementById('videoDesc').textContent = '🎉 Course complete!';
+      document.getElementById('videoWrap').innerHTML = `<div class="video-placeholder"><i class="fas fa-trophy" style="font-size:3rem;color:var(--gold);"></i><span>All modules complete!</span></div>`;
+    }
+  } catch(err) { showToast(err.message||'Could not open course','error'); }
 }
 
-function renderModuleListPlayer(modules) {
-  const completed = activeEnrollment.completed_modules || [];
+function renderModuleList() {
+  const completed = activeEnrollment.completed_modules||[];
   const container = document.getElementById('moduleListPlayer');
-  if (!modules.length) { container.innerHTML = '<div class="empty-modules">No modules yet</div>'; return; }
-
-  container.innerHTML = modules.map(m => {
+  container.innerHTML = activeModules.map(m => {
     const isDone = completed.includes(m.id);
     const isActive = m.id === activeModuleId;
+    const locked = !isDone && !isFirstIncomplete(m, completed);
     return `
-      <div class="module-item ${isActive ? 'active' : ''}" onclick='loadModuleIntoPlayer(${JSON.stringify(m).replace(/'/g,"&apos;")}, ${JSON.stringify(modules).replace(/'/g,"&apos;")})'>
-        <div class="mod-num ${isDone ? 'done' : isActive ? 'current' : 'todo'}">${isDone ? '<i class="fas fa-check"></i>' : m.module_number}</div>
+      <div class="module-item ${isActive?'active':''} ${locked?'locked':''}" onclick="${locked?`showToast('Complete previous modules first','info')`:`loadModule(${JSON.stringify(m).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')})`}">
+        <div class="mod-num ${isDone?'mod-done':isActive?'mod-current':locked?'mod-locked':'mod-todo'}">${isDone?'<i class="fas fa-check"></i>':m.module_number}</div>
         <div>
-          <div class="mod-item-title">${m.title}</div>
-          <div class="mod-item-dur">${m.duration_label || ''}</div>
+          <div class="mod-title">${m.title}</div>
+          <div class="mod-dur">${m.duration_label||''} ${m.quiz_required?'<i class="fas fa-question-circle" title="Quiz required" style="color:var(--gold);font-size:.7rem;"></i>':''}</div>
         </div>
       </div>`;
-  }).join('');
+  }).join('') || '<div style="padding:20px;text-align:center;color:var(--muted);font-size:.82rem;">No modules yet</div>';
 }
 
-function loadModuleIntoPlayer(mod, allModules) {
+function isFirstIncomplete(mod, completed) {
+  // A module is accessible if it's done OR it's the first undone one
+  const idx = activeModules.findIndex(m=>m.id===mod.id);
+  if (idx === 0) return true;
+  const prev = activeModules[idx-1];
+  return completed.includes(prev.id);
+}
+
+function loadModule(mod) {
+  if (typeof mod === 'string') mod = JSON.parse(mod.replace(/&quot;/g,'"'));
   activeModuleId = mod.id;
   document.getElementById('videoTitle').textContent = mod.title;
-  document.getElementById('videoDesc').textContent = mod.description || '';
+  document.getElementById('videoDesc').textContent = mod.description||'';
+  document.getElementById('quizPanel').innerHTML = '';
 
   const wrap = document.getElementById('videoWrap');
   if (mod.video_id) {
-    const src = mod.video_provider === 'youtube'
+    const src = mod.video_provider==='youtube'
       ? `https://www.youtube-nocookie.com/embed/${mod.video_id}?rel=0&modestbranding=1`
       : `https://player.vimeo.com/video/${mod.video_id}?title=0&byline=0&portrait=0`;
-    wrap.innerHTML = `<iframe src="${src}" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+    wrap.innerHTML = `<iframe src="${src}" allowfullscreen></iframe>`;
   } else {
     wrap.innerHTML = `<div class="video-placeholder"><i class="fas fa-film" style="font-size:2.5rem;"></i><span>Video coming soon</span></div>`;
   }
 
-  const isDone = (activeEnrollment.completed_modules || []).includes(mod.id);
+  const completed = activeEnrollment.completed_modules||[];
+  const isDone = completed.includes(mod.id);
   const btn = document.getElementById('markDoneBtn');
-  btn.innerHTML = isDone ? '<i class="fas fa-check-circle"></i> Completed' : '<i class="fas fa-check"></i> Mark Complete';
+  btn.innerHTML = isDone?'<i class="fas fa-check-circle"></i> Completed':'<i class="fas fa-check"></i> Mark Complete';
   btn.disabled = isDone;
 
-  renderModuleListPlayer(allModules);
+  // Materials
+  const mats = JSON.parse(mod.materials_json||'[]');
+  const matsSection = document.getElementById('materialsSection');
+  if (mats.length) {
+    matsSection.style.display = 'block';
+    document.getElementById('materialsList').innerHTML = mats.map(mat=>`
+      <div class="material-item">
+        <i class="fas ${mat.type==='pdf'?'fa-file-pdf':mat.type==='video'?'fa-video':'fa-file'}" style="color:var(--gold);"></i>
+        <a href="${mat.url}" target="_blank">${mat.name}</a>
+      </div>`).join('');
+  } else { matsSection.style.display='none'; }
+
+  renderModuleList();
 }
 
-async function markCurrentComplete() {
+async function handleMarkDone() {
   if (!activeModuleId || !activeEnrollment) return;
+  const mod = activeModules.find(m=>m.id===activeModuleId);
+  if (!mod) return;
+
+  // If quiz required and not done yet — show quiz instead of marking complete
+  if (mod.quiz_required && mod.quiz && mod.quiz.length > 0) {
+    const completed = activeEnrollment.completed_modules||[];
+    if (!completed.includes(mod.id)) {
+      renderQuiz(mod);
+      return;
+    }
+  }
+  await markModuleComplete();
+}
+
+async function markModuleComplete() {
   try {
     const result = await API.completeModule(activeEnrollment.id, activeModuleId);
     activeEnrollment.completed_modules = result.completed_modules;
-    document.getElementById('markDoneBtn').innerHTML = '<i class="fas fa-check-circle"></i> Completed';
-    document.getElementById('markDoneBtn').disabled = true;
-    showToast('Module marked complete!', 'success');
-
-    // Refresh module list + my courses grid (progress ring)
-    const data = await API.getEnrollmentDetail(activeEnrollment.id);
-    renderModuleListPlayer(data.modules);
+    const btn = document.getElementById('markDoneBtn');
+    btn.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
+    btn.disabled = true;
+    document.getElementById('quizPanel').innerHTML = '';
+    showToast('Module complete! 🎉','success');
+    USER.module_streak = (USER.module_streak||0)+1;
+    document.getElementById('moduleStreak').textContent = USER.module_streak;
+    renderModuleList();
     loadMyCourses();
-  } catch (err) {
-    showToast(err.message || 'Failed to update progress', 'error');
+  } catch(err) { showToast(err.message||'Failed to update progress','error'); }
+}
+
+function renderQuiz(mod) {
+  const quiz = mod.quiz||[];
+  if (!quiz.length) { markModuleComplete(); return; }
+  const selected = new Array(quiz.length).fill(null);
+  let submitted = false;
+
+  document.getElementById('quizPanel').innerHTML = `
+    <div class="quiz-panel">
+      <h3>Module Quiz</h3>
+      <p class="quiz-sub">Score ${mod.quiz_pass_threshold||70}% or higher to complete this module.</p>
+      ${quiz.map((q,qi)=>`
+        <div class="question-block" id="qblock_${qi}">
+          <div class="question-text">${qi+1}. ${q.question}</div>
+          ${q.options.map((opt,oi)=>`
+            <button class="option-btn" id="opt_${qi}_${oi}" onclick="selectOption(${qi},${oi},${quiz.length})">${String.fromCharCode(65+oi)}. ${opt}</button>
+          `).join('')}
+        </div>`).join('')}
+      <button class="btn btn-gold" id="submitQuizBtn" onclick="submitQuiz()" style="margin-top:8px;" disabled><i class="fas fa-check"></i> Submit Quiz</button>
+      <div id="quizResultPanel"></div>
+    </div>`;
+
+  window._quizSelected = selected;
+  window._quizSubmitted = false;
+
+  function selectOption(qi, oi, total) {
+    if (window._quizSubmitted) return;
+    window._quizSelected[qi] = oi;
+    // Highlight selected
+    quiz[qi].options.forEach((_,i)=>{
+      const btn = document.getElementById(`opt_${qi}_${i}`);
+      btn.classList.toggle('selected', i===oi);
+    });
+    const allAnswered = window._quizSelected.every(v=>v!==null);
+    document.getElementById('submitQuizBtn').disabled = !allAnswered;
   }
+  window.selectOption = selectOption;
+
+  window.submitQuiz = async function() {
+    if (window._quizSubmitted) return;
+    window._quizSubmitted = true;
+    document.getElementById('submitQuizBtn').disabled = true;
+    try {
+      const result = await API.submitQuiz(activeModuleId, activeEnrollment.id, window._quizSelected);
+      // Show correct/wrong per question
+      result.results.forEach((r,qi)=>{
+        quiz[qi].options.forEach((_,oi)=>{
+          const btn = document.getElementById(`opt_${qi}_${oi}`);
+          if (oi===r.correct) btn.classList.add('correct');
+          else if (oi===window._quizSelected[qi] && !r.is_correct) btn.classList.add('wrong');
+          btn.onclick=null;
+        });
+        if (r.explanation) {
+          const exp = document.createElement('div');
+          exp.style.cssText='font-size:.76rem;color:var(--muted);margin-top:6px;padding:8px 10px;background:var(--nude-light);border-radius:6px;';
+          exp.textContent = '💡 '+r.explanation;
+          document.getElementById(`qblock_${qi}`).appendChild(exp);
+        }
+      });
+      const passed = result.passed;
+      document.getElementById('quizResultPanel').innerHTML = `
+        <div class="quiz-result ${passed?'pass':'fail'}" style="margin-top:14px;">
+          <div class="quiz-score ${passed?'pass':'fail'}">${result.score}%</div>
+          <div style="margin-top:6px;font-weight:600;">${result.message}</div>
+          ${!passed?`<button class="btn btn-ghost" onclick="renderQuiz(activeModules.find(m=>m.id===activeModuleId))" style="margin-top:12px;"><i class="fas fa-redo"></i> Try Again</button>`:''}
+        </div>`;
+      if (passed) {
+        activeEnrollment.completed_modules = [...(activeEnrollment.completed_modules||[]), activeModuleId];
+        const btn = document.getElementById('markDoneBtn');
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
+        btn.disabled = true;
+        USER.module_streak = (USER.module_streak||0)+1;
+        document.getElementById('moduleStreak').textContent = USER.module_streak;
+        renderModuleList();
+        loadMyCourses();
+      }
+    } catch(err) { showToast(err.message||'Failed to submit quiz','error'); window._quizSubmitted=false; document.getElementById('submitQuizBtn').disabled=false; }
+  };
 }
 
 async function goNextModule() {
-  if (!activeCourseDetail) return;
+  const idx = activeModules.findIndex(m=>m.id===activeModuleId);
+  if (idx>=0 && idx<activeModules.length-1) {
+    const next = activeModules[idx+1];
+    const completed = activeEnrollment.completed_modules||[];
+    if (!completed.includes(activeModuleId)) { showToast('Complete this module first','info'); return; }
+    loadModule(next);
+  } else { showToast("🎉 You've reached the last module!",'success'); }
+}
+
+function closePlayer(restoreTab=true) {
+  document.getElementById('playerView').classList.remove('show');
+  document.getElementById('myCoursesGrid').style.display = '';
+  const frame = document.getElementById('videoFrame');
+  if(frame) frame.src='';
+  activeEnrollment=null; activeCourseDetail=null; activeModuleId=null; activeModules=[];
+  if (restoreTab) {
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.querySelector('[data-tab="courses"]').classList.add('active');
+    document.getElementById('courses').classList.add('active');
+    document.getElementById('pageTitle').textContent='My Courses';
+  }
+}
+
+// ── DISCOVER TAB ───────────────────────────────────────────────────────────
+async function loadCatalog() {
   try {
-    const data = await API.getEnrollmentDetail(activeEnrollment.id);
-    const modules = data.modules;
-    const idx = modules.findIndex(m => m.id === activeModuleId);
-    if (idx >= 0 && idx < modules.length - 1) {
-      loadModuleIntoPlayer(modules[idx + 1], modules);
-    } else {
-      showToast('🎉 You\'ve reached the last module!', 'success');
+    const data = await API.getCourses();
+    const enrolledIds = new Set(myCourses.map(e=>e.course_id));
+    const unenrolled = (data.courses||[]).filter(c=>!enrolledIds.has(c.id));
+    if (!unenrolled.length) {
+      document.getElementById('catalogGrid').innerHTML=`<div class="empty-state"><i class="fas fa-check-circle"></i><p>You're enrolled in all available courses!</p></div>`;
+      return;
+    }
+    document.getElementById('catalogGrid').innerHTML = unenrolled.map(c=>`
+      <div class="card catalog-card">
+        <div class="catalog-icon"><i class="fas ${c.icon||'fa-graduation-cap'}"></i></div>
+        <div class="catalog-title">${c.title}</div>
+        <div class="catalog-price">KES ${c.price.toLocaleString()}</div>
+        <a href="enroll.html?course=${c.slug}" class="btn btn-gold btn-sm">Enroll Now</a>
+      </div>`).join('');
+  } catch { document.getElementById('catalogGrid').innerHTML=`<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load courses.</p></div>`; }
+}
+
+// ── MY MENTOR TAB ──────────────────────────────────────────────────────────
+async function loadMentorTab() {
+  const container = document.getElementById('mentorContent');
+  if (!USER.has_mentorship) {
+    container.innerHTML = `
+      <div class="upgrade-card">
+        <i class="fas fa-lock" style="font-size:2.2rem;color:var(--gold);margin-bottom:12px;display:block;"></i>
+        <h3>Unlock Full Mentorship</h3>
+        <p>Get a dedicated trading mentor, 1-on-1 sessions, personalised feedback, and access to all course modules.</p>
+        <div class="price">KES 3,500</div>
+        <a href="mentorship-form.html" class="btn-welcome">Apply for Mentorship <i class="fas fa-arrow-right"></i></a>
+      </div>`;
+    return;
+  }
+  if (!USER.mentor_id) {
+    container.innerHTML = `
+      <div class="card" style="padding:28px;text-align:center;">
+        <i class="fas fa-user-clock" style="font-size:2.2rem;color:var(--gold);margin-bottom:12px;display:block;"></i>
+        <h3 style="font-size:1.3rem;margin-bottom:8px;">Mentor Assignment Pending</h3>
+        <p style="color:var(--muted);font-size:.88rem;">Your mentor will be assigned within 24 hours of enrollment approval. You'll see them here once assigned.</p>
+      </div>`;
+    return;
+  }
+  try {
+    const [sessionsData, avData] = await Promise.all([
+      API.getMySessions(),
+      API.getMentorAvailability(USER.mentor_id)
+    ]);
+    updateNextSession(sessionsData.sessions);
+    const upcoming = (sessionsData.sessions||[]).filter(s=>s.status!=='cancelled'&&new Date(s.scheduled_at)>new Date());
+    const past = (sessionsData.sessions||[]).filter(s=>s.status==='completed');
+
+    container.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div class="card mentor-card" style="margin-bottom:14px;">
+            <div class="mentor-avatar-lg">${(USER.mentor_name||'M').charAt(0)}</div>
+            <div class="mentor-name">${USER.mentor_display_name||'Your Mentor'}</div>
+            <div class="mentor-bio">${USER.mentor_bio||'Your dedicated trading mentor.'}</div>
+            <div style="text-align:center;">
+              <button class="btn btn-gold" onclick="document.getElementById('bookModal').classList.add('show')"><i class="fas fa-calendar-plus"></i> Book a Session</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Upcoming Sessions</div>
+          ${upcoming.length?upcoming.map(s=>`
+            <div class="card session-card">
+              <div class="session-icon"><i class="fas fa-${s.contact_method==='zoom'?'video':'whatsapp'}"></i></div>
+              <div>
+                <div class="session-date">${new Date(s.scheduled_at).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'})}</div>
+                <div class="session-meta">${s.duration_minutes} min · ${s.contact_method} · <span class="badge badge-${s.status==='confirmed'?'approved':'pending'}">${s.status}</span></div>
+                ${s.status==='confirmed'&&s.contact_link?`<a href="${s.contact_link}" target="_blank" class="session-contact"><i class="fas fa-${s.contact_method==='zoom'?'video':'whatsapp'}"></i> Join Session</a>`:''}
+                ${s.client_notes?`<div style="font-size:.76rem;color:var(--muted);margin-top:6px;">${s.client_notes}</div>`:''}
+                <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--danger);border:none;margin-top:8px;" onclick="cancelSession(${s.id})">Cancel</button>
+              </div>
+            </div>`).join(''):`<div class="empty-state" style="padding:20px;"><i class="fas fa-calendar-xmark"></i><p>No upcoming sessions</p></div>`}
+          
+          ${past.length?`<div class="section-label" style="margin-top:16px;">Past Sessions</div>${past.map(s=>`
+            <div class="card session-card">
+              <div class="session-icon" style="background:rgba(16,185,129,.1);"><i class="fas fa-check" style="color:var(--success);"></i></div>
+              <div>
+                <div class="session-date">${new Date(s.scheduled_at).toLocaleDateString('en-KE',{dateStyle:'medium'})}</div>
+                ${s.mentor_notes?`<div style="font-size:.78rem;color:var(--muted);margin-top:4px;font-style:italic;">"${s.mentor_notes}"</div>`:''}
+              </div>
+            </div>`).join('')}`:''}
+        </div>
+      </div>`;
+  } catch(err) { container.innerHTML=`<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load mentor info.</p></div>`; }
+}
+
+async function submitBooking() {
+  const dt = document.getElementById('book_datetime').value;
+  const method = document.getElementById('book_method').value;
+  const notes = document.getElementById('book_notes').value;
+  if (!dt) { showToast('Please select a date and time','info'); return; }
+  try {
+    await API.bookSession({ scheduled_at: new Date(dt).toISOString(), contact_method: method, client_notes: notes, duration_minutes: 60 });
+    document.getElementById('bookModal').classList.remove('show');
+    showToast('Session booked! Your mentor will confirm shortly.','success');
+    loadMentorTab();
+  } catch(err) { showToast(err.message||'Failed to book session','error'); }
+}
+
+async function cancelSession(id) {
+  if (!confirm('Cancel this session?')) return;
+  try { await API.cancelSession(id); showToast('Session cancelled','info'); loadMentorTab(); }
+  catch(err) { showToast(err.message||'Failed to cancel','error'); }
+}
+
+// ── TRADING TOOLS ──────────────────────────────────────────────────────────
+function switchTool(tool, btn) {
+  document.querySelectorAll('.tool-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tool-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(`tool-${tool}`).classList.add('active');
+}
+
+function calcPositionSize() {
+  const balance = parseFloat(document.getElementById('ps_balance').value)||0;
+  const risk = parseFloat(document.getElementById('ps_risk').value)||1;
+  const sl = parseFloat(document.getElementById('ps_sl').value)||20;
+  const pair = document.getElementById('ps_pair').value;
+  if (!balance||!sl) return;
+
+  const riskAmt = balance * risk/100;
+  const isJpy = pair==='jpy';
+  const pipValue = isJpy ? 0.01 : 0.0001;
+  const pipValuePerStdLot = isJpy ? 1000 : 10; // USD per standard lot per pip
+  const lots = riskAmt / (sl * pipValuePerStdLot);
+  const pipVal = lots * pipValuePerStdLot;
+
+  document.getElementById('ps_result').style.display='block';
+  document.getElementById('ps_lots').textContent = lots.toFixed(2);
+  document.getElementById('ps_risk_amt').textContent = '$'+riskAmt.toFixed(2);
+  document.getElementById('ps_pip_val').textContent = '$'+pipVal.toFixed(2);
+}
+
+function calcRR() {
+  const entry = parseFloat(document.getElementById('rr_entry').value);
+  const sl = parseFloat(document.getElementById('rr_sl').value);
+  const tp = parseFloat(document.getElementById('rr_tp').value);
+  const dir = document.getElementById('rr_dir').value;
+  if (!entry||!sl||!tp) return;
+
+  const isJpy = false;
+  const mult = isJpy?100:10000;
+  const slPips = Math.abs(entry-sl)*mult;
+  const tpPips = Math.abs(tp-entry)*mult;
+  const rr = slPips>0?(tpPips/slPips):0;
+
+  document.getElementById('rr_result').style.display='block';
+  document.getElementById('rr_ratio').textContent = rr.toFixed(2)+':1';
+  document.getElementById('rr_sl_pips').textContent = slPips.toFixed(1);
+  document.getElementById('rr_tp_pips').textContent = tpPips.toFixed(1);
+
+  const slW = Math.round(slPips/(slPips+tpPips)*100);
+  const tpW = 100-slW;
+  document.getElementById('rr_visual').innerHTML = `
+    <div class="rr-sl" style="width:${slW}%;padding:8px;">SL ${slPips.toFixed(0)}p</div>
+    <div class="rr-entry"></div>
+    <div class="rr-tp" style="width:${tpW}%;padding:8px;">TP ${tpPips.toFixed(0)}p</div>`;
+
+  const verdict = rr>=2?'✅ Good trade setup — reward outweighs risk':rr>=1?'⚠️ Acceptable but aim for 2:1 or better':'❌ Risk outweighs reward — reconsider entry or exit';
+  document.getElementById('rr_verdict').textContent=verdict;
+}
+
+// ── TRADE JOURNAL ──────────────────────────────────────────────────────────
+let editingTradeId = null;
+function openTradeModal(trade=null) {
+  editingTradeId = trade?trade.id:null;
+  document.getElementById('tradeModalTitle').textContent = trade?'Update Trade':'Log a Trade';
+  document.getElementById('tj_pair').value = trade?.pair||'';
+  document.getElementById('tj_direction').value = trade?.direction||'buy';
+  document.getElementById('tj_entry').value = trade?.entry_price||'';
+  document.getElementById('tj_sl').value = trade?.sl_price||'';
+  document.getElementById('tj_tp').value = trade?.tp_price||'';
+  document.getElementById('tj_setup').value = trade?.setup_type||'';
+  document.getElementById('tj_notes').value = trade?.notes||'';
+  document.getElementById('tradeModal').classList.add('show');
+}
+function closeTradeModal() { document.getElementById('tradeModal').classList.remove('show'); editingTradeId=null; }
+
+async function saveTrade() {
+  const data = {
+    pair: document.getElementById('tj_pair').value.trim().toUpperCase(),
+    direction: document.getElementById('tj_direction').value,
+    entry_price: parseFloat(document.getElementById('tj_entry').value),
+    sl_price: parseFloat(document.getElementById('tj_sl').value),
+    tp_price: parseFloat(document.getElementById('tj_tp').value),
+    setup_type: document.getElementById('tj_setup').value.trim(),
+    notes: document.getElementById('tj_notes').value.trim()
+  };
+  if (!data.pair||!data.entry_price||!data.sl_price||!data.tp_price) { showToast('Fill in pair, entry, SL and TP','info'); return; }
+  try {
+    if (editingTradeId) await API.updateTrade(editingTradeId, data);
+    else await API.logTrade(data);
+    closeTradeModal();
+    showToast(editingTradeId?'Trade updated':'Trade logged','success');
+    loadJournal();
+  } catch(err) { showToast(err.message||'Failed to save trade','error'); }
+}
+
+async function loadJournal() {
+  try {
+    const data = await API.getJournal();
+    journalData = data;
+    renderJournalStats(data.stats);
+    renderTradeTable(data.trades);
+    if (USER.has_partner_status && data.stats) {
+      document.getElementById('stat-earnings').textContent = `KES ${(data.stats.total_pips||0).toFixed(0)}p`;
     }
   } catch {}
 }
 
-function closePlayer(restoreTab = true) {
-  document.getElementById('playerView').classList.remove('show');
-  document.getElementById('videoFrame')?.setAttribute('src', '');
-  activeEnrollment = null;
-  activeCourseDetail = null;
-  activeModuleId = null;
-  if (restoreTab) {
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.querySelector('[data-tab="mycourses"]').classList.add('active');
-    document.getElementById('mycourses').classList.add('active');
-    document.getElementById('pageTitle').textContent = 'My Courses';
-    loadMyCourses();
-  }
+function renderJournalStats(stats) {
+  if (!stats) return;
+  const container = document.getElementById('journalStats');
+  const wr = stats.win_rate||0;
+  container.style.display='grid';
+  container.innerHTML = `
+    <div class="journal-stat card"><div class="val">${stats.total_trades||0}</div><div class="lbl">Total Trades</div></div>
+    <div class="journal-stat card"><div class="val" style="color:${wr>=50?'var(--success)':'var(--danger)'}">${wr}%</div><div class="lbl">Win Rate</div></div>
+    <div class="journal-stat card"><div class="val" style="color:${(stats.total_pips||0)>=0?'var(--success)':'var(--danger)'}">${(stats.total_pips||0).toFixed(1)}</div><div class="lbl">Total Pips</div></div>
+    <div class="journal-stat card"><div class="val">${stats.avg_rr||0}</div><div class="lbl">Avg R:R</div></div>
+    <div class="journal-stat card"><div class="val">${stats.wins||0}</div><div class="lbl">Wins</div></div>
+    <div class="journal-stat card"><div class="val">${stats.losses||0}</div><div class="lbl">Losses</div></div>`;
 }
 
-// ── TOAST ──────────────────────────────────────────────────────────────────────
-function showToast(msg, type = 'info') {
-  const colors = { success: 'var(--success)', error: 'var(--danger)', info: 'var(--gold)' };
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.style.background = colors[type] || colors.info;
-  t.textContent = msg;
+function renderTradeTable(trades) {
+  const tbody = document.getElementById('tradeTableBody');
+  if (!trades||!trades.length) {
+    tbody.innerHTML='<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">No trades logged yet. Click "Log Trade" to start.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = trades.map(t=>`
+    <tr>
+      <td><strong>${t.pair}</strong></td>
+      <td><span style="color:${t.direction==='buy'?'var(--success)':'var(--danger)'};">${t.direction.toUpperCase()}</span></td>
+      <td>${parseFloat(t.entry_price).toFixed(5)}</td>
+      <td>${parseFloat(t.sl_price).toFixed(5)}</td>
+      <td>${parseFloat(t.tp_price).toFixed(5)}</td>
+      <td>${t.exit_price?parseFloat(t.exit_price).toFixed(5):'—'}</td>
+      <td class="${t.pips_result>0?'outcome-win':t.pips_result<0?'outcome-loss':''}">${t.pips_result!=null?parseFloat(t.pips_result).toFixed(1)+'p':'—'}</td>
+      <td>${t.rr_result?parseFloat(t.rr_result).toFixed(2)+':1':'—'}</td>
+      <td class="${t.outcome==='win'?'outcome-win':t.outcome==='loss'?'outcome-loss':'outcome-be'}">${t.outcome||'open'}</td>
+      <td>${t.setup_type||'—'}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn btn-sm btn-ghost" onclick="openTradeModal(${JSON.stringify(t).replace(/"/g,'&quot;')})" style="margin-right:4px;">Edit</button>
+        <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--danger);border:none;" onclick="deleteTrade(${t.id})">Del</button>
+      </td>
+    </tr>`).join('');
+}
+
+async function deleteTrade(id) {
+  if (!confirm('Delete this trade?')) return;
+  try { await API.deleteTrade(id); showToast('Trade deleted','info'); loadJournal(); }
+  catch(err) { showToast(err.message||'Failed to delete','error'); }
+}
+
+// ── CROWN PARTNER TAB ──────────────────────────────────────────────────────
+async function loadPartnerTab() {
+  const container = document.getElementById('partnerContent');
+  if (!USER.has_partner_status) {
+    container.innerHTML = `
+      <div class="upgrade-card">
+        <i class="fas fa-crown" style="font-size:2.2rem;color:var(--gold);margin-bottom:12px;display:block;"></i>
+        <h3>Become a Crown Partner</h3>
+        <p>Earn commissions by referring traders to Crown Trade Academy. Join our affiliate program and build passive income alongside your trading journey.</p>
+        <div class="price">KES 500</div>
+        <a href="referral-register.html" class="btn-welcome">Apply as Crown Partner <i class="fas fa-arrow-right"></i></a>
+      </div>`;
+    return;
+  }
+  try {
+    const data = await API.getReferralDashboard();
+    partnerData = data;
+    const agent = data.agent;
+    document.getElementById('stat-earnings').textContent = `KES ${(agent.wallet?.available||0).toLocaleString()}`;
+
+    const tierClass = `tier-${agent.tier||'bronze'}`;
+    container.innerHTML = `
+      <div class="wallet-card">
+        <div class="wallet-title">Available Balance</div>
+        <div><span class="wallet-amount">${(agent.wallet?.available||0).toLocaleString()}</span><span class="wallet-currency">KES</span></div>
+        <div class="wallet-stats">
+          <div class="wallet-stat"><div class="lbl">Pending</div><div class="val">KES ${(agent.wallet?.pending||0).toLocaleString()}</div></div>
+          <div class="wallet-stat"><div class="lbl">Lifetime Earned</div><div class="val">KES ${(agent.wallet?.lifetime_earned||0).toLocaleString()}</div></div>
+          <div class="wallet-stat"><div class="lbl">Withdrawn</div><div class="val">KES ${(agent.wallet?.total_withdrawn||0).toLocaleString()}</div></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+        <div>
+          <span class="tier-badge ${tierClass}"><i class="fas fa-crown"></i> ${agent.tier_label}</span>
+          <span style="margin-left:10px;font-size:.8rem;color:var(--muted);">${agent.total_referrals} referral${agent.total_referrals!==1?'s':''}</span>
+          ${agent.next_tier?`<span style="margin-left:8px;font-size:.76rem;color:var(--muted);">— ${agent.next_tier.min - agent.total_referrals} more to ${agent.next_tier.label}</span>`:'<span style="margin-left:8px;font-size:.76rem;color:var(--gold);">🏆 Max tier!</span>'}
+        </div>
+        <button class="btn btn-gold" onclick="document.getElementById('withdrawModal').classList.add('show')"><i class="fas fa-money-bill-wave"></i> Withdraw</button>
+      </div>
+      <div class="section-label">Your Referral Link</div>
+      <div class="referral-link-box" style="margin-bottom:20px;">
+        <code id="refLink">${agent.referral_link||''}</code>
+        <button class="btn btn-ghost btn-sm" onclick="copyRefLink()"><i class="fas fa-copy"></i> Copy</button>
+      </div>
+      <div class="section-label">Recent Earnings</div>
+      <div class="card" style="overflow:auto;">
+        <table class="earnings-table">
+          <thead><tr><th>Referred</th><th>Amount</th><th>Type</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>${(data.earnings||[]).slice(0,10).map(e=>`
+            <tr>
+              <td>${e.referred_name||e.referred_email}</td>
+              <td><strong>KES ${e.amount}</strong></td>
+              <td>${e.commission_type==='first_referral'?'🎁 First Referral':'Standard'}</td>
+              <td><span class="badge ${e.status==='paid'?'badge-approved':e.status==='available'?'badge-gold':'badge-pending'}">${e.status}</span></td>
+              <td>${new Date(e.created_at).toLocaleDateString('en-KE')}</td>
+            </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">No earnings yet. Share your link to start earning!</td></tr>'}
+          </tbody>
+        </table>
+      </div>`;
+  } catch(err) { container.innerHTML=`<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load partner data.</p></div>`; }
+}
+
+function copyRefLink() {
+  const link = document.getElementById('refLink')?.textContent;
+  if (!link) return;
+  navigator.clipboard.writeText(link).then(()=>showToast('Referral link copied!','success')).catch(()=>{
+    const el=document.createElement('textarea'); el.value=link; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); showToast('Copied!','success');
+  });
+}
+
+async function submitWithdrawal() {
+  const amount = parseInt(document.getElementById('wd_amount').value);
+  const mpesa = document.getElementById('wd_mpesa').value.trim();
+  const name = document.getElementById('wd_name').value.trim();
+  if (!amount||amount<500) { showToast('Minimum withdrawal is KES 500','info'); return; }
+  if (!mpesa) { showToast('M-Pesa number required','info'); return; }
+  try {
+    await API.requestWithdrawal({ amount, mpesa_number: mpesa, mpesa_name: name });
+    document.getElementById('withdrawModal').classList.remove('show');
+    showToast('Withdrawal request submitted!','success');
+    loadPartnerTab();
+  } catch(err) { showToast(err.message||'Failed to submit','error'); }
+}
+
+// ── PAYMENTS TAB ───────────────────────────────────────────────────────────
+async function loadPaymentsTab() {
+  const container = document.getElementById('paymentsContent');
+  if (!myCourses.length) { container.innerHTML='<div class="empty-state"><i class="fas fa-receipt"></i><p>No payment records yet.</p></div>'; return; }
+  container.innerHTML = myCourses.map(e=>`
+    <div class="card payment-item" style="margin-bottom:10px;">
+      <div class="payment-icon"><i class="fas fa-graduation-cap"></i></div>
+      <div class="payment-info">
+        <div class="payment-title">${e.course_title}</div>
+        <div class="payment-meta">
+          Amount: KES ${(e.amount||0).toLocaleString()} ·
+          Payment: <span class="badge ${e.payment_status==='verified'?'badge-approved':e.payment_status==='pending'?'badge-pending':'badge-payment'}">${e.payment_status||'unpaid'}</span> ·
+          Enrollment: <span class="badge ${e.status==='approved'?'badge-approved':e.status==='rejected'?'badge-rejected':'badge-pending'}">${e.status}</span>
+        </div>
+        ${(!e.payment_proof||e.payment_status==='unpaid')?`
+          <div style="margin-top:10px;">
+            <label style="font-size:.76rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:6px;">Upload Payment Proof</label>
+            <input type="file" accept="image/*,application/pdf" id="proof_${e.id}" style="font-size:.8rem;">
+            <button class="btn btn-gold btn-sm" style="margin-top:8px;" onclick="uploadProof(${e.id},'${e.email||USER.email}')"><i class="fas fa-upload"></i> Upload</button>
+          </div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+async function uploadProof(enrollmentId, email) {
+  const fileInput = document.getElementById(`proof_${enrollmentId}`);
+  if (!fileInput.files.length) { showToast('Select a file first','info'); return; }
+  try {
+    const uploadData = await API.uploadPaymentProof(fileInput.files[0]);
+    await API.submitEnrollmentProof(email, enrollmentId, uploadData.url);
+    showToast('Payment proof submitted!','success');
+    loadMyCourses();
+    loadPaymentsTab();
+  } catch(err) { showToast(err.message||'Upload failed','error'); }
+}
+
+// ── PROFILE TAB ────────────────────────────────────────────────────────────
+async function saveProfile() {
+  const name = document.getElementById('pf_name').value.trim();
+  const phone = document.getElementById('pf_phone').value.trim();
+  if (!name) { showToast('Name cannot be empty','info'); return; }
+  try {
+    await API.updateProfile({ full_name:name, phone });
+    USER.full_name=name; USER.phone=phone; setUser(USER);
+    document.getElementById('userName').textContent=name;
+    document.getElementById('userAvatar').textContent=name.charAt(0).toUpperCase();
+    showToast('Profile updated','success');
+  } catch(err) { showToast(err.message||'Failed to update','error'); }
+}
+
+async function changePassword() {
+  const cur = document.getElementById('pw_current').value;
+  const nw = document.getElementById('pw_new').value;
+  const cf = document.getElementById('pw_confirm').value;
+  if (!cur||!nw) { showToast('Fill in both passwords','info'); return; }
+  if (nw!==cf) { showToast('New passwords do not match','info'); return; }
+  if (nw.length<6) { showToast('Password must be at least 6 characters','info'); return; }
+  try {
+    await API.changePassword({ current_password:cur, new_password:nw });
+    document.getElementById('pw_current').value='';
+    document.getElementById('pw_new').value='';
+    document.getElementById('pw_confirm').value='';
+    showToast('Password updated','success');
+  } catch(err) { showToast(err.message||'Failed to change password','error'); }
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────────
+function showToast(msg, type='info') {
+  const colors={success:'var(--success)',error:'var(--danger)',info:'var(--gold)'};
+  const t=document.createElement('div');
+  t.className='toast';
+  t.style.background=colors[type]||colors.info;
+  t.textContent=msg;
   document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
+  setTimeout(()=>t.remove(),3200);
 }
 </script>
 </body>
