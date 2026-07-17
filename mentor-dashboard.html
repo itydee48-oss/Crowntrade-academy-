@@ -3,279 +3,885 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mentor Dashboard — Crown Trade Academy</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Crown Trade Academy — Mentor Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="api.js"></script>
 <style>
-:root{--nude-light:#F9F6F2;--nude-med:#E8DFD6;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#2e2e2e;--muted:#7A7A7A;--success:#10B981;--danger:#EF4444;--info:#3B82F6;}
+:root{--gold:#C8A97E;--gold-dark:#B89463;--gold-glow:rgba(200,169,126,.15);--charcoal:#1C1C1E;--charcoal-2:#2d2d35;--nude-light:#F9F6F2;--nude-med:#E8DFD6;--nude-dark:#D4C8BB;--muted:#7A7A7A;--success:#10B981;--danger:#EF4444;--warning:#F59E0B;--sidebar-w:240px;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Montserrat',sans-serif;background:linear-gradient(135deg,var(--nude-light),#fff);color:var(--charcoal);min-height:100vh;}
-.app{display:grid;grid-template-columns:240px 1fr;gap:20px;padding:20px;min-height:100vh;max-width:1400px;margin:0 auto;}
-.sidebar{background:#fff;border:1px solid rgba(212,200,188,0.6);border-radius:16px;padding:24px 16px;height:fit-content;position:sticky;top:20px;box-shadow:0 4px 20px rgba(0,0,0,0.06);}
-.brand{font-family:'Cormorant Garamond',serif;color:var(--gold-dark);font-size:1.7rem;text-align:center;font-weight:700;margin-bottom:4px;}
-.brand-sub{color:var(--muted);font-size:0.8rem;text-align:center;margin-bottom:20px;}
-.user-info{display:flex;align-items:center;gap:10px;padding:12px;background:var(--nude-light);border-radius:10px;margin-bottom:20px;border:1px solid rgba(212,200,188,0.3);}
-.user-avatar{width:40px;height:40px;background:linear-gradient(135deg,#1C2B3A,#2d3a4a);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:1rem;flex-shrink:0;}
-.user-name{font-weight:700;font-size:0.9rem;}
-.user-role{color:var(--muted);font-size:0.78rem;}
-.nav{display:flex;flex-direction:column;gap:5px;margin-bottom:20px;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid transparent;border-radius:9px;cursor:pointer;font-weight:600;font-size:0.87rem;color:var(--charcoal);text-decoration:none;transition:all 0.3s;}
-.nav-item:hover{background:var(--nude-light);border-color:rgba(212,200,188,0.3);}
-.nav-item.active{background:linear-gradient(135deg,#1C2B3A,#2d3a4a);color:var(--gold);}
-.nav-item i{width:16px;text-align:center;}
-.logout-btn{display:flex;align-items:center;gap:9px;padding:11px 13px;background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);border-radius:9px;cursor:pointer;font-weight:600;font-size:0.87rem;width:100%;font-family:'Montserrat',sans-serif;transition:all 0.3s;}
+body{font-family:'Montserrat',sans-serif;background:#EDEAE5;color:var(--charcoal);min-height:100vh;}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',serif;font-weight:700;}
+button{font-family:'Montserrat',sans-serif;cursor:pointer;}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:var(--sidebar-w);background:var(--charcoal);color:#E0D8CF;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sidebar-logo{padding:22px 16px 14px;border-bottom:1px solid rgba(255,255,255,.06);}
+.brand{font-family:'Cormorant Garamond',serif;font-size:1.45rem;color:var(--gold);font-weight:700;}
+.brand-sub{font-size:.66rem;color:#555;margin-top:1px;letter-spacing:1px;}
+.sidebar-mentor{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;}
+.mentor-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0;overflow:hidden;background:linear-gradient(135deg,var(--gold),var(--gold-dark));}
+.mentor-avatar img{width:100%;height:100%;object-fit:cover;}
+.mentor-name-tag{font-weight:600;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mentor-role{font-size:.66rem;color:#666;margin-top:1px;}
+.sidebar-nav{flex:1;padding:10px;display:flex;flex-direction:column;gap:2px;}
+.nav-sec{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#3a3a3a;padding:10px 10px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:500;font-size:.82rem;color:#888;border:none;background:none;width:100%;text-align:left;transition:all .18s;}
+.nav-item:hover{background:rgba(255,255,255,.05);color:#E0D8CF;}
+.nav-item.active{background:var(--gold);color:#fff;font-weight:700;}
+.nav-item i{width:15px;text-align:center;}
+.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,.06);}
+.logout-btn{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(239,68,68,.1);color:#EF4444;border:1px solid rgba(239,68,68,.2);border-radius:8px;cursor:pointer;font-weight:600;font-size:.82rem;width:100%;}
 .logout-btn:hover{background:var(--danger);color:#fff;}
-.main{background:#fff;border-radius:16px;padding:24px;border:1px solid rgba(212,200,188,0.6);box-shadow:0 4px 20px rgba(0,0,0,0.06);}
-.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:14px;border-bottom:2px solid var(--nude-med);}
-.page-title{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--gold-dark);font-weight:700;}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:22px;}
-.stat{text-align:center;padding:18px 12px;background:linear-gradient(135deg,var(--nude-light),#fff);border-radius:12px;border:1px solid rgba(212,200,188,0.3);transition:all 0.3s;}
-.stat:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.06);}
-.stat-icon{font-size:1.6rem;color:var(--gold);margin-bottom:6px;}
-.stat-value{font-size:1.7rem;font-weight:700;color:var(--gold-dark);margin-bottom:4px;}
-.stat-label{color:var(--muted);font-size:0.78rem;font-weight:600;}
-.card{background:#fff;padding:20px;border-radius:12px;margin-bottom:18px;box-shadow:0 2px 10px rgba(0,0,0,0.04);border:1px solid rgba(212,200,188,0.3);}
-.card-title{font-family:'Cormorant Garamond',serif;color:var(--gold-dark);font-size:1.35rem;margin-bottom:14px;}
-.tab-content{display:none;}
-.tab-content.active{display:block;animation:fadeIn 0.3s ease;}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;}
+.topbar{background:#fff;border-bottom:1px solid rgba(212,200,188,.35);padding:13px 22px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold-dark);font-weight:700;}
+.content{flex:1;padding:20px 22px;overflow-y:auto;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;animation:fadeIn .25s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
-.table-wrap{overflow-x:auto;}
-table{width:100%;border-collapse:collapse;font-size:0.85rem;}
-th{background:var(--nude-light);padding:10px 12px;text-align:left;font-weight:700;font-size:0.76rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--nude-med);}
-td{padding:12px;border-bottom:1px solid rgba(212,200,188,0.25);vertical-align:top;}
-tr:hover td{background:#FDFAF7;}
-.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.74rem;font-weight:700;}
-.badge-approved{background:#D1FAE5;color:#065F46;}
-.badge-pending{background:#FEF3C7;color:#92400E;}
-.badge-verified{background:#DBEAFE;color:#1E40AF;}
-.student-card{background:var(--nude-light);border-radius:10px;padding:16px;border:1px solid rgba(212,200,188,0.4);margin-bottom:12px;display:flex;gap:14px;align-items:flex-start;transition:all 0.2s;}
-.student-card:hover{border-color:var(--gold);transform:translateX(3px);}
-.student-avatar{width:44px;height:44px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;}
-.student-name{font-weight:700;margin-bottom:3px;}
-.student-meta{color:var(--muted);font-size:0.82rem;}
-.info-box{background:var(--nude-light);border-left:4px solid var(--gold);padding:13px 15px;border-radius:0 8px 8px 0;margin-bottom:14px;font-size:0.87rem;}
-.spinner-wrap{text-align:center;padding:40px;color:var(--muted);}
-.spin{display:inline-block;width:24px;height:24px;border:3px solid var(--nude-med);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+.card{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);box-shadow:0 2px 8px rgba(0,0,0,.03);}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.8rem;border:1px solid transparent;font-family:'Montserrat',sans-serif;transition:all .2s;}
+.btn-gold{background:var(--gold);color:#fff;border-color:var(--gold);}
+.btn-gold:hover:not(:disabled){background:var(--gold-dark);}
+.btn-gold:disabled{opacity:.5;cursor:not-allowed;}
+.btn-ghost{background:transparent;border-color:var(--gold);color:var(--gold-dark);}
+.btn-ghost:hover{background:var(--gold);color:#fff;}
+.btn-danger{background:var(--danger);color:#fff;border-color:var(--danger);}
+.btn-sm{padding:5px 10px;font-size:.74rem;}
+.section-label{font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700;margin-bottom:10px;}
+.spinner{display:inline-block;width:22px;height:22px;border:3px solid var(--nude-med);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.toast{position:fixed;bottom:20px;right:20px;padding:12px 16px;border-radius:9px;color:#fff;font-weight:600;font-size:0.87rem;z-index:9999;display:flex;align-items:center;gap:7px;animation:slideUp 0.3s ease;box-shadow:0 6px 20px rgba(0,0,0,0.13);}
-.toast-success{background:var(--success);}
-.toast-error{background:var(--danger);}
-@keyframes slideUp{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-@media(max-width:800px){.app{grid-template-columns:1fr;}.sidebar{position:static;}.stats{grid-template-columns:repeat(2,1fr);}}
+.spinner-wrap{text-align:center;padding:36px;color:var(--muted);}
+.empty-state{text-align:center;padding:40px 20px;color:var(--muted);}
+.empty-state i{font-size:2rem;color:var(--gold);margin-bottom:10px;display:block;}
+.badge{display:inline-block;font-size:.66rem;padding:3px 8px;border-radius:20px;font-weight:700;}
+.badge-pending{background:#FEF3C7;color:#92400E;}
+.badge-approved{background:#D1FAE5;color:#065F46;}
+.badge-rejected{background:#FEE2E2;color:#991B1B;}
+.badge-info{background:#DBEAFE;color:#1E40AF;}
+.form-field{margin-bottom:14px;}
+.form-field label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);display:block;margin-bottom:5px;}
+.form-field input,.form-field select,.form-field textarea{width:100%;padding:9px 11px;border:1px solid var(--nude-med);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:.84rem;outline:none;transition:border .2s;background:#fff;}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--gold);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:14px;padding:24px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;}
+.modal h3{font-size:1.3rem;margin-bottom:16px;}
+.toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;border-radius:9px;color:#fff;font-weight:600;font-size:.82rem;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,.15);animation:slideUp .3s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── CLIENTS TAB ──────────────────────────────────────────────────────────── */
+.client-table{width:100%;border-collapse:collapse;font-size:.8rem;}
+.client-table th{padding:9px 12px;text-align:left;font-size:.66rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--nude-med);background:var(--nude-light);}
+.client-table td{padding:10px 12px;border-bottom:1px solid rgba(212,200,188,.2);}
+.client-table tr:hover td{background:var(--nude-light);}
+.streak-pill{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:20px;}
+.streak-login{background:rgba(245,158,11,.1);color:#92400E;}
+.streak-module{background:rgba(16,185,129,.1);color:#065F46;}
+.progress-bar-wrap{background:var(--nude-med);border-radius:20px;height:6px;width:100px;}
+.progress-bar-fill{background:var(--gold);border-radius:20px;height:6px;transition:width .5s ease;}
+.client-detail-panel{display:none;}
+.client-detail-panel.show{display:block;}
+
+/* ── SESSIONS TAB ─────────────────────────────────────────────────────────── */
+.session-row{padding:16px;margin-bottom:10px;}
+.session-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.session-info .date{font-weight:700;font-size:.92rem;}
+.session-info .meta{font-size:.76rem;color:var(--muted);margin-top:2px;}
+.session-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.notes-field{width:100%;padding:8px 10px;border:1px solid var(--nude-med);border-radius:7px;font-family:'Montserrat',sans-serif;font-size:.8rem;margin-top:8px;resize:vertical;min-height:60px;outline:none;}
+.notes-field:focus{border-color:var(--gold);}
+
+/* ── AVAILABILITY TAB ─────────────────────────────────────────────────────── */
+.avail-grid{display:grid;gap:12px;}
+.avail-day{background:#fff;border:1px solid rgba(212,200,188,.3);border-radius:10px;padding:14px;}
+.avail-day-title{font-weight:700;font-size:.88rem;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.avail-day-title input[type=checkbox]{accent-color:var(--gold);width:16px;height:16px;}
+.avail-times{display:flex;gap:10px;align-items:center;}
+.avail-times input{padding:7px 10px;border:1px solid var(--nude-med);border-radius:7px;font-size:.82rem;outline:none;}
+.avail-times input:focus{border-color:var(--gold);}
+
+/* ── COURSE CONTENT TAB ───────────────────────────────────────────────────── */
+.course-selector{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.course-chip{padding:7px 14px;border-radius:20px;border:1px solid var(--nude-med);background:#fff;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all .2s;}
+.course-chip.active{background:var(--gold);color:#fff;border-color:var(--gold);}
+.module-row{padding:14px 16px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;}
+.module-drag{color:#ccc;cursor:grab;font-size:.9rem;padding-top:2px;}
+.module-num{width:28px;height:28px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;flex-shrink:0;}
+.module-body{flex:1;}
+.module-title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.module-title-text{font-weight:700;font-size:.9rem;}
+.module-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+
+/* ── QUIZ BUILDER ─────────────────────────────────────────────────────────── */
+.quiz-builder{background:var(--nude-light);border-radius:10px;padding:16px;margin-top:12px;}
+.quiz-builder-title{font-weight:700;font-size:.86rem;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.question-builder{background:#fff;border:1px solid var(--nude-med);border-radius:9px;padding:14px;margin-bottom:10px;}
+.q-text{width:100%;padding:8px 10px;border:1px solid var(--nude-med);border-radius:7px;font-family:'Montserrat',sans-serif;font-size:.82rem;margin-bottom:10px;outline:none;}
+.q-text:focus{border-color:var(--gold);}
+.option-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.option-row input[type=text]{flex:1;padding:7px 10px;border:1px solid var(--nude-med);border-radius:7px;font-size:.8rem;outline:none;}
+.option-row input[type=text]:focus{border-color:var(--gold);}
+.option-row input[type=radio]{accent-color:var(--success);width:16px;height:16px;}
+.option-letter{font-weight:700;font-size:.78rem;color:var(--muted);width:16px;flex-shrink:0;}
+.explanation-input{width:100%;padding:6px 10px;border:1px solid var(--nude-med);border-radius:7px;font-size:.76rem;margin-top:8px;outline:none;font-family:'Montserrat',sans-serif;}
+
+/* ── PROFILE TAB ──────────────────────────────────────────────────────────── */
+.profile-wrap{max-width:480px;}
+.avatar-upload{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+.avatar-preview{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#fff;font-weight:700;overflow:hidden;}
+.avatar-preview img{width:100%;height:100%;object-fit:cover;}
 </style>
 </head>
 <body>
+
+<!-- ADD MODULE MODAL -->
+<div class="modal-overlay" id="addModuleModal">
+  <div class="modal">
+    <h3 id="moduleModalTitle">Add Module</h3>
+    <div class="form-row">
+      <div class="form-field"><label>Module Number</label><input type="number" id="mod_num" min="1"></div>
+      <div class="form-field"><label>Duration (e.g. 12 min)</label><input type="text" id="mod_dur" placeholder="12 min"></div>
+    </div>
+    <div class="form-field"><label>Title</label><input type="text" id="mod_title" placeholder="Module title"></div>
+    <div class="form-field"><label>Description</label><textarea id="mod_desc" rows="2" placeholder="Brief overview..."></textarea></div>
+    <div class="form-row">
+      <div class="form-field"><label>Video Provider</label><select id="mod_provider"><option value="vimeo">Vimeo</option><option value="youtube">YouTube</option></select></div>
+      <div class="form-field"><label>Video ID</label><input type="text" id="mod_vid" placeholder="e.g. 123456789"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <input type="checkbox" id="mod_quiz_req" style="accent-color:var(--gold);width:16px;height:16px;">
+      <label for="mod_quiz_req" style="font-size:.82rem;font-weight:600;">Quiz required to unlock next module</label>
+    </div>
+    <div class="form-field"><label>Quiz Pass Threshold (%)</label><input type="number" id="mod_threshold" value="70" min="1" max="100"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="document.getElementById('addModuleModal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveModule()"><i class="fas fa-save"></i> Save Module</button>
+    </div>
+  </div>
+</div>
+
+<!-- SESSION NOTES MODAL -->
+<div class="modal-overlay" id="sessionModal">
+  <div class="modal">
+    <h3>Update Session</h3>
+    <div class="form-field"><label>Status</label>
+      <select id="sess_status">
+        <option value="pending">Pending</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+    </div>
+    <div class="form-field"><label>Contact Link (WhatsApp/Zoom URL)</label><input type="text" id="sess_link" placeholder="https://wa.me/254..."></div>
+    <div class="form-field"><label>Mentor Notes (visible to client after session)</label><textarea id="sess_notes" rows="3" placeholder="Session summary, areas to work on..."></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="document.getElementById('sessionModal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveSession()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- REASSIGN MODAL -->
+<div class="modal-overlay" id="reassignModal">
+  <div class="modal">
+    <h3>Request Client Reassignment</h3>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:16px;">This request will be sent to admin for review. The client stays assigned to you until admin approves.</p>
+    <div class="form-field"><label>Reason for Reassignment</label><textarea id="reassign_reason" rows="3" placeholder="Explain why this client should be reassigned..."></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="document.getElementById('reassignModal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-gold" onclick="submitReassign()"><i class="fas fa-paper-plane"></i> Submit Request</button>
+    </div>
+  </div>
+</div>
+
 <div class="app">
   <aside class="sidebar">
-    <div class="brand">Crown Trade</div>
-    <div class="brand-sub">Mentor Portal</div>
-    <div class="user-info">
-      <div class="user-avatar" id="userAvatar">M</div>
-      <div>
-        <div class="user-name" id="userName">Loading…</div>
-        <div class="user-role">Mentor</div>
+    <div class="sidebar-logo">
+      <div class="brand">Crown Trade</div>
+      <div class="brand-sub">Mentor Portal</div>
+    </div>
+    <div class="sidebar-mentor">
+      <div class="mentor-avatar" id="sidebarAvatar">M</div>
+      <div style="min-width:0;">
+        <div class="mentor-name-tag" id="sidebarName">Loading…</div>
+        <div class="mentor-role">Mentor</div>
       </div>
     </div>
-    <nav class="nav">
-      <a href="#" class="nav-item active" data-tab="overview"><i class="fas fa-tachometer-alt"></i> Overview</a>
-      <a href="#" class="nav-item" data-tab="students"><i class="fas fa-users"></i> My Students</a>
-      <a href="#" class="nav-item" data-tab="schedule"><i class="fas fa-calendar-alt"></i> Schedule</a>
-      <a href="#" class="nav-item" data-tab="resources"><i class="fas fa-book-open"></i> Resources</a>
+    <nav class="sidebar-nav">
+      <div class="nav-sec">Dashboard</div>
+      <button class="nav-item active" data-tab="clients"><i class="fas fa-users"></i> My Clients</button>
+      <button class="nav-item" data-tab="sessions"><i class="fas fa-calendar-check"></i> Sessions</button>
+      <div class="nav-sec">Management</div>
+      <button class="nav-item" data-tab="availability"><i class="fas fa-clock"></i> My Availability</button>
+      <button class="nav-item" data-tab="content"><i class="fas fa-book-open"></i> Course Content</button>
+      <div class="nav-sec">Account</div>
+      <button class="nav-item" data-tab="requests"><i class="fas fa-exchange-alt"></i> Requests</button>
+      <button class="nav-item" data-tab="profile"><i class="fas fa-user-circle"></i> My Profile</button>
     </nav>
-    <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
   </aside>
 
-  <main class="main">
-
-    <!-- OVERVIEW -->
-    <div id="overview" class="tab-content active">
-      <div class="page-header">
-        <h1 class="page-title">Mentor Overview</h1>
-      </div>
-      <div class="stats">
-        <div class="stat"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value" id="totalStudents">0</div><div class="stat-label">Total Students</div></div>
-        <div class="stat"><div class="stat-icon"><i class="fas fa-check-circle"></i></div><div class="stat-value" id="activeStudents">0</div><div class="stat-label">Active</div></div>
-        <div class="stat"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-value" id="pendingStudents">0</div><div class="stat-label">Pending</div></div>
-        <div class="stat"><div class="stat-icon"><i class="fas fa-calendar-check"></i></div><div class="stat-value">24/7</div><div class="stat-label">Support</div></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Recent Students</div>
-        <div id="recentStudents"><div class="spinner-wrap"><div class="spin"></div></div></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Quick Actions</div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <a href="mailto:crowntradeacademy@gmail.com" style="display:inline-flex;align-items:center;gap:7px;padding:10px 18px;background:var(--gold);color:#fff;text-decoration:none;border-radius:8px;font-weight:600;font-size:0.88rem;">
-            <i class="fas fa-envelope"></i> Contact Admin
-          </a>
-        </div>
-      </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="pageTitle">My Clients</div>
+      <div style="font-size:.78rem;color:var(--muted);" id="clientCount"></div>
     </div>
+    <div class="content">
 
-    <!-- STUDENTS -->
-    <div id="students" class="tab-content">
-      <div class="page-header">
-        <h1 class="page-title">My Students</h1>
+      <!-- ══ CLIENTS TAB ══ -->
+      <div id="clients" class="tab-panel active">
+        <div id="clientsContent"><div class="spinner-wrap"><div class="spinner"></div></div></div>
+        <div id="clientDetailPanel" class="client-detail-panel"></div>
       </div>
-      <div class="info-box"><i class="fas fa-info-circle"></i> These are approved mentorship applicants assigned to you by the admin. Contact them via the email addresses shown below.</div>
-      <div id="studentsList"><div class="spinner-wrap"><div class="spin"></div></div></div>
-    </div>
 
-    <!-- SCHEDULE -->
-    <div id="schedule" class="tab-content">
-      <div class="page-header"><h1 class="page-title">Session Schedule</h1></div>
-      <div class="card">
-        <div class="card-title">Upcoming Sessions</div>
-        <div class="info-box"><i class="fas fa-calendar"></i> Session scheduling is managed by the admin. Contact <strong>crowntradeacademy@gmail.com</strong> to coordinate sessions with your students.</div>
-        <div style="background:var(--nude-light);border-radius:10px;padding:30px;text-align:center;">
-          <div style="font-size:3rem;color:var(--gold);margin-bottom:12px;"><i class="fas fa-calendar-alt"></i></div>
-          <p style="color:var(--muted);">No sessions scheduled yet. The admin will assign sessions shortly.</p>
+      <!-- ══ SESSIONS TAB ══ -->
+      <div id="sessions" class="tab-panel">
+        <div class="section-label">Upcoming Sessions</div>
+        <div id="upcomingSessions"><div class="spinner-wrap"><div class="spinner"></div></div></div>
+        <div class="section-label" style="margin-top:20px;">Past Sessions</div>
+        <div id="pastSessions"></div>
+      </div>
+
+      <!-- ══ AVAILABILITY TAB ══ -->
+      <div id="availability" class="tab-panel">
+        <p style="font-size:.84rem;color:var(--muted);margin-bottom:18px;">Set the days and times you're available for student sessions. These slots appear on the student's booking calendar.</p>
+        <div class="avail-grid" id="availGrid"></div>
+        <button class="btn btn-gold" style="margin-top:16px;" onclick="saveAvailability()"><i class="fas fa-save"></i> Save Availability</button>
+      </div>
+
+      <!-- ══ COURSE CONTENT TAB ══ -->
+      <div id="content" class="tab-panel">
+        <div class="section-label">Your Assigned Courses</div>
+        <div class="course-selector" id="courseSelector"><div class="spinner-wrap"><div class="spinner"></div></div></div>
+        <div id="moduleManager"></div>
+      </div>
+
+      <!-- ══ REQUESTS TAB ══ -->
+      <div id="requests" class="tab-panel">
+        <div class="section-label">Reassignment Requests</div>
+        <div id="requestsContent"><div class="spinner-wrap"><div class="spinner"></div></div></div>
+      </div>
+
+      <!-- ══ PROFILE TAB ══ -->
+      <div id="profile" class="tab-panel">
+        <div class="profile-wrap">
+          <h3 style="font-size:1.4rem;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--nude-med);">My Profile</h3>
+          <div class="avatar-upload">
+            <div class="avatar-preview" id="avatarPreview">M</div>
+            <div>
+              <div style="font-size:.8rem;font-weight:600;margin-bottom:6px;">Profile Picture</div>
+              <input type="file" accept="image/*" id="avatarFile" style="font-size:.78rem;">
+              <button class="btn btn-ghost btn-sm" style="margin-top:6px;" onclick="uploadAvatar()"><i class="fas fa-upload"></i> Upload</button>
+            </div>
+          </div>
+          <div class="form-field"><label>Display Name (shown to clients)</label><input type="text" id="pf_display" placeholder="e.g. Coach James"></div>
+          <div class="form-field"><label>Full Name</label><input type="text" id="pf_fullname"></div>
+          <div class="form-field"><label>Email (read-only)</label><input type="text" id="pf_email" readonly style="background:var(--nude-light);cursor:not-allowed;"></div>
+          <div class="form-field"><label>Phone (used for WhatsApp sessions)</label><input type="tel" id="pf_phone"></div>
+          <div class="form-field"><label>Bio (shown to assigned clients)</label><textarea id="pf_bio" rows="3" placeholder="Tell your clients about your trading experience and approach..."></textarea></div>
+          <button class="btn btn-gold" onclick="saveProfile()" style="margin-bottom:24px;"><i class="fas fa-save"></i> Save Profile</button>
+          <h3 style="font-size:1.2rem;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--nude-med);">Change Password</h3>
+          <div class="form-field"><label>Current Password</label><input type="password" id="pw_current"></div>
+          <div class="form-field"><label>New Password</label><input type="password" id="pw_new"></div>
+          <div class="form-field"><label>Confirm New Password</label><input type="password" id="pw_confirm"></div>
+          <button class="btn btn-gold" onclick="changePassword()"><i class="fas fa-lock"></i> Update Password</button>
         </div>
       </div>
-    </div>
 
-    <!-- RESOURCES -->
-    <div id="resources" class="tab-content">
-      <div class="page-header"><h1 class="page-title">Teaching Resources</h1></div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
-        <div class="card" style="text-align:center;padding:24px 14px;">
-          <div style="font-size:2.2rem;color:var(--gold);margin-bottom:10px;"><i class="fas fa-chart-bar"></i></div>
-          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:6px;">Technical Analysis</h3>
-          <p style="color:var(--muted);font-size:0.82rem;">Chart patterns & indicators</p>
-        </div>
-        <div class="card" style="text-align:center;padding:24px 14px;">
-          <div style="font-size:2.2rem;color:var(--gold);margin-bottom:10px;"><i class="fas fa-shield-alt"></i></div>
-          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:6px;">Risk Management</h3>
-          <p style="color:var(--muted);font-size:0.82rem;">Position sizing & stop losses</p>
-        </div>
-        <div class="card" style="text-align:center;padding:24px 14px;">
-          <div style="font-size:2.2rem;color:var(--gold);margin-bottom:10px;"><i class="fas fa-brain"></i></div>
-          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:6px;">Psychology</h3>
-          <p style="color:var(--muted);font-size:0.82rem;">Mindset & discipline</p>
-        </div>
-        <div class="card" style="text-align:center;padding:24px 14px;">
-          <div style="font-size:2.2rem;color:var(--gold);margin-bottom:10px;"><i class="fas fa-book"></i></div>
-          <h3 style="font-family:'Cormorant Garamond',serif;margin-bottom:6px;">Curriculum</h3>
-          <p style="color:var(--muted);font-size:0.82rem;">12-week program outline</p>
-        </div>
-      </div>
-      <div class="info-box" style="margin-top:16px;"><i class="fas fa-lock"></i> Full resource library coming soon. Contact admin for teaching materials.</div>
     </div>
-
-  </main>
+  </div>
 </div>
 
 <script>
+// ── STATE ──────────────────────────────────────────────────────────────────
+let MENTOR = null;
+let clients = [];
+let mentorSessions = [];
+let myCourses = [];
+let activeContentCourseId = null;
+let editingModuleId = null;
+let editingSessionId = null;
+let reassignClientId = null;
+let quizQuestions = [];
+
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+// ── BOOT ───────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  if (!requireAuth('mentor-login.html')) return;
-  const user = getUser();
-  if (!user || user.role !== 'mentor') {
-    window.location.href = 'mentor-login.html';
-    return;
-  }
+  if (!getToken()) { window.location.href = 'mentor-login.html'; return; }
+  const cached = getUser();
+  if (!cached || cached.type !== 'mentor') { logout(); window.location.href = 'mentor-login.html'; return; }
 
-  document.getElementById('userName').textContent = user.full_name || user.email;
-  document.getElementById('userAvatar').textContent = (user.full_name || user.email).charAt(0).toUpperCase();
+  try {
+    const data = await API.getMentorProfile();
+    MENTOR = data.mentor;
+    setUser({ ...MENTOR, type: 'mentor' });
+  } catch { MENTOR = cached; }
 
-  await loadStudents();
-
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', e => {
-      e.preventDefault();
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-      item.classList.add('active');
-      document.getElementById(item.dataset.tab).classList.add('active');
-    });
-  });
-
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    logout();
-    window.location.href = 'mentor-login.html';
-  });
+  initUI();
+  await Promise.all([loadClients(), loadSessions(), loadMyCourses()]);
+  loadRequests();
+  initAvailabilityGrid();
 });
 
-async function loadStudents() {
+function initUI() {
+  const name = MENTOR.display_name || MENTOR.full_name || 'Mentor';
+  document.getElementById('sidebarName').textContent = name;
+  const av = document.getElementById('sidebarAvatar');
+  if (MENTOR.avatar_url) av.innerHTML = `<img src="${MENTOR.avatar_url}" alt="avatar">`;
+  else av.textContent = name.charAt(0).toUpperCase();
+
+  // Profile tab prefill
+  document.getElementById('pf_display').value = MENTOR.display_name || '';
+  document.getElementById('pf_fullname').value = MENTOR.full_name || '';
+  document.getElementById('pf_email').value = MENTOR.email || '';
+  document.getElementById('pf_phone').value = MENTOR.phone || '';
+  document.getElementById('pf_bio').value = MENTOR.bio || '';
+  const ap = document.getElementById('avatarPreview');
+  if (MENTOR.avatar_url) ap.innerHTML = `<img src="${MENTOR.avatar_url}" alt="avatar">`;
+  else ap.textContent = name.charAt(0).toUpperCase();
+
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => switchTab(item.dataset.tab));
+  });
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(t => t.classList.remove('active'));
+  const navItem = document.querySelector(`[data-tab="${tab}"]`);
+  if (navItem) navItem.classList.add('active');
+  const panel = document.getElementById(tab);
+  if (panel) panel.classList.add('active');
+  const titles = { clients:'My Clients', sessions:'Sessions', availability:'My Availability', content:'Course Content', requests:'Requests', profile:'My Profile' };
+  document.getElementById('pageTitle').textContent = titles[tab] || tab;
+}
+
+function doLogout() { logout(); window.location.href = 'mentor-login.html'; }
+
+// ── CLIENTS TAB ────────────────────────────────────────────────────────────
+async function loadClients() {
   try {
-    // Mentors see approved mentorship applications
-    const data = await fetch('https://crowntrade-academy-phai.onrender.com/api/admin/mentorship?status=approved', {
-      headers: { 'Authorization': `Bearer ${getToken()}` }
-    }).then(r => r.json());
-
-    const students = data.applications || [];
-    const approved = students.filter(s => s.status === 'approved');
-    const pending = students.filter(s => s.status === 'pending');
-
-    document.getElementById('totalStudents').textContent = students.length;
-    document.getElementById('activeStudents').textContent = approved.length;
-    document.getElementById('pendingStudents').textContent = pending.length;
-
-    renderRecentStudents(students.slice(0, 4));
-    renderStudentsList(students);
-  } catch (err) {
-    document.getElementById('recentStudents').innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No student data available yet.</p>';
-    document.getElementById('studentsList').innerHTML = '<p style="color:var(--muted);text-align:center;padding:30px;">No students assigned yet. The admin will assign students to you.</p>';
+    const data = await API.getMentorClients();
+    clients = data.clients || [];
+    document.getElementById('clientCount').textContent = `${clients.length} client${clients.length!==1?'s':''}`;
+    renderClientsTable();
+  } catch {
+    document.getElementById('clientsContent').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load clients.</p></div>`;
   }
 }
 
-function renderRecentStudents(students) {
-  const container = document.getElementById('recentStudents');
-  if (!students.length) {
-    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;">No students yet.</p>';
-    return;
-  }
-  container.innerHTML = students.map(s => `
-    <div class="student-card">
-      <div class="student-avatar">${s.full_name.charAt(0).toUpperCase()}</div>
-      <div style="flex:1;">
-        <div class="student-name">${s.full_name}</div>
-        <div class="student-meta">${s.email} · ${cap(s.experience_level)} · ${s.time_commitment} hrs/week</div>
-        <div style="margin-top:6px;display:flex;gap:6px;">
-          <span class="badge badge-${s.status}">${cap(s.status)}</span>
-          <span class="badge badge-${s.payment_status||'pending'}">${cap(s.payment_status||'pending')}</span>
-        </div>
-      </div>
-      <a href="mailto:${s.email}" style="color:var(--gold);font-size:1.2rem;padding:4px;"><i class="fas fa-envelope"></i></a>
-    </div>`).join('');
-}
-
-function renderStudentsList(students) {
-  const container = document.getElementById('studentsList');
-  if (!students.length) {
-    container.innerHTML = '<p style="color:var(--muted);text-align:center;padding:30px;">No students assigned yet.</p>';
+function renderClientsTable() {
+  const container = document.getElementById('clientsContent');
+  if (!clients.length) {
+    container.innerHTML = `<div class="empty-state"><i class="fas fa-users"></i><p>No clients assigned yet. Contact admin to get clients assigned.</p></div>`;
     return;
   }
   container.innerHTML = `
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Experience</th><th>Markets</th><th>Time/Week</th><th>Status</th><th>Payment</th><th>Applied</th></tr></thead>
-        <tbody>${students.map(s => `
-          <tr>
-            <td><strong>${s.full_name}</strong></td>
-            <td><a href="mailto:${s.email}" style="color:var(--gold);">${s.email}</a></td>
-            <td>${s.phone}</td>
-            <td>${cap(s.experience_level)}</td>
-            <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.preferred_markets||'—'}</td>
-            <td>${s.time_commitment} hrs</td>
-            <td><span class="badge badge-${s.status}">${cap(s.status)}</span></td>
-            <td><span class="badge badge-${s.payment_status||'pending'}">${cap(s.payment_status||'pending')}</span></td>
-            <td>${fmt(s.submitted_at)}</td>
-          </tr>`).join('')}
+    <div class="card" style="overflow:auto;margin-bottom:16px;">
+      <table class="client-table">
+        <thead><tr>
+          <th>#</th><th>Name</th><th>Course</th><th>Progress</th><th>Login Streak</th><th>Module Streak</th><th>Last Active</th><th>Sessions</th><th>Actions</th>
+        </tr></thead>
+        <tbody>${clients.map(c => {
+          const done = (c.completed_modules||[]).length;
+          const total = 0; // we don't have total here, show count
+          const lastActive = c.login_last_date ? new Date(c.login_last_date).toLocaleDateString('en-KE',{month:'short',day:'numeric'}) : 'Never';
+          return `
+            <tr>
+              <td>${c.member_number||'—'}</td>
+              <td><strong>${c.full_name}</strong><br><span style="font-size:.72rem;color:var(--muted);">${c.email}</span></td>
+              <td>${c.course_title||'—'}</td>
+              <td><span style="font-weight:700;">${done}</span> modules done</td>
+              <td><span class="streak-pill streak-login">🔥 ${c.login_streak||0}d</span></td>
+              <td><span class="streak-pill streak-module">📚 ${c.module_streak||0}d</span></td>
+              <td>${lastActive}</td>
+              <td>${c.session_count||0}</td>
+              <td style="white-space:nowrap;">
+                <button class="btn btn-ghost btn-sm" onclick="viewClientDetail(${c.id})">View</button>
+                <button class="btn btn-sm" style="background:rgba(245,158,11,.1);color:#92400E;border:none;margin-left:4px;" onclick="openReassignModal(${c.id})">Reassign</button>
+              </td>
+            </tr>`;
+        }).join('')}
         </tbody>
       </table>
     </div>`;
 }
 
-function cap(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : '—'; }
-function fmt(d) { return d ? new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '—'; }
+async function viewClientDetail(clientId) {
+  const client = clients.find(c=>c.id===clientId);
+  if (!client) return;
+  const panel = document.getElementById('clientDetailPanel');
+  panel.classList.add('show');
+  panel.innerHTML = `
+    <div class="card" style="padding:20px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+        <div>
+          <h3 style="font-size:1.3rem;">${client.full_name}</h3>
+          <div style="font-size:.78rem;color:var(--muted);">${client.email} · ${client.phone||'No phone'} · Member #${client.member_number||'—'}</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('clientDetailPanel').classList.remove('show')"><i class="fas fa-times"></i> Close</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:16px;">
+        <div class="card" style="padding:12px;text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold);font-weight:700;">🔥${client.login_streak||0}</div><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);">Login Streak</div></div>
+        <div class="card" style="padding:12px;text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold);font-weight:700;">📚${client.module_streak||0}</div><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);">Module Streak</div></div>
+        <div class="card" style="padding:12px;text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold);font-weight:700;">${(client.completed_modules||[]).length}</div><div style="font-size:.66rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);">Modules Done</div></div>
+        <div class="card" style="padding:12px;text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold);font-weight:700;">${client.session_count||0}</div><div style="font-size:.66px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);">Sessions</div></div>
+      </div>
+      <div class="section-label">Quiz Performance</div>
+      <div id="clientQuizScores_${clientId}"><div class="spinner"></div></div>
+    </div>`;
 
+  try {
+    const scoreData = await API.getClientQuizScores(clientId);
+    const attempts = scoreData.attempts || [];
+    document.getElementById(`clientQuizScores_${clientId}`).innerHTML = attempts.length
+      ? `<table class="client-table"><thead><tr><th>Module</th><th>Score</th><th>Passed</th><th>Attempts</th><th>Date</th></tr></thead><tbody>
+          ${attempts.map(a=>`<tr><td>${a.module_title}</td><td style="color:${a.passed?'var(--success)':'var(--danger)'};">${a.score}%</td><td>${a.passed?'✅':'❌'}</td><td>—</td><td>${new Date(a.attempted_at).toLocaleDateString('en-KE')}</td></tr>`).join('')}
+         </tbody></table>`
+      : `<div class="empty-state" style="padding:16px;"><i class="fas fa-clipboard"></i><p>No quiz attempts yet</p></div>`;
+  } catch { document.getElementById(`clientQuizScores_${clientId}`).textContent = 'Could not load scores.'; }
+}
+
+function openReassignModal(clientId) {
+  reassignClientId = clientId;
+  document.getElementById('reassign_reason').value = '';
+  document.getElementById('reassignModal').classList.add('show');
+}
+
+async function submitReassign() {
+  const reason = document.getElementById('reassign_reason').value.trim();
+  if (!reason) { showToast('Please provide a reason','info'); return; }
+  try {
+    await API.requestReassignment({ client_user_id: reassignClientId, reason });
+    document.getElementById('reassignModal').classList.remove('show');
+    showToast('Reassignment request submitted to admin','success');
+    loadRequests();
+  } catch(err) { showToast(err.message||'Failed to submit','error'); }
+}
+
+// ── SESSIONS TAB ───────────────────────────────────────────────────────────
+async function loadSessions() {
+  try {
+    const data = await API.getMentorSessions();
+    mentorSessions = data.sessions || [];
+    renderSessions();
+  } catch {
+    document.getElementById('upcomingSessions').innerHTML=`<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load sessions.</p></div>`;
+  }
+}
+
+function renderSessions() {
+  const now = new Date();
+  const upcoming = mentorSessions.filter(s=>s.status!=='cancelled'&&s.status!=='completed'&&new Date(s.scheduled_at)>now).sort((a,b)=>new Date(a.scheduled_at)-new Date(b.scheduled_at));
+  const past = mentorSessions.filter(s=>s.status==='completed'||new Date(s.scheduled_at)<=now).slice(0,20);
+
+  const upEl = document.getElementById('upcomingSessions');
+  upEl.innerHTML = upcoming.length ? upcoming.map(s=>sessionCard(s, false)).join('') : `<div class="empty-state"><i class="fas fa-calendar"></i><p>No upcoming sessions</p></div>`;
+
+  const pastEl = document.getElementById('pastSessions');
+  pastEl.innerHTML = past.length ? past.map(s=>sessionCard(s, true)).join('') : `<div style="color:var(--muted);font-size:.82rem;padding:10px 0;">No past sessions yet.</div>`;
+}
+
+function sessionCard(s, isPast) {
+  return `
+    <div class="card session-row" style="margin-bottom:10px;">
+      <div class="session-head">
+        <div class="session-info">
+          <div class="date">${new Date(s.scheduled_at).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'})}</div>
+          <div class="meta"><strong>${s.client_name}</strong> · ${s.client_email} · ${s.duration_minutes}min · <i class="fas fa-${s.contact_method==='zoom'?'video':'whatsapp'}"></i> ${s.contact_method}</div>
+          ${s.client_notes?`<div style="font-size:.75rem;color:var(--muted);margin-top:3px;">Client note: "${s.client_notes}"</div>`:''}
+          <span class="badge ${s.status==='confirmed'?'badge-approved':s.status==='completed'?'badge-info':s.status==='cancelled'?'badge-rejected':'badge-pending'}" style="margin-top:5px;display:inline-block;">${s.status}</span>
+        </div>
+      </div>
+      ${!isPast?`
+      <div class="session-actions">
+        <button class="btn btn-gold btn-sm" onclick="openSessionModal(${JSON.stringify(s).replace(/"/g,'&quot;')})"><i class="fas fa-edit"></i> Update</button>
+      </div>`:`
+      <div style="margin-top:8px;">
+        ${s.mentor_notes?`<div style="font-size:.78rem;color:var(--muted);font-style:italic;">"${s.mentor_notes}"</div>`:''}
+        <button class="btn btn-ghost btn-sm" style="margin-top:6px;" onclick="openSessionModal(${JSON.stringify(s).replace(/"/g,'&quot;')})"><i class="fas fa-sticky-note"></i> Edit Notes</button>
+      </div>`}
+    </div>`;
+}
+
+function openSessionModal(s) {
+  if (typeof s === 'string') s = JSON.parse(s.replace(/&quot;/g,'"'));
+  editingSessionId = s.id;
+  document.getElementById('sess_status').value = s.status || 'pending';
+  document.getElementById('sess_link').value = s.contact_link || '';
+  document.getElementById('sess_notes').value = s.mentor_notes || '';
+  document.getElementById('sessionModal').classList.add('show');
+}
+
+async function saveSession() {
+  const status = document.getElementById('sess_status').value;
+  const link = document.getElementById('sess_link').value.trim();
+  const notes = document.getElementById('sess_notes').value.trim();
+  try {
+    await API.updateMentorSession(editingSessionId, { status, contact_link: link||null, mentor_notes: notes||null });
+    document.getElementById('sessionModal').classList.remove('show');
+    showToast('Session updated','success');
+    loadSessions();
+  } catch(err) { showToast(err.message||'Failed to update','error'); }
+}
+
+// ── AVAILABILITY TAB ────────────────────────────────────────────────────────
+function initAvailabilityGrid() {
+  const grid = document.getElementById('availGrid');
+  grid.innerHTML = DAYS.map((day, i) => `
+    <div class="avail-day">
+      <div class="avail-day-title">
+        <input type="checkbox" id="avail_${i}" value="${i}">
+        <label for="avail_${i}" style="font-weight:700;cursor:pointer;">${day}</label>
+      </div>
+      <div class="avail-times">
+        <span style="font-size:.78rem;color:var(--muted);">From</span>
+        <input type="time" id="start_${i}" value="09:00">
+        <span style="font-size:.78rem;color:var(--muted);">To</span>
+        <input type="time" id="end_${i}" value="17:00">
+      </div>
+    </div>`).join('');
+}
+
+async function saveAvailability() {
+  const slots = [];
+  for (let i=0; i<7; i++) {
+    const checked = document.getElementById(`avail_${i}`).checked;
+    if (checked) {
+      slots.push({
+        day_of_week: i,
+        start_time: document.getElementById(`start_${i}`).value,
+        end_time: document.getElementById(`end_${i}`).value,
+        is_active: true
+      });
+    }
+  }
+  try {
+    await API.setMentorAvailability(slots);
+    showToast(`Availability saved — ${slots.length} day${slots.length!==1?'s':''} set`,'success');
+  } catch(err) { showToast(err.message||'Failed to save','error'); }
+}
+
+// ── COURSE CONTENT TAB ─────────────────────────────────────────────────────
+async function loadMyCourses() {
+  try {
+    const data = await API.getMentorCourses();
+    myCourses = data.courses || [];
+    renderCourseSelector();
+    if (myCourses.length) selectCourse(myCourses[0].id);
+  } catch {
+    document.getElementById('courseSelector').innerHTML=`<div class="empty-state"><i class="fas fa-book"></i><p>No courses assigned yet.</p></div>`;
+  }
+}
+
+function renderCourseSelector() {
+  document.getElementById('courseSelector').innerHTML = myCourses.length
+    ? myCourses.map(c=>`<button class="course-chip ${c.id===activeContentCourseId?'active':''}" onclick="selectCourse(${c.id})">${c.title}</button>`).join('')
+    : '<div style="color:var(--muted);font-size:.82rem;">No courses assigned</div>';
+}
+
+async function selectCourse(courseId) {
+  activeContentCourseId = courseId;
+  renderCourseSelector();
+  const container = document.getElementById('moduleManager');
+  container.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div></div>';
+  try {
+    const data = await API.getMentorCourseModules(courseId);
+    const modules = data.modules || [];
+    quizQuestions = [];
+    container.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div class="section-label" style="margin-bottom:0;">${modules.length} module${modules.length!==1?'s':''}</div>
+        <button class="btn btn-gold btn-sm" onclick="openAddModule()"><i class="fas fa-plus"></i> Add Module</button>
+      </div>
+      ${modules.length?modules.map(m=>renderModuleRow(m)).join(''):`<div class="empty-state"><i class="fas fa-puzzle-piece"></i><p>No modules yet. Add the first one.</p></div>`}`;
+  } catch { container.innerHTML=`<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load modules.</p></div>`; }
+}
+
+function renderModuleRow(m) {
+  const quiz = m.quiz||[];
+  const materials = m.materials||[];
+  return `
+    <div class="card module-row" id="mod_row_${m.id}">
+      <div class="module-drag"><i class="fas fa-grip-vertical"></i></div>
+      <div class="module-num">${m.module_number}</div>
+      <div class="module-body">
+        <div class="module-title-row">
+          <span class="module-title-text">${m.title}</span>
+          ${m.duration_label?`<span style="font-size:.72rem;color:var(--muted);">${m.duration_label}</span>`:''}
+          ${m.quiz_required?`<span class="badge badge-info"><i class="fas fa-question-circle"></i> Quiz required</span>`:''}
+          ${quiz.length?`<span class="badge" style="background:var(--gold-glow);color:var(--gold-dark);">${quiz.length}Q</span>`:''}
+          ${materials.length?`<span class="badge badge-pending">${materials.length} material${materials.length!==1?'s':''}</span>`:''}
+        </div>
+        ${m.description?`<div style="font-size:.78rem;color:var(--muted);margin-top:3px;">${m.description}</div>`:''}
+        ${m.video_id?`<div style="font-size:.74rem;color:var(--muted);margin-top:3px;"><i class="fas fa-play-circle" style="color:var(--gold);"></i> ${m.video_provider||'vimeo'}:${m.video_id}</div>`:''}
+        <div class="module-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openEditModule(${JSON.stringify(m).replace(/"/g,'&quot;')})"><i class="fas fa-edit"></i> Edit</button>
+          <button class="btn btn-ghost btn-sm" onclick="openQuizBuilder(${JSON.stringify(m).replace(/"/g,'&quot;')})"><i class="fas fa-question-circle"></i> ${quiz.length?'Edit Quiz':'Add Quiz'}</button>
+          <button class="btn btn-ghost btn-sm" onclick="openMaterialsEditor(${m.id},${JSON.stringify(materials).replace(/"/g,'&quot;')})"><i class="fas fa-paperclip"></i> Materials</button>
+          <button class="btn btn-sm" style="background:rgba(239,68,68,.08);color:var(--danger);border:none;" onclick="deleteModule(${m.id})"><i class="fas fa-trash"></i></button>
+        </div>
+        <div id="quizBuilder_${m.id}" style="display:none;"></div>
+        <div id="materialsEditor_${m.id}" style="display:none;"></div>
+      </div>
+    </div>`;
+}
+
+// Module add/edit
+function openAddModule() {
+  editingModuleId = null;
+  document.getElementById('moduleModalTitle').textContent = 'Add Module';
+  ['mod_num','mod_title','mod_desc','mod_vid','mod_dur'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mod_provider').value = 'vimeo';
+  document.getElementById('mod_quiz_req').checked = false;
+  document.getElementById('mod_threshold').value = 70;
+  document.getElementById('addModuleModal').classList.add('show');
+}
+
+function openEditModule(m) {
+  if (typeof m==='string') m=JSON.parse(m.replace(/&quot;/g,'"'));
+  editingModuleId = m.id;
+  document.getElementById('moduleModalTitle').textContent = 'Edit Module';
+  document.getElementById('mod_num').value = m.module_number||'';
+  document.getElementById('mod_title').value = m.title||'';
+  document.getElementById('mod_desc').value = m.description||'';
+  document.getElementById('mod_provider').value = m.video_provider||'vimeo';
+  document.getElementById('mod_vid').value = m.video_id||'';
+  document.getElementById('mod_dur').value = m.duration_label||'';
+  document.getElementById('mod_quiz_req').checked = !!m.quiz_required;
+  document.getElementById('mod_threshold').value = m.quiz_pass_threshold||70;
+  document.getElementById('addModuleModal').classList.add('show');
+}
+
+async function saveModule() {
+  const data = {
+    module_number: parseInt(document.getElementById('mod_num').value),
+    title: document.getElementById('mod_title').value.trim(),
+    description: document.getElementById('mod_desc').value.trim(),
+    video_provider: document.getElementById('mod_provider').value,
+    video_id: document.getElementById('mod_vid').value.trim(),
+    duration_label: document.getElementById('mod_dur').value.trim(),
+    quiz_required: document.getElementById('mod_quiz_req').checked,
+    quiz_pass_threshold: parseInt(document.getElementById('mod_threshold').value)||70,
+  };
+  if (!data.title||!data.module_number) { showToast('Module number and title are required','info'); return; }
+  try {
+    if (editingModuleId) await API.updateMentorModule(editingModuleId, data);
+    else await API.addMentorModule(activeContentCourseId, data);
+    document.getElementById('addModuleModal').classList.remove('show');
+    showToast(editingModuleId?'Module updated':'Module added','success');
+    selectCourse(activeContentCourseId);
+  } catch(err) { showToast(err.message||'Failed to save module','error'); }
+}
+
+async function deleteModule(moduleId) {
+  if (!confirm('Delete this module? This cannot be undone if no students have completed it.')) return;
+  try { await API.deleteMentorModule(moduleId); showToast('Module deleted','success'); selectCourse(activeContentCourseId); }
+  catch(err) { showToast(err.message||'Cannot delete','error'); }
+}
+
+// ── QUIZ BUILDER ───────────────────────────────────────────────────────────
+function openQuizBuilder(m) {
+  if (typeof m==='string') m=JSON.parse(m.replace(/&quot;/g,'"'));
+  const container = document.getElementById(`quizBuilder_${m.id}`);
+  const isOpen = container.style.display !== 'none';
+  if (isOpen) { container.style.display='none'; return; }
+  quizQuestions = m.quiz ? JSON.parse(JSON.stringify(m.quiz)) : [];
+  renderQuizBuilder(m.id);
+  container.style.display='block';
+}
+
+function renderQuizBuilder(moduleId) {
+  const container = document.getElementById(`quizBuilder_${moduleId}`);
+  container.innerHTML = `
+    <div class="quiz-builder">
+      <div class="quiz-builder-title">
+        Quiz Builder
+        <button class="btn btn-ghost btn-sm" onclick="addQuestion(${moduleId})"><i class="fas fa-plus"></i> Add Question</button>
+      </div>
+      <div id="questionsContainer_${moduleId}">
+        ${quizQuestions.map((q,qi)=>renderQuestionBuilder(qi,moduleId)).join('')}
+      </div>
+      ${quizQuestions.length?`
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="btn btn-gold" onclick="saveQuiz(${moduleId})"><i class="fas fa-save"></i> Save Quiz (${quizQuestions.length} questions)</button>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('quizBuilder_${moduleId}').style.display='none'">Close</button>
+        </div>`:
+        `<div style="font-size:.8rem;color:var(--muted);">No questions yet. Click "Add Question" to start.</div>`}
+    </div>`;
+}
+
+function renderQuestionBuilder(qi, moduleId) {
+  const q = quizQuestions[qi] || { question:'', options:['','','',''], correct:0, explanation:'' };
+  return `
+    <div class="question-builder" id="qb_${qi}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-weight:700;font-size:.82rem;color:var(--gold);">Question ${qi+1}</span>
+        <button class="btn btn-sm" style="background:rgba(239,68,68,.08);color:var(--danger);border:none;" onclick="removeQuestion(${qi},${moduleId})"><i class="fas fa-times"></i></button>
+      </div>
+      <textarea class="q-text" placeholder="Enter your question..." oninput="updateQ(${qi},'question',this.value)">${q.question}</textarea>
+      <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px;">Options — select the correct answer</div>
+      ${['A','B','C','D'].map((letter,oi)=>`
+        <div class="option-row">
+          <input type="radio" name="correct_${qi}_${moduleId}" ${q.correct===oi?'checked':''} onchange="updateQ(${qi},'correct',${oi})">
+          <span class="option-letter">${letter}.</span>
+          <input type="text" placeholder="Option ${letter}" value="${q.options[oi]||''}" oninput="updateOption(${qi},${oi},this.value)">
+        </div>`).join('')}
+      <input class="explanation-input" type="text" placeholder="Explanation (shown after answering — optional)" value="${q.explanation||''}" oninput="updateQ(${qi},'explanation',this.value)">
+    </div>`;
+}
+
+function addQuestion(moduleId) {
+  quizQuestions.push({ question:'', options:['','','',''], correct:0, explanation:'' });
+  renderQuizBuilder(moduleId);
+}
+function removeQuestion(qi, moduleId) { quizQuestions.splice(qi,1); renderQuizBuilder(moduleId); }
+function updateQ(qi, field, val) { if (quizQuestions[qi]) quizQuestions[qi][field]=field==='correct'?Number(val):val; }
+function updateOption(qi, oi, val) { if (quizQuestions[qi]) quizQuestions[qi].options[oi]=val; }
+
+async function saveQuiz(moduleId) {
+  const valid = quizQuestions.every(q=>q.question.trim()&&q.options.every(o=>o.trim()));
+  if (!valid) { showToast('Fill in all questions and options','info'); return; }
+  try {
+    await API.saveMentorQuiz(moduleId, { questions: quizQuestions });
+    showToast(`Quiz saved — ${quizQuestions.length} questions`,'success');
+    selectCourse(activeContentCourseId);
+  } catch(err) { showToast(err.message||'Failed to save quiz','error'); }
+}
+
+// ── MATERIALS EDITOR ────────────────────────────────────────────────────────
+function openMaterialsEditor(moduleId, materials) {
+  if (typeof materials==='string') materials=JSON.parse(materials.replace(/&quot;/g,'"'));
+  const container = document.getElementById(`materialsEditor_${moduleId}`);
+  const isOpen = container.style.display !== 'none';
+  if (isOpen) { container.style.display='none'; return; }
+
+  let mats = [...materials];
+  const render = () => {
+    container.innerHTML = `
+      <div style="background:var(--nude-light);border-radius:10px;padding:14px;margin-top:10px;">
+        <div style="font-weight:700;font-size:.84rem;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+          Study Materials
+          <button class="btn btn-ghost btn-sm" onclick="container.style.display='none'">Close</button>
+        </div>
+        ${mats.map((mat,i)=>`
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;background:#fff;padding:8px 10px;border-radius:7px;border:1px solid var(--nude-med);">
+            <input type="text" value="${mat.name||''}" placeholder="Material name" style="flex:1;padding:6px;border:1px solid var(--nude-med);border-radius:6px;font-size:.78rem;" oninput="mats[${i}].name=this.value">
+            <input type="text" value="${mat.url||''}" placeholder="URL" style="flex:2;padding:6px;border:1px solid var(--nude-med);border-radius:6px;font-size:.78rem;" oninput="mats[${i}].url=this.value">
+            <select style="padding:6px;border:1px solid var(--nude-med);border-radius:6px;font-size:.76rem;" onchange="mats[${i}].type=this.value">
+              <option value="pdf" ${mat.type==='pdf'?'selected':''}>PDF</option>
+              <option value="link" ${mat.type==='link'?'selected':''}>Link</option>
+              <option value="video" ${mat.type==='video'?'selected':''}>Video</option>
+            </select>
+            <button class="btn btn-sm" style="background:rgba(239,68,68,.08);color:var(--danger);border:none;" onclick="mats.splice(${i},1);render()"><i class="fas fa-times"></i></button>
+          </div>`).join('')}
+        <button class="btn btn-ghost btn-sm" onclick="mats.push({name:'',url:'',type:'pdf'});render()"><i class="fas fa-plus"></i> Add Material</button>
+        <button class="btn btn-gold btn-sm" style="margin-left:8px;" onclick="saveMaterials(${moduleId},mats)"><i class="fas fa-save"></i> Save Materials</button>
+      </div>`;
+  };
+  render();
+  container.style.display='block';
+  // Expose mats and render to the onclick closures above via closure
+  window[`mats_${moduleId}`] = mats;
+}
+
+async function saveMaterials(moduleId, mats) {
+  const clean = mats.filter(m=>m.url&&m.name);
+  try {
+    await API.saveMentorMaterials(moduleId, { materials: clean });
+    showToast(`${clean.length} materials saved`,'success');
+    selectCourse(activeContentCourseId);
+  } catch(err) { showToast(err.message||'Failed to save','error'); }
+}
+
+// ── REQUESTS TAB ───────────────────────────────────────────────────────────
+async function loadRequests() {
+  try {
+    const data = await API.getReassignRequests ? await API.getReassignRequests() : { requests:[] };
+    // Use the sessions endpoint for reassign requests
+    const response = await fetch('https://crowntrade-academy-phai.onrender.com/api/sessions/mentor/reassign-requests', {
+      headers: { 'Authorization': `Bearer ${getToken()}`, 'Content-Type': 'application/json' }
+    });
+    const result = await response.json();
+    const requests = result.requests || [];
+    const container = document.getElementById('requestsContent');
+    if (!requests.length) { container.innerHTML=`<div class="empty-state"><i class="fas fa-exchange-alt"></i><p>No reassignment requests submitted yet.</p></div>`; return; }
+    container.innerHTML = requests.map(r=>`
+      <div class="card" style="padding:16px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+          <div>
+            <div style="font-weight:700;font-size:.9rem;">${r.client_name} <span style="color:var(--muted);font-weight:400;">(#${r.member_number||'—'})</span></div>
+            <div style="font-size:.78rem;color:var(--muted);margin-top:3px;">${r.reason}</div>
+            <div style="font-size:.74rem;color:var(--muted);margin-top:3px;">Submitted ${new Date(r.requested_at).toLocaleDateString('en-KE')}</div>
+            ${r.admin_notes?`<div style="font-size:.76rem;background:var(--nude-light);padding:6px 10px;border-radius:6px;margin-top:6px;">Admin: "${r.admin_notes}"</div>`:''}
+          </div>
+          <span class="badge ${r.status==='approved'?'badge-approved':r.status==='rejected'?'badge-rejected':'badge-pending'}">${r.status}</span>
+        </div>
+      </div>`).join('');
+  } catch { document.getElementById('requestsContent').innerHTML=`<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load requests.</p></div>`; }
+}
+
+// ── PROFILE TAB ────────────────────────────────────────────────────────────
+async function uploadAvatar() {
+  const file = document.getElementById('avatarFile').files[0];
+  if (!file) { showToast('Select a file first','info'); return; }
+  try {
+    const uploadData = await API.uploadPaymentProof(file); // reuse upload endpoint
+    await API.updateMentorProfile({ avatar_url: uploadData.url });
+    const preview = document.getElementById('avatarPreview');
+    preview.innerHTML = `<img src="${uploadData.url}" alt="avatar">`;
+    const sidebarAv = document.getElementById('sidebarAvatar');
+    sidebarAv.innerHTML = `<img src="${uploadData.url}" alt="avatar">`;
+    MENTOR.avatar_url = uploadData.url;
+    showToast('Profile picture updated','success');
+  } catch(err) { showToast(err.message||'Upload failed','error'); }
+}
+
+async function saveProfile() {
+  const data = {
+    display_name: document.getElementById('pf_display').value.trim(),
+    full_name: document.getElementById('pf_fullname').value.trim(),
+    phone: document.getElementById('pf_phone').value.trim(),
+    bio: document.getElementById('pf_bio').value.trim()
+  };
+  if (!data.display_name) { showToast('Display name required','info'); return; }
+  try {
+    await API.updateMentorProfile(data);
+    MENTOR = { ...MENTOR, ...data };
+    setUser({ ...MENTOR, type:'mentor' });
+    document.getElementById('sidebarName').textContent = data.display_name || data.full_name;
+    showToast('Profile saved','success');
+  } catch(err) { showToast(err.message||'Failed to save','error'); }
+}
+
+async function changePassword() {
+  const cur = document.getElementById('pw_current').value;
+  const nw = document.getElementById('pw_new').value;
+  const cf = document.getElementById('pw_confirm').value;
+  if (!cur||!nw) { showToast('Fill in both passwords','info'); return; }
+  if (nw!==cf) { showToast('New passwords do not match','info'); return; }
+  if (nw.length<6) { showToast('Password must be at least 6 characters','info'); return; }
+  try {
+    await API.changePassword({ current_password:cur, new_password:nw });
+    ['pw_current','pw_new','pw_confirm'].forEach(id=>document.getElementById(id).value='');
+    showToast('Password updated','success');
+  } catch(err) { showToast(err.message||'Failed','error'); }
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────────
 function showToast(msg, type='info') {
-  const t = document.createElement('div');
-  t.className = `toast toast-${type}`;
-  t.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':'info-circle'}"></i> ${msg}`;
+  const colors={success:'var(--success)',error:'var(--danger)',info:'var(--gold)'};
+  const t=document.createElement('div');
+  t.className='toast';
+  t.style.background=colors[type]||colors.info;
+  t.textContent=msg;
   document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
+  setTimeout(()=>t.remove(),3200);
 }
 </script>
 </body>
