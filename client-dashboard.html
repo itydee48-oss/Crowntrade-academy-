@@ -458,13 +458,7 @@ button{font-family:'Montserrat',sans-serif;cursor:pointer;}
           <div class="card stat-card"><div class="stat-val" id="stat-session">—</div><div class="stat-lbl">Next Session</div></div>
           <div class="card stat-card"><div class="stat-val" id="stat-earnings">—</div><div class="stat-lbl">Partner Earnings</div></div>
         </div>
-        <div class="section-label">Live Market</div>
-        <div class="tv-widget-wrap" style="margin-bottom:20px;">
-          <div class="tv-widget-header"><i class="fas fa-chart-candlestick"></i> TradingView Chart</div>
-          <div class="tradingview-widget-container" style="height:400px;">
-            <div id="tradingview_chart"></div>
-          </div>
-        </div>
+
       </div>
 
       <!-- ══ MY COURSES TAB ══ -->
@@ -514,16 +508,55 @@ button{font-family:'Montserrat',sans-serif;cursor:pointer;}
       <!-- ══ TRADING TOOLS TAB ══ -->
       <div id="tools" class="tab-panel">
         <div class="tools-subnav">
-          <button class="tool-tab active" onclick="switchTool('calendar',this)"><i class="fas fa-calendar"></i> Economic Calendar</button>
+          <button class="tool-tab active" onclick="switchTool('chart',this)"><i class="fas fa-chart-candlestick"></i> Live Chart</button>
+          <button class="tool-tab" onclick="switchTool('calendar',this)"><i class="fas fa-calendar"></i> Economic Calendar</button>
           <button class="tool-tab" onclick="switchTool('possize',this)"><i class="fas fa-calculator"></i> Position Size</button>
           <button class="tool-tab" onclick="switchTool('rrcalc',this)"><i class="fas fa-balance-scale"></i> Risk/Reward</button>
           <button class="tool-tab" onclick="switchTool('journal',this)"><i class="fas fa-book"></i> Trade Journal</button>
         </div>
 
+        <!-- Live Chart -->
+        <div class="tool-panel active" id="tool-chart">
+          <div class="card" style="overflow:hidden;border-radius:12px;">
+            <div style="padding:12px 16px;border-bottom:1px solid rgba(212,200,188,.3);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <i class="fas fa-chart-line" style="color:var(--gold);"></i>
+              <strong style="font-size:.9rem;">TradingView Chart</strong>
+              <select id="chartSymbol" onchange="updateChartSymbol(this.value)" style="padding:5px 10px;border:1px solid var(--nude-med);border-radius:6px;font-size:.8rem;background:#fff;outline:none;">
+                <option value="OANDA:XAUUSD">XAU/USD (Gold)</option>
+                <option value="FX:EURUSD">EUR/USD</option>
+                <option value="FX:GBPUSD">GBP/USD</option>
+                <option value="FX:USDJPY">USD/JPY</option>
+                <option value="FX:USDCHF">USD/CHF</option>
+                <option value="FX:AUDUSD">AUD/USD</option>
+                <option value="FX:USDCAD">USD/CAD</option>
+                <option value="FX:NZDUSD">NZD/USD</option>
+                <option value="OANDA:XAGUSD">XAG/USD (Silver)</option>
+                <option value="NASDAQ:US100">US100 (Nasdaq)</option>
+                <option value="TVC:DXY">DXY (Dollar Index)</option>
+              </select>
+              <select id="chartInterval" onchange="updateChartSymbol(document.getElementById('chartSymbol').value)" style="padding:5px 10px;border:1px solid var(--nude-med);border-radius:6px;font-size:.8rem;background:#fff;outline:none;">
+                <option value="1">1m</option>
+                <option value="5">5m</option>
+                <option value="15">15m</option>
+                <option value="60" selected>1H</option>
+                <option value="240">4H</option>
+                <option value="D">1D</option>
+                <option value="W">1W</option>
+              </select>
+            </div>
+            <div id="tvChartWrap" style="height:500px;"></div>
+          </div>
+        </div>
+
         <!-- Economic Calendar -->
-        <div class="tool-panel active" id="tool-calendar">
-          <div class="tradingview-widget-container" style="height:500px;">
-            <div id="tv_calendar"></div>
+        <div class="tool-panel" id="tool-calendar">
+          <div class="card" style="overflow:hidden;border-radius:12px;">
+            <div style="padding:12px 16px;border-bottom:1px solid rgba(212,200,188,.3);display:flex;align-items:center;gap:8px;">
+              <i class="fas fa-calendar" style="color:var(--gold);"></i>
+              <strong style="font-size:.9rem;">Economic Calendar</strong>
+              <span style="font-size:.76rem;color:var(--muted);">High-impact events — trade with caution around red folders</span>
+            </div>
+            <iframe id="calendarFrame" src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&features=datepicker,timezone&countries=25,32,6,37,72,22,17,39,14,10,35&calType=week&timeZone=67&lang=1" frameborder="0" allowtransparency="true" marginwidth="0" marginheight="0" style="width:100%;height:500px;display:block;"></iframe>
           </div>
         </div>
 
@@ -647,9 +680,6 @@ button{font-family:'Montserrat',sans-serif;cursor:pointer;}
   </div><!-- /main -->
 </div><!-- /app -->
 
-<!-- TradingView scripts -->
-<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-
 <script>
 // ── STATE ──────────────────────────────────────────────────────────────────
 let USER = null;
@@ -682,8 +712,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadPaymentsTab();
   loadMentorTab();
   loadJournal();
-  initTradingViewChart();
-  initCalendarWidget();
+  initChartWidget();
 });
 
 function initUI() {
@@ -761,38 +790,22 @@ function updateNextSession(sessions) {
 }
 
 // ── TRADINGVIEW CHART ──────────────────────────────────────────────────────
-function initTradingViewChart() {
-  if (typeof TradingView === 'undefined') return;
-  new TradingView.widget({
-    container_id: 'tradingview_chart',
-    autosize: true,
-    symbol: 'FX:XAUUSD',
-    interval: 'H1',
-    timezone: 'Africa/Nairobi',
-    theme: 'light',
-    style: '1',
-    locale: 'en',
-    toolbar_bg: '#F9F6F2',
-    enable_publishing: false,
-    hide_side_toolbar: false,
-    allow_symbol_change: true,
-    studies: ['RSI@tv-basicstudies','MACD@tv-basicstudies'],
-    height: 400,
-  });
+function initChartWidget() {
+  updateChartSymbol('OANDA:XAUUSD');
 }
 
-function initCalendarWidget() {
-  if (typeof TradingView === 'undefined') return;
-  new TradingView.widget({
-    colorTheme: 'light',
-    isTransparent: false,
-    width: '100%',
-    height: 500,
-    locale: 'en',
-    container_id: 'tv_calendar',
-    importanceFilter: '0,1',
-    countryFilter: 'us,eu,gb,jp',
-  });
+function updateChartSymbol(symbol) {
+  const interval = document.getElementById('chartInterval')?.value || '60';
+  const wrap = document.getElementById('tvChartWrap');
+  if (!wrap) return;
+  // Encode symbol for URL
+  const enc = encodeURIComponent(symbol);
+  wrap.innerHTML = `<iframe
+    src="https://s.tradingview.com/widgetembed/?frameElementId=tv_chart&symbol=${enc}&interval=${interval}&hidesidetoolbar=0&hidetoptoolbar=0&symboledit=1&saveimage=1&toolbarbg=F9F6F2&studies=RSI%40tv-basicstudies&theme=light&style=1&timezone=Africa%2FNairobi&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=en&utm_source=crown"
+    style="width:100%;height:500px;border:none;"
+    allowtransparency="true"
+    allowfullscreen="true">
+  </iframe>`;
 }
 
 // ── MY COURSES ─────────────────────────────────────────────────────────────
@@ -1116,17 +1129,47 @@ async function loadCatalog() {
     const enrolledIds = new Set(myCourses.map(e=>e.course_id));
     const unenrolled = (data.courses||[]).filter(c=>!enrolledIds.has(c.id));
     if (!unenrolled.length) {
-      document.getElementById('catalogGrid').innerHTML=`<div class="empty-state"><i class="fas fa-check-circle"></i><p>You're enrolled in all available courses!</p></div>`;
+      document.getElementById('catalogGrid').innerHTML=`<div class="empty-state"><i class="fas fa-check-circle"></i><p>You're enrolled in all available courses! Check back for new ones.</p></div>`;
       return;
     }
     document.getElementById('catalogGrid').innerHTML = unenrolled.map(c=>`
       <div class="card catalog-card">
         <div class="catalog-icon"><i class="fas ${c.icon||'fa-graduation-cap'}"></i></div>
         <div class="catalog-title">${c.title}</div>
+        ${c.tagline?`<div style="font-size:.76rem;color:var(--muted);margin-bottom:6px;">${c.tagline}</div>`:''}
         <div class="catalog-price">KES ${c.price.toLocaleString()}</div>
-        <a href="enroll.html?course=${c.slug}" class="btn btn-gold btn-sm">Enroll Now</a>
+        <button class="btn btn-gold btn-sm" onclick="quickEnroll(${c.id},'${c.title}',${c.price})">
+          <i class="fas fa-plus"></i> Enroll Now
+        </button>
       </div>`).join('');
   } catch { document.getElementById('catalogGrid').innerHTML=`<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load courses.</p></div>`; }
+}
+
+// In-dashboard enrollment for already-logged-in users
+// No re-registration needed — uses their existing account
+async function quickEnroll(courseId, courseTitle, price) {
+  const confirmed = confirm(`Enroll in "${courseTitle}" for KES ${price.toLocaleString()}?\n\nYou'll need to upload payment proof after enrolling.`);
+  if (!confirmed) return;
+  try {
+    const data = await API.enrollInCourse({
+      course_id: courseId,
+      full_name: USER.full_name,
+      email: USER.email,
+      phone: USER.phone || ''
+    });
+    showToast(`Enrolled in ${courseTitle}! Upload payment proof to unlock.`, 'success');
+    await loadMyCourses();
+    loadPaymentsTab();
+    loadCatalog();
+    switchTab('payments');
+  } catch(err) {
+    if (err.message && err.message.includes('already enrolled')) {
+      showToast('You're already enrolled in this course.', 'info');
+      switchTab('courses');
+    } else {
+      showToast(err.message || 'Enrollment failed', 'error');
+    }
+  }
 }
 
 // ── MY MENTOR TAB ──────────────────────────────────────────────────────────
@@ -1372,6 +1415,7 @@ async function deleteTrade(id) {
 // ── CROWN PARTNER TAB ──────────────────────────────────────────────────────
 async function loadPartnerTab() {
   const container = document.getElementById('partnerContent');
+
   if (!USER.has_partner_status) {
     container.innerHTML = `
       <div class="upgrade-card">
@@ -1383,13 +1427,26 @@ async function loadPartnerTab() {
       </div>`;
     return;
   }
+
+  container.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div><p style="margin-top:10px;color:var(--muted);font-size:.82rem;">Loading partner data…</p></div>';
+
   try {
     const data = await API.getReferralDashboard();
     partnerData = data;
     const agent = data.agent;
-    document.getElementById('stat-earnings').textContent = `KES ${(agent.wallet?.available||0).toLocaleString()}`;
 
+    if (!agent) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-clock"></i>
+          <p>Your Crown Partner application is under review. Check back once approved.</p>
+        </div>`;
+      return;
+    }
+
+    document.getElementById('stat-earnings').textContent = `KES ${(agent.wallet?.available||0).toLocaleString()}`;
     const tierClass = `tier-${agent.tier||'bronze'}`;
+
     container.innerHTML = `
       <div class="wallet-card">
         <div class="wallet-title">Available Balance</div>
@@ -1400,35 +1457,90 @@ async function loadPartnerTab() {
           <div class="wallet-stat"><div class="lbl">Withdrawn</div><div class="val">KES ${(agent.wallet?.total_withdrawn||0).toLocaleString()}</div></div>
         </div>
       </div>
+
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
         <div>
-          <span class="tier-badge ${tierClass}"><i class="fas fa-crown"></i> ${agent.tier_label}</span>
-          <span style="margin-left:10px;font-size:.8rem;color:var(--muted);">${agent.total_referrals} referral${agent.total_referrals!==1?'s':''}</span>
-          ${agent.next_tier?`<span style="margin-left:8px;font-size:.76rem;color:var(--muted);">— ${agent.next_tier.min - agent.total_referrals} more to ${agent.next_tier.label}</span>`:'<span style="margin-left:8px;font-size:.76rem;color:var(--gold);">🏆 Max tier!</span>'}
+          <span class="tier-badge ${tierClass}"><i class="fas fa-crown"></i> ${agent.tier_label||agent.tier}</span>
+          <span style="margin-left:10px;font-size:.8rem;color:var(--muted);">${agent.total_referrals||0} referral${(agent.total_referrals||0)!==1?'s':''}</span>
+          ${agent.next_tier
+            ? `<span style="margin-left:8px;font-size:.76rem;color:var(--muted);">— ${agent.next_tier.min - (agent.total_referrals||0)} more to ${agent.next_tier.label}</span>`
+            : '<span style="margin-left:8px;font-size:.76rem;color:var(--gold);">🏆 Max tier!</span>'}
         </div>
-        <button class="btn btn-gold" onclick="document.getElementById('withdrawModal').classList.add('show')"><i class="fas fa-money-bill-wave"></i> Withdraw</button>
+        <button class="btn btn-gold" onclick="document.getElementById('withdrawModal').classList.add('show')">
+          <i class="fas fa-money-bill-wave"></i> Withdraw
+        </button>
       </div>
+
       <div class="section-label">Your Referral Link</div>
       <div class="referral-link-box" style="margin-bottom:20px;">
         <code id="refLink">${agent.referral_link||''}</code>
         <button class="btn btn-ghost btn-sm" onclick="copyRefLink()"><i class="fas fa-copy"></i> Copy</button>
+        <button class="btn btn-ghost btn-sm" onclick="shareRefLink('${agent.referral_link||''}')"><i class="fas fa-share-alt"></i> Share</button>
       </div>
+
       <div class="section-label">Recent Earnings</div>
       <div class="card" style="overflow:auto;">
         <table class="earnings-table">
           <thead><tr><th>Referred</th><th>Amount</th><th>Type</th><th>Status</th><th>Date</th></tr></thead>
-          <tbody>${(data.earnings||[]).slice(0,10).map(e=>`
-            <tr>
-              <td>${e.referred_name||e.referred_email}</td>
-              <td><strong>KES ${e.amount}</strong></td>
-              <td>${e.commission_type==='first_referral'?'🎁 First Referral':'Standard'}</td>
-              <td><span class="badge ${e.status==='paid'?'badge-approved':e.status==='available'?'badge-gold':'badge-pending'}">${e.status}</span></td>
-              <td>${new Date(e.created_at).toLocaleDateString('en-KE')}</td>
-            </tr>`).join('')||'<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">No earnings yet. Share your link to start earning!</td></tr>'}
+          <tbody>
+            ${(data.earnings||[]).length
+              ? (data.earnings||[]).slice(0,10).map(e=>`
+                  <tr>
+                    <td>${e.referred_name||e.referred_email||'—'}</td>
+                    <td><strong>KES ${e.amount}</strong></td>
+                    <td>${e.commission_type==='first_referral'?'🎁 First Referral':'Standard'}</td>
+                    <td><span class="badge ${e.status==='paid'?'badge-approved':e.status==='available'?'badge-gold':'badge-pending'}">${e.status}</span></td>
+                    <td>${new Date(e.created_at).toLocaleDateString('en-KE')}</td>
+                  </tr>`).join('')
+              : '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">No earnings yet — share your referral link to start earning!</td></tr>'}
           </tbody>
         </table>
-      </div>`;
-  } catch(err) { container.innerHTML=`<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load partner data.</p></div>`; }
+      </div>
+
+      ${(data.withdrawals||[]).length ? `
+        <div class="section-label" style="margin-top:20px;">Withdrawal History</div>
+        <div class="card" style="overflow:auto;">
+          <table class="earnings-table">
+            <thead><tr><th>Amount</th><th>M-Pesa</th><th>Status</th><th>M-Pesa Code</th><th>Date</th></tr></thead>
+            <tbody>
+              ${data.withdrawals.map(w=>`
+                <tr>
+                  <td><strong>KES ${w.amount}</strong></td>
+                  <td>${w.mpesa_number}</td>
+                  <td><span class="badge ${w.status==='paid'?'badge-approved':w.status==='rejected'?'badge-rejected':'badge-pending'}">${w.status}</span></td>
+                  <td>${w.mpesa_code||'—'}</td>
+                  <td>${new Date(w.requested_at).toLocaleDateString('en-KE')}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>` : ''}`;
+
+  } catch(err) {
+    console.error('Partner tab error:', err);
+    // Check if it's a "no application" error vs a real failure
+    if (err.message && (err.message.includes('not found') || err.message.includes('No partner'))) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-hourglass-half"></i>
+          <p>Your Crown Partner application is under review. You'll see your dashboard here once approved.</p>
+        </div>`;
+    } else {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-exclamation-circle"></i>
+          <p>Could not load partner data. <button class="btn btn-ghost btn-sm" onclick="loadPartnerTab()" style="margin-top:8px;"><i class="fas fa-redo"></i> Retry</button></p>
+        </div>`;
+    }
+  }
+}
+
+function shareRefLink(link) {
+  if (navigator.share) {
+    navigator.share({ title: 'Join Crown Trade Academy', text: 'Learn forex trading with expert mentors. Use my link:', url: link })
+      .catch(()=>{});
+  } else {
+    copyRefLink();
+  }
 }
 
 function copyRefLink() {
