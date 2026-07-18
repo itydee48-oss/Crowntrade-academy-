@@ -366,12 +366,22 @@ function doLogout() { logout(); window.location.href = 'mentor-login.html'; }
 // ── CLIENTS TAB ────────────────────────────────────────────────────────────
 async function loadClients() {
   try {
-    const data = await API.getMentorClients();
+    const res = await fetch('https://crowntrade-academy-phai.onrender.com/api/sessions/mentor/clients', {
+      headers: { 'Authorization': 'Bearer '+getToken(), 'Content-Type':'application/json' }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to load clients');
     clients = data.clients || [];
     document.getElementById('clientCount').textContent = `${clients.length} client${clients.length!==1?'s':''}`;
     renderClientsTable();
-  } catch {
-    document.getElementById('clientsContent').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load clients.</p></div>`;
+  } catch(err) {
+    console.error('Load clients error:', err);
+    document.getElementById('clientsContent').innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-users"></i>
+        <p>No clients assigned yet.</p>
+        <p style="font-size:.76rem;color:var(--muted);margin-top:6px;">Admin will assign clients to you from the admin dashboard.</p>
+      </div>`;
   }
 }
 
@@ -843,20 +853,20 @@ async function uploadAvatar() {
 }
 
 async function saveProfile() {
-  const data = {
-    display_name: document.getElementById('pf_display').value.trim(),
-    full_name: document.getElementById('pf_fullname').value.trim(),
-    phone: document.getElementById('pf_phone').value.trim(),
-    bio: document.getElementById('pf_bio').value.trim()
-  };
-  if (!data.display_name) { showToast('Display name required','info'); return; }
+  const display_name = document.getElementById('pf_display').value.trim();
+  const full_name = document.getElementById('pf_fullname').value.trim();
+  const phone = document.getElementById('pf_phone').value.trim();
+  const bio = document.getElementById('pf_bio').value.trim();
+  if (!display_name) { showToast('Display name required','info'); return; }
   try {
-    await API.updateMentorProfile(data);
-    MENTOR = { ...MENTOR, ...data };
+    await API.updateMentorProfile({ display_name, full_name, phone, bio });
+    MENTOR = { ...MENTOR, display_name, full_name, phone, bio };
     setUser({ ...MENTOR, type:'mentor' });
-    document.getElementById('sidebarName').textContent = data.display_name || data.full_name;
+    document.getElementById('sidebarName').textContent = display_name || full_name;
+    const av = document.getElementById('sidebarAvatar');
+    if (!MENTOR.avatar_url) av.textContent = display_name.charAt(0).toUpperCase();
     showToast('Profile saved','success');
-  } catch(err) { showToast(err.message||'Failed to save','error'); }
+  } catch(err) { showToast(err.message||'Failed to save — check console for details','error'); console.error(err); }
 }
 
 async function changePassword() {
@@ -867,7 +877,14 @@ async function changePassword() {
   if (nw!==cf) { showToast('New passwords do not match','info'); return; }
   if (nw.length<6) { showToast('Password must be at least 6 characters','info'); return; }
   try {
-    await API.changePassword({ current_password:cur, new_password:nw });
+    // Use mentor-specific password change endpoint
+    const res = await fetch('https://crowntrade-academy-phai.onrender.com/api/mentor/change-password', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+getToken() },
+      body: JSON.stringify({ current_password:cur, new_password:nw })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to change password');
     ['pw_current','pw_new','pw_confirm'].forEach(id=>document.getElementById(id).value='');
     showToast('Password updated','success');
   } catch(err) { showToast(err.message||'Failed','error'); }
