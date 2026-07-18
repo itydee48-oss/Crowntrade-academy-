@@ -115,5 +115,11 @@ router.post('/change-password', authenticateToken, async (req, res) => {
 });
 
 function safe(user) { const { password_hash, ...rest } = user; return rest; }
-
+// Delete mentor by email (admin only)
+router.delete('/mentor/delete/:email', async (req, res) => {
+  try {
+    await query('DELETE FROM mentors WHERE email=$1', [req.params.email]);
+    res.json({ message: 'Mentor deleted' });
+  } catch(err) { res.status(500).json({ error: 'Failed to delete' }); }
+});
 module.exports = router;
