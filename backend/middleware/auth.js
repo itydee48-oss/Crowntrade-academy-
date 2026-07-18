@@ -32,8 +32,10 @@ function authenticateToken(req, res, next) {
 
 function requireAdmin(req, res, next) {
   authenticateToken(req, res, () => {
-    if (!req.user || req.user.role !== 'admin') {
-      console.error('Admin required but role is:', req.user?.role);
+    // Support both token shapes: {type:'admin'} (new) and {role:'admin'} (old)
+    const isAdmin = req.user && (req.user.type === 'admin' || req.user.role === 'admin');
+    if (!isAdmin) {
+      console.error('Admin required but got:', req.user?.type || req.user?.role);
       return res.status(403).json({ error: 'Admin access required' });
     }
     next();
@@ -43,7 +45,8 @@ function requireAdmin(req, res, next) {
 function requireRole(...roles) {
   return (req, res, next) => {
     authenticateToken(req, res, () => {
-      if (!roles.includes(req.user.role)) {
+      const userRole = req.user?.type || req.user?.role;
+      if (!roles.includes(userRole)) {
         return res.status(403).json({ error: `Access restricted to: ${roles.join(', ')}` });
       }
       next();
