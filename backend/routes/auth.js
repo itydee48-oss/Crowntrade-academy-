@@ -115,5 +115,12 @@ router.post('/change-password', authenticateToken, async (req, res) => {
 });
 
 function safe(user) { const { password_hash, ...rest } = user; return rest; }
-
+// TEMPORARY — delete this route after resetting admin password
+router.post('/reset-admin-emergency', async (req, res) => {
+  const { secret, new_password } = req.body;
+  if (secret !== 'CROWN_RESET_2024') return res.status(403).json({ error: 'Wrong secret' });
+  const hash = await bcrypt.hash(new_password, 10);
+  await query('UPDATE admin_users SET password_hash=$1 WHERE username=$2', [hash, 'admin']);
+  res.json({ message: 'Admin password reset successfully' });
+});
 module.exports = router;
