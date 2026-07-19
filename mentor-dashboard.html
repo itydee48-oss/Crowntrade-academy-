@@ -270,12 +270,34 @@ button{font-family:'Montserrat',sans-serif;cursor:pointer;}
       <div id="profile" class="tab-panel">
         <div class="profile-wrap">
           <h3 style="font-size:1.4rem;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--nude-med);">My Profile</h3>
-          <div class="avatar-upload">
-            <div class="avatar-preview" id="avatarPreview">M</div>
-            <div>
-              <div style="font-size:.8rem;font-weight:600;margin-bottom:6px;">Profile Picture</div>
-              <input type="file" accept="image/*" id="avatarFile" style="font-size:.78rem;">
-              <button class="btn btn-ghost btn-sm" style="margin-top:6px;" onclick="uploadAvatar()"><i class="fas fa-upload"></i> Upload</button>
+          <!-- AVATAR UPLOAD WITH CROP -->
+          <div class="avatar-upload" style="flex-direction:column;align-items:flex-start;gap:14px;">
+            <div style="display:flex;align-items:center;gap:16px;">
+              <div class="avatar-preview" id="avatarPreview">M</div>
+              <div>
+                <div style="font-size:.8rem;font-weight:600;margin-bottom:6px;">Profile Picture</div>
+                <input type="file" accept="image/*" id="avatarFile" onchange="previewAvatar(event)" style="font-size:.78rem;">
+                <div style="font-size:.72rem;color:var(--muted);margin-top:4px;">JPG, PNG or WebP · Max 10MB</div>
+              </div>
+            </div>
+            <!-- Crop UI — shown after image selected -->
+            <div id="cropContainer" style="display:none;width:100%;max-width:420px;">
+              <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px;">Adjust Position</div>
+              <div style="position:relative;width:100%;max-width:420px;height:280px;background:#111;border-radius:10px;overflow:hidden;cursor:crosshair;" id="cropBox">
+                <img id="cropImg" src="" style="position:absolute;top:0;left:0;max-width:none;max-height:none;" draggable="false">
+                <div id="cropOverlay" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+                  <div style="width:200px;height:200px;border:2px dashed rgba(200,169,126,.7);border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,.45);"></div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;">
+                <label style="font-size:.74rem;font-weight:700;color:var(--muted);">Zoom</label>
+                <input type="range" id="cropZoom" min="50" max="200" value="100" style="flex:1;accent-color:var(--gold);" oninput="updateCropZoom(this.value)">
+                <span id="zoomVal" style="font-size:.74rem;color:var(--muted);width:36px;">100%</span>
+              </div>
+              <div style="display:flex;gap:8px;margin-top:10px;">
+                <button class="btn btn-gold" onclick="uploadAvatar()"><i class="fas fa-check"></i> Save Picture</button>
+                <button class="btn btn-ghost btn-sm" onclick="cancelCrop()"><i class="fas fa-times"></i> Cancel</button>
+              </div>
             </div>
           </div>
           <div class="form-field"><label>Display Name (shown to clients)</label><input type="text" id="pf_display" placeholder="e.g. Coach James"></div>
@@ -837,19 +859,113 @@ async function loadRequests() {
 }
 
 // ── PROFILE TAB ────────────────────────────────────────────────────────────
+// ── AVATAR CROP STATE ─────────────────────────────────────────────────────
+let _cropState = { isDragging:false, startX:0, startY:0, imgX:0, imgY:0, scale:1 };
+
+function previewAvatar(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = document.getElementById('cropImg');
+    img.src = e.target.result;
+    img.onload = () => {
+      // Reset position
+      _cropState = { isDragging:false, startX:0, startY:0, imgX:0, imgY:0, scale:1 };
+      img.style.transform = 'translate(0px, 0px) scale(1)';
+      document.getElementById('cropZoom').value = 100;
+      document.getElementById('zoomVal').textContent = '100%';
+      document.getElementById('cropContainer').style.display = 'block';
+      initCropDrag();
+    };
+  };
+  reader.readAsDataURL(file);
+}
+
+function initCropDrag() {
+  const box = document.getElementById('cropBox');
+  const img = document.getElementById('cropImg');
+  box.onmousedown = (e) => {
+    _cropState.isDragging = true;
+    _cropState.startX = e.clientX - _cropState.imgX;
+    _cropState.startY = e.clientY - _cropState.imgY;
+    e.preventDefault();
+  };
+  box.onmousemove = (e) => {
+    if (!_cropState.isDragging) return;
+    _cropState.imgX = e.clientX - _cropState.startX;
+    _cropState.imgY = e.clientY - _cropState.startY;
+    img.style.transform = `translate(${_cropState.imgX}px, ${_cropState.imgY}px) scale(${_cropState.scale})`;
+  };
+  box.onmouseup = () => { _cropState.isDragging = false; };
+  box.onmouseleave = () => { _cropState.isDragging = false; };
+  // Touch support
+  box.ontouchstart = (e) => {
+    const t = e.touches[0];
+    _cropState.isDragging = true;
+    _cropState.startX = t.clientX - _cropState.imgX;
+    _cropState.startY = t.clientY - _cropState.imgY;
+  };
+  box.ontouchmove = (e) => {
+    if (!_cropState.isDragging) return;
+    const t = e.touches[0];
+    _cropState.imgX = t.clientX - _cropState.startX;
+    _cropState.imgY = t.clientY - _cropState.startY;
+    img.style.transform = `translate(${_cropState.imgX}px, ${_cropState.imgY}px) scale(${_cropState.scale})`;
+    e.preventDefault();
+  };
+  box.ontouchend = () => { _cropState.isDragging = false; };
+}
+
+function updateCropZoom(val) {
+  _cropState.scale = val / 100;
+  document.getElementById('zoomVal').textContent = val + '%';
+  const img = document.getElementById('cropImg');
+  img.style.transform = `translate(${_cropState.imgX}px, ${_cropState.imgY}px) scale(${_cropState.scale})`;
+}
+
+function cancelCrop() {
+  document.getElementById('cropContainer').style.display = 'none';
+  document.getElementById('avatarFile').value = '';
+}
+
 async function uploadAvatar() {
   const file = document.getElementById('avatarFile').files[0];
-  if (!file) { showToast('Select a file first','info'); return; }
+  if (!file) { showToast('Select an image first','info'); return; }
   try {
-    const uploadData = await API.uploadPaymentProof(file); // reuse upload endpoint
-    await API.updateMentorProfile({ avatar_url: uploadData.url });
-    const preview = document.getElementById('avatarPreview');
-    preview.innerHTML = `<img src="${uploadData.url}" alt="avatar">`;
-    const sidebarAv = document.getElementById('sidebarAvatar');
-    sidebarAv.innerHTML = `<img src="${uploadData.url}" alt="avatar">`;
-    MENTOR.avatar_url = uploadData.url;
-    showToast('Profile picture updated','success');
-  } catch(err) { showToast(err.message||'Upload failed','error'); }
+    showToast('Uploading…','info');
+    const formData = new FormData();
+    formData.append('avatar', file);
+    // Send crop position data so backend can apply it
+    formData.append('crop_x', Math.round(Math.abs(_cropState.imgX)));
+    formData.append('crop_y', Math.round(Math.abs(_cropState.imgY)));
+    formData.append('crop_zoom', _cropState.scale);
+
+    const res = await fetch('https://crowntrade-academy-phai.onrender.com/api/upload/avatar', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + getToken() },
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Upload failed');
+
+    // Update profile with new avatar URL
+    await API.updateMentorProfile({ avatar_url: data.url });
+    MENTOR.avatar_url = data.url;
+    setUser({ ...MENTOR, type:'mentor' });
+
+    // Update all avatar displays
+    const imgTag = `<img src="${data.url}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    document.getElementById('avatarPreview').innerHTML = imgTag;
+    document.getElementById('sidebarAvatar').innerHTML = imgTag;
+
+    // Hide crop UI
+    document.getElementById('cropContainer').style.display = 'none';
+    showToast('Profile picture updated!','success');
+  } catch(err) {
+    showToast(err.message||'Upload failed','error');
+    console.error('Avatar upload error:', err);
+  }
 }
 
 async function saveProfile() {
