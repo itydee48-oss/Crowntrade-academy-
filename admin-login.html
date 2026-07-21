@@ -131,6 +131,7 @@ async function doLogin() {
 
     // Save token and user
     setToken(data.token);
+    localStorage.setItem("ct_admin_token", data.token);
     setUser(data.user);
 
     // Verify it was saved
