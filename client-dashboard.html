@@ -3,448 +3,507 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Crown Trade Academy — Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<title>Crown Trade Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <script src="api.js"></script>
 <style>
-:root {
-  --nude-light: #F9F6F2;
-  --nude-med: #E8DFD6;
-  --nude-dark: #D4C8BB;
-  --gold: #C8A97E;
-  --gold-dark: #B89463;
-  --gold-glow: rgba(200,169,126,0.15);
-  --charcoal: #1C1C1E;
-  --charcoal-2: #2d2d35;
-  --muted: #7A7A7A;
-  --success: #10B981;
-  --danger: #EF4444;
-  --warning: #F59E0B;
-  --info: #3B82F6;
-  --sidebar-w: 250px;
-}
+/* ── RESET & TOKENS ─────────────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Montserrat',sans-serif;background:#EDEAE5;color:var(--charcoal);min-height:100vh;}
-h1,h2,h3,h4{font-family:'Cormorant Garamond',serif;font-weight:700;}
+:root{
+  --bg:#0F0F10;
+  --surface:#18181B;
+  --surface2:#1E1E23;
+  --surface3:#26262D;
+  --border:rgba(255,255,255,.07);
+  --gold:#C8A97E;
+  --gold2:#E2C9A0;
+  --gold-dim:rgba(200,169,126,.12);
+  --gold-glow:rgba(200,169,126,.25);
+  --text:#F4F0EB;
+  --text2:#A8A29E;
+  --text3:#57534E;
+  --success:#22C55E;
+  --danger:#EF4444;
+  --warning:#F59E0B;
+  --info:#3B82F6;
+  --nav-w:220px;
+  --radius:12px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;}
+button{font-family:'Inter',sans-serif;cursor:pointer;}
 a{text-decoration:none;color:inherit;}
-button{font-family:'Montserrat',sans-serif;cursor:pointer;}
+input,select,textarea{font-family:'Inter',sans-serif;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:4px;}
 
-/* ── WELCOME OVERLAY ──────────────────────────────────────────────────────── */
-.welcome-overlay{display:none;position:fixed;inset:0;background:linear-gradient(135deg,#1C1C1E 0%,#2d2d35 100%);z-index:9999;align-items:center;justify-content:center;padding:2rem;}
-.welcome-overlay.show{display:flex;animation:fadeIn 0.5s ease;}
-.welcome-box{text-align:center;max-width:520px;color:#fff;}
-.welcome-crown{font-size:4.5rem;color:var(--gold);margin-bottom:1.2rem;animation:dropIn 0.8s cubic-bezier(.34,1.56,.64,1);}
-@keyframes dropIn{from{opacity:0;transform:translateY(-30px) scale(.6);}to{opacity:1;transform:translateY(0) scale(1);}}
-.welcome-box h1{font-size:2.4rem;margin-bottom:.8rem;}
-.welcome-box h1 span{color:var(--gold);}
-.welcome-box p{color:rgba(255,255,255,.65);font-size:.95rem;line-height:1.7;margin-bottom:1.6rem;}
-.welcome-member{display:inline-block;background:rgba(200,169,126,.12);border:1px solid rgba(200,169,126,.35);padding:12px 28px;border-radius:8px;margin-bottom:1.8rem;}
-.welcome-member .lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.45);margin-bottom:3px;}
-.welcome-member .val{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold);font-weight:700;}
-.btn-welcome{background:var(--gold);color:#fff;border:none;padding:.9rem 2.2rem;font-size:.88rem;font-weight:700;letter-spacing:.5px;transition:all .25s;}
-.btn-welcome:hover{background:var(--gold-dark);transform:translateY(-2px);}
+/* ── WELCOME OVERLAY ───────────────────────────────────────────── */
+.welcome{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+.welcome.show{display:flex;animation:fadeIn .4s ease;}
+.welcome-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:44px 40px;max-width:480px;width:100%;text-align:center;}
+.welcome-crown{font-size:3.5rem;color:var(--gold);margin-bottom:16px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+.welcome-box h1{font-size:2.2rem;color:var(--gold2);margin-bottom:8px;}
+.welcome-box p{color:var(--text2);line-height:1.7;margin-bottom:20px;font-size:.9rem;}
+.welcome-member{background:var(--gold-dim);border:1px solid rgba(200,169,126,.2);border-radius:10px;padding:12px 20px;margin-bottom:24px;display:inline-block;}
+.welcome-member .lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--text3);margin-bottom:2px;}
+.welcome-member .val{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--gold);font-weight:700;}
+.btn-welcome{background:linear-gradient(135deg,var(--gold),#A08060);color:#fff;border:none;padding:12px 32px;border-radius:10px;font-weight:700;font-size:.9rem;letter-spacing:.3px;transition:all .2s;}
+.btn-welcome:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,169,126,.3);}
 
-/* ── LAYOUT ───────────────────────────────────────────────────────────────── */
-.app{display:flex;min-height:100vh;}
-.sidebar{width:var(--sidebar-w);background:var(--charcoal);color:#E0D8CF;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;}
-.sidebar-logo{padding:24px 18px 16px;border-bottom:1px solid rgba(255,255,255,.06);}
-.brand{font-family:'Cormorant Garamond',serif;font-size:1.55rem;color:var(--gold);font-weight:700;}
-.brand-sub{font-size:.7rem;color:#555;margin-top:2px;letter-spacing:1px;}
-.sidebar-user{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;}
-.user-avatar{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.95rem;flex-shrink:0;}
-.user-name{font-weight:600;font-size:.85rem;color:#E0D8CF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.member-tag{font-size:.7rem;color:#666;margin-top:1px;}
-.sidebar-nav{flex:1;padding:10px 10px;display:flex;flex-direction:column;gap:2px;}
-.nav-section{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#3a3a3a;padding:10px 10px 4px;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:500;font-size:.82rem;color:#888;border:1px solid transparent;transition:all .18s;}
-.nav-item:hover{background:rgba(255,255,255,.05);color:#E0D8CF;}
-.nav-item.active{background:var(--gold);color:#fff;font-weight:700;}
-.nav-item i{width:15px;text-align:center;font-size:.85rem;}
-.nav-item .badge{background:var(--danger);color:#fff;border-radius:20px;padding:1px 6px;font-size:.6rem;font-weight:700;margin-left:auto;}
-.sidebar-footer{padding:12px 10px;border-top:1px solid rgba(255,255,255,.06);}
-.logout-btn{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(239,68,68,.1);color:#EF4444;border:1px solid rgba(239,68,68,.2);border-radius:8px;cursor:pointer;font-weight:600;font-size:.82rem;width:100%;}
-.logout-btn:hover{background:var(--danger);color:#fff;}
+/* ── LAYOUT ─────────────────────────────────────────────────────── */
+.shell{display:flex;min-height:100vh;}
+.nav{width:var(--nav-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:200;transition:transform .3s;}
+.main{margin-left:var(--nav-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
 
-/* ── MAIN ─────────────────────────────────────────────────────────────────── */
-.main{flex:1;display:flex;flex-direction:column;min-width:0;}
-.topbar{background:#fff;border-bottom:1px solid rgba(212,200,188,.35);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;}
-.topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.55rem;color:var(--gold-dark);font-weight:700;}
-.topbar-right{display:flex;align-items:center;gap:12px;}
-.status-badge{display:inline-flex;align-items:center;gap:5px;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:20px;background:var(--gold-glow);color:var(--gold-dark);border:1px solid rgba(200,169,126,.3);}
-.content{flex:1;padding:22px 24px;overflow-y:auto;}
+/* ── NAV ────────────────────────────────────────────────────────── */
+.nav-brand{padding:22px 18px 16px;border-bottom:1px solid var(--border);}
+.nav-brand-name{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--gold);font-weight:700;line-height:1.2;}
+.nav-brand-sub{font-size:.62rem;text-transform:uppercase;letter-spacing:2px;color:var(--text3);margin-top:2px;}
+.nav-user{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.nav-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8B6340);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0;overflow:hidden;}
+.nav-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.nav-username{font-weight:600;font-size:.82rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-member{font-size:.68rem;color:var(--text3);margin-top:1px;}
+.nav-links{flex:1;padding:10px 8px;overflow-y:auto;}
+.nav-group{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);padding:12px 10px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--text2);border:none;background:none;width:100%;text-align:left;transition:all .18s;position:relative;}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:var(--gold-dim);color:var(--gold);font-weight:600;}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:var(--gold);border-radius:0 3px 3px 0;}
+.nav-item i{width:16px;text-align:center;font-size:.82rem;}
+.nav-item .dot{width:6px;height:6px;background:var(--danger);border-radius:50%;margin-left:auto;}
+.nav-bottom{padding:12px 8px;border-top:1px solid var(--border);}
+.nav-logout{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;background:rgba(239,68,68,.08);color:var(--danger);border:1px solid rgba(239,68,68,.15);cursor:pointer;font-size:.82rem;font-weight:600;width:100%;}
+.nav-logout:hover{background:var(--danger);color:#fff;}
 
-/* ── TABS ─────────────────────────────────────────────────────────────────── */
-.tab-panel{display:none;}
-.tab-panel.active{display:block;animation:fadeIn .25s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+/* ── TOPBAR ─────────────────────────────────────────────────────── */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold2);font-weight:700;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.status-chip{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:20px;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(200,169,126,.2);}
+.status-dot{width:5px;height:5px;border-radius:50%;background:var(--success);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.menu-btn{display:none;background:none;border:none;color:var(--text);font-size:1.1rem;padding:6px;}
 
-/* ── COMMON COMPONENTS ────────────────────────────────────────────────────── */
-.section-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700;margin-bottom:12px;}
-.card{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);box-shadow:0 2px 8px rgba(0,0,0,.03);}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.82rem;border:1px solid transparent;font-family:'Montserrat',sans-serif;transition:all .2s;}
-.btn-gold{background:var(--gold);color:#fff;}
-.btn-gold:hover:not(:disabled){background:var(--gold-dark);}
-.btn-gold:disabled{opacity:.5;cursor:not-allowed;}
-.btn-ghost{background:transparent;border-color:var(--gold);color:var(--gold-dark);}
-.btn-ghost:hover{background:var(--gold);color:#fff;}
-.btn-danger{background:var(--danger);color:#fff;}
-.btn-sm{padding:6px 12px;font-size:.76rem;}
-.spinner{display:inline-block;width:22px;height:22px;border:3px solid var(--nude-med);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+/* ── CONTENT ─────────────────────────────────────────────────────── */
+.content{flex:1;padding:22px 24px;max-width:1200px;width:100%;}
+.tab{display:none;}
+.tab.active{display:block;animation:slideUp .2s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+/* ── COMPONENTS ─────────────────────────────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);}
+.card-p{padding:20px;}
+.section-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:12px;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.8rem;border:1px solid transparent;transition:all .18s;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#A08060);color:#fff;border:none;}
+.btn-gold:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px);}
+.btn-gold:disabled{opacity:.4;cursor:not-allowed;}
+.btn-outline{background:transparent;border-color:var(--gold);color:var(--gold);}
+.btn-outline:hover{background:var(--gold-dim);}
+.btn-ghost{background:var(--surface2);color:var(--text2);border-color:var(--border);}
+.btn-ghost:hover{background:var(--surface3);color:var(--text);}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--danger);border-color:rgba(239,68,68,.2);}
+.btn-sm{padding:5px 10px;font-size:.74rem;}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--surface3);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.spinner-wrap{text-align:center;padding:36px;color:var(--muted);}
-.empty-state{text-align:center;padding:44px 20px;color:var(--muted);}
-.empty-state i{font-size:2.2rem;color:var(--gold);margin-bottom:12px;display:block;}
-.badge{display:inline-block;font-size:.68rem;padding:3px 9px;border-radius:20px;font-weight:700;}
-.badge-pending{background:#FEF3C7;color:#92400E;}
-.badge-approved{background:#D1FAE5;color:#065F46;}
-.badge-rejected{background:#FEE2E2;color:#991B1B;}
-.badge-payment{background:#DBEAFE;color:#1E40AF;}
-.badge-gold{background:var(--gold-glow);color:var(--gold-dark);border:1px solid rgba(200,169,126,.3);}
-.upgrade-card{background:linear-gradient(135deg,var(--charcoal) 0%,var(--charcoal-2) 100%);border-radius:14px;padding:28px;text-align:center;color:#fff;}
-.upgrade-card h3{font-size:1.5rem;margin-bottom:.6rem;}
-.upgrade-card p{color:rgba(255,255,255,.6);font-size:.88rem;line-height:1.7;margin-bottom:1.4rem;}
-.upgrade-card .price{font-family:'Cormorant Garamond',serif;font-size:2.4rem;color:var(--gold);font-weight:700;margin-bottom:1.2rem;}
+.loading{display:flex;align-items:center;justify-content:center;padding:48px;color:var(--text3);flex-direction:column;gap:10px;}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;color:var(--text3);gap:8px;}
+.empty i{font-size:2rem;color:var(--surface3);margin-bottom:4px;}
+.badge{display:inline-block;font-size:.65rem;padding:2px 8px;border-radius:20px;font-weight:700;}
+.badge-pending{background:rgba(245,158,11,.15);color:var(--warning);}
+.badge-approved{background:rgba(34,197,94,.12);color:var(--success);}
+.badge-rejected{background:rgba(239,68,68,.12);color:var(--danger);}
+.badge-gold{background:var(--gold-dim);color:var(--gold);}
+.badge-info{background:rgba(59,130,246,.12);color:var(--info);}
 
-/* ── HOME TAB ─────────────────────────────────────────────────────────────── */
-.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
-.streak-card{padding:20px;display:flex;align-items:center;gap:16px;}
-.streak-icon{font-size:2.4rem;flex-shrink:0;}
-.streak-num{font-family:'Cormorant Garamond',serif;font-size:2.6rem;color:var(--gold);font-weight:700;line-height:1;}
-.streak-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;margin-top:2px;}
-.streak-sub{font-size:.75rem;color:var(--muted);margin-top:4px;}
+/* ── HOME ──────────────────────────────────────────────────────── */
+.home-hero{background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.home-hero-text h2{font-size:1.7rem;color:var(--gold2);margin-bottom:4px;}
+.home-hero-text p{color:var(--text2);font-size:.88rem;}
+.streak-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.streak-card{padding:20px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;}
+.streak-card::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:.06;}
+.streak-card.login::before{background:var(--warning);}
+.streak-card.module::before{background:var(--success);}
+.streak-emoji{font-size:2.2rem;line-height:1;}
+.streak-num{font-family:'Cormorant Garamond',serif;font-size:2.8rem;color:var(--gold);font-weight:700;line-height:1;}
+.streak-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-top:2px;}
+.streak-sub{font-size:.72rem;color:var(--text3);margin-top:4px;}
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
-.stat-card{padding:16px 14px;text-align:center;}
-.stat-val{font-family:'Cormorant Garamond',serif;font-size:1.9rem;color:var(--charcoal);font-weight:700;}
-.stat-lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;margin-top:3px;}
-.continue-strip{background:linear-gradient(135deg,var(--charcoal) 0%,var(--charcoal-2) 100%);border-radius:12px;padding:20px 22px;margin-bottom:20px;color:#fff;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
-.continue-icon{width:50px;height:50px;background:rgba(200,169,126,.15);border:1px solid rgba(200,169,126,.3);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--gold);flex-shrink:0;}
-.continue-info{flex:1;min-width:140px;}
-.continue-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.45);margin-bottom:3px;}
-.continue-title{font-weight:700;font-size:1rem;}
-.continue-sub{font-size:.78rem;color:rgba(255,255,255,.5);margin-top:2px;}
-.tv-widget-wrap{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);overflow:hidden;}
-.tv-widget-header{padding:14px 18px;border-bottom:1px solid rgba(212,200,188,.3);display:flex;align-items:center;gap:8px;font-weight:700;font-size:.88rem;color:var(--charcoal);}
-.tv-widget-header i{color:var(--gold);}
+.stat-box{padding:16px;text-align:center;}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--text);}
+.stat-val.gold{color:var(--gold);}
+.stat-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);font-weight:600;margin-top:4px;}
+.continue-card{background:linear-gradient(135deg,#1a1206 0%,var(--surface2) 100%);border:1px solid rgba(200,169,126,.2);border-radius:14px;padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:20px;cursor:pointer;transition:all .2s;}
+.continue-card:hover{border-color:var(--gold);transform:translateY(-2px);}
+.continue-icon{width:48px;height:48px;background:var(--gold-dim);border:1px solid rgba(200,169,126,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--gold);flex-shrink:0;}
+.continue-lbl{font-size:.62rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);}
+.continue-title{font-weight:700;font-size:.95rem;color:var(--text);margin-top:2px;}
+.continue-sub{font-size:.76rem;color:var(--text3);margin-top:3px;}
+.progress-bar{background:var(--surface3);border-radius:20px;height:4px;margin-top:8px;overflow:hidden;}
+.progress-fill{background:linear-gradient(90deg,var(--gold),var(--gold2));height:4px;border-radius:20px;transition:width .6s ease;}
 
-/* ── COURSES TAB ──────────────────────────────────────────────────────────── */
-.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:24px;}
-.course-card{overflow:hidden;border-radius:12px;cursor:pointer;transition:all .25s;}
-.course-card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.08);}
-.course-card-top{padding:18px 18px 12px;}
-.ring-name-wrap{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-.progress-ring{position:relative;width:52px;height:52px;flex-shrink:0;}
-.progress-ring svg{transform:rotate(-90deg);}
-.ring-bg{fill:none;stroke:var(--nude-med);stroke-width:5;}
+/* ── COURSES ───────────────────────────────────────────────────── */
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+.course-card{border-radius:14px;overflow:hidden;cursor:pointer;transition:all .22s;position:relative;}
+.course-card:hover{transform:translateY(-4px);border-color:rgba(200,169,126,.3);box-shadow:0 12px 32px rgba(0,0,0,.3);}
+.course-card-top{padding:20px 18px 14px;}
+.ring-wrap{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.ring{position:relative;width:50px;height:50px;flex-shrink:0;}
+.ring svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--surface3);stroke-width:5;}
 .ring-fill{fill:none;stroke:var(--gold);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1s ease;}
-.ring-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.05rem;color:var(--gold);}
-.course-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;line-height:1.25;}
-.course-meta{font-size:.75rem;color:var(--muted);margin-top:1px;}
-.course-card-foot{padding:12px 18px;border-top:1px solid rgba(212,200,188,.3);background:var(--nude-light);font-size:.8rem;font-weight:700;color:var(--gold-dark);display:flex;justify-content:space-between;align-items:center;}
+.ring-icon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--gold);}
+.course-title{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;line-height:1.2;color:var(--text);}
+.course-meta{font-size:.72rem;color:var(--text3);margin-top:2px;}
+.course-card-foot{padding:11px 18px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.76rem;font-weight:600;color:var(--gold);}
 
-/* ── COURSE PLAYER ────────────────────────────────────────────────────────── */
-.player-view{display:none;}
-.player-view.show{display:block;}
-.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--gold-dark);cursor:pointer;font-weight:600;font-size:.85rem;background:none;border:none;margin-bottom:16px;}
-.back-btn:hover{color:var(--gold);}
-.player-layout{display:grid;grid-template-columns:1fr 300px;gap:18px;}
-.video-wrap{position:relative;padding-bottom:56.25%;height:0;border-radius:10px;background:#000;overflow:hidden;margin-bottom:14px;}
-.video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
-.video-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:rgba(255,255,255,.4);}
-.video-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px;}
-.video-desc{color:var(--muted);font-size:.85rem;line-height:1.6;margin-bottom:14px;}
-.module-sidebar{border-radius:10px;padding:14px;max-height:520px;overflow-y:auto;}
-.module-sidebar-title{font-weight:700;font-size:.82rem;margin-bottom:10px;}
-.module-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:7px;cursor:pointer;margin-bottom:3px;transition:all .15s;}
-.module-item:hover{background:var(--nude-light);}
-.module-item.active{background:var(--gold-glow);}
-.module-item.locked{opacity:.5;cursor:not-allowed;}
-.mod-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;}
+/* ── VIDEO PLAYER ──────────────────────────────────────────────── */
+.player-back{display:none;background:none;border:none;color:var(--gold);font-size:.84rem;font-weight:600;padding:0;margin-bottom:16px;cursor:pointer;align-items:center;gap:6px;}
+.player-back.show{display:inline-flex;}
+.player-grid{display:grid;grid-template-columns:1fr 300px;gap:16px;}
+.video-frame-wrap{position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;background:#000;margin-bottom:14px;}
+.video-frame-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
+.video-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--text3);font-size:.84rem;}
+.module-list{border-radius:12px;overflow:hidden;max-height:560px;overflow-y:auto;}
+.module-list-header{padding:14px 16px;font-weight:700;font-size:.82rem;border-bottom:1px solid var(--border);}
+.module-item{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;}
+.module-item:last-child{border-bottom:none;}
+.module-item:hover{background:var(--surface2);}
+.module-item.active{background:var(--gold-dim);}
+.module-item.locked{opacity:.4;cursor:not-allowed;}
+.mod-circle{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;}
 .mod-done{background:var(--success);color:#fff;}
-.mod-current{background:var(--gold);color:#fff;}
-.mod-todo{background:var(--nude-med);color:var(--muted);}
-.mod-locked{background:#ddd;color:#999;}
-.mod-title{font-size:.8rem;font-weight:600;}
-.mod-dur{font-size:.7rem;color:var(--muted);}
-.materials-section{margin-top:16px;padding-top:14px;border-top:1px solid var(--nude-med);}
-.material-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--nude-light);border-radius:7px;margin-bottom:6px;font-size:.8rem;}
-.material-item a{color:var(--gold-dark);font-weight:600;}
-.material-item a:hover{color:var(--gold);}
+.mod-active{background:var(--gold);color:#fff;}
+.mod-todo{background:var(--surface3);color:var(--text2);}
+.mod-locked-c{background:var(--surface2);color:var(--text3);}
+.mod-title-text{font-size:.8rem;font-weight:600;color:var(--text);}
+.mod-dur{font-size:.68rem;color:var(--text3);}
+.lesson-info{margin-bottom:16px;}
+.lesson-title{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:700;color:var(--text);margin-bottom:4px;}
+.lesson-desc{font-size:.82rem;color:var(--text2);line-height:1.6;}
+.lesson-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.materials-wrap{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.material-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--surface2);border-radius:7px;margin-bottom:6px;font-size:.78rem;}
+.material-item a{color:var(--gold);font-weight:600;}
 
-/* ── QUIZ PANEL ───────────────────────────────────────────────────────────── */
-.quiz-panel{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);padding:24px;margin-top:16px;}
-.quiz-panel h3{font-size:1.3rem;color:var(--charcoal);margin-bottom:4px;}
-.quiz-panel .quiz-sub{font-size:.8rem;color:var(--muted);margin-bottom:18px;}
-.question-block{margin-bottom:20px;}
-.question-text{font-weight:600;font-size:.92rem;margin-bottom:10px;line-height:1.5;}
-.option-btn{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 14px;border-radius:8px;border:1px solid var(--nude-med);background:var(--nude-light);font-family:'Montserrat',sans-serif;font-size:.82rem;cursor:pointer;margin-bottom:6px;transition:all .2s;}
-.option-btn:hover:not(.selected):not(.correct):not(.wrong){border-color:var(--gold);background:var(--gold-glow);}
-.option-btn.selected{border-color:var(--gold);background:var(--gold-glow);}
-.option-btn.correct{border-color:var(--success);background:rgba(16,185,129,.1);color:#065F46;}
-.option-btn.wrong{border-color:var(--danger);background:rgba(239,68,68,.08);color:#991B1B;}
-.quiz-result{text-align:center;padding:24px;border-radius:10px;margin-top:16px;}
-.quiz-result.pass{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.3);}
-.quiz-result.fail{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);}
-.quiz-score{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;}
+/* ── QUIZ ──────────────────────────────────────────────────────── */
+.quiz-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;margin-top:16px;}
+.quiz-title{font-family:'Cormorant Garamond',serif;font-size:1.25rem;margin-bottom:4px;}
+.quiz-sub{font-size:.78rem;color:var(--text3);margin-bottom:18px;}
+.quiz-progress{background:var(--surface2);border-radius:20px;height:4px;margin-bottom:20px;overflow:hidden;}
+.quiz-progress-fill{background:var(--gold);height:4px;border-radius:20px;transition:width .3s;}
+.question-num{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:6px;}
+.question-text{font-weight:600;font-size:.95rem;line-height:1.5;margin-bottom:14px;color:var(--text);}
+.option{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:9px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;margin-bottom:8px;transition:all .18s;font-size:.84rem;color:var(--text);}
+.option:hover:not(.selected):not(.correct):not(.wrong){border-color:var(--gold);background:var(--gold-dim);}
+.option.selected{border-color:var(--gold);background:var(--gold-dim);}
+.option.correct{border-color:var(--success);background:rgba(34,197,94,.1);color:var(--success);}
+.option.wrong{border-color:var(--danger);background:rgba(239,68,68,.08);color:var(--danger);}
+.option-letter{width:24px;height:24px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;}
+.explanation{font-size:.76rem;color:var(--text2);background:var(--surface2);padding:8px 12px;border-radius:7px;margin-top:6px;border-left:2px solid var(--gold);}
+.quiz-result{text-align:center;padding:28px;border-radius:12px;margin-top:16px;}
+.quiz-result.pass{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);}
+.quiz-result.fail{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);}
+.quiz-score{font-family:'Cormorant Garamond',serif;font-size:3.5rem;font-weight:700;line-height:1;}
 .quiz-score.pass{color:var(--success);}
 .quiz-score.fail{color:var(--danger);}
 
-/* ── MY MENTOR TAB ────────────────────────────────────────────────────────── */
-.mentor-card{padding:22px;}
-.mentor-avatar-lg{width:72px;height:72px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.8rem;font-weight:700;margin:0 auto 12px;}
-.mentor-name{font-size:1.3rem;text-align:center;margin-bottom:4px;}
-.mentor-bio{color:var(--muted);font-size:.84rem;text-align:center;line-height:1.6;margin-bottom:16px;}
-.availability-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:16px;}
-.slot-btn{padding:8px 10px;border-radius:7px;border:1px solid var(--nude-med);background:var(--nude-light);font-size:.76rem;font-weight:600;cursor:pointer;text-align:center;transition:all .2s;}
-.slot-btn:hover{border-color:var(--gold);background:var(--gold-glow);}
+/* ── MENTOR TAB ──────────────────────────────────────────────────── */
+.mentor-hero{background:linear-gradient(135deg,var(--surface2),var(--surface));border:1px solid var(--border);border-radius:14px;padding:24px;text-align:center;margin-bottom:16px;}
+.mentor-avatar-lg{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8B6340);display:flex;align-items:center;justify-content:center;color:#fff;font-size:2rem;font-weight:700;margin:0 auto 12px;overflow:hidden;}
+.mentor-avatar-lg img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.mentor-name-lg{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold2);margin-bottom:4px;}
+.mentor-bio-text{font-size:.84rem;color:var(--text2);line-height:1.6;}
+.session-card{padding:16px;border-radius:10px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;}
+.session-dot{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+.session-dot.upcoming{background:var(--gold-dim);color:var(--gold);}
+.session-dot.completed{background:rgba(34,197,94,.1);color:var(--success);}
+.session-date{font-weight:700;font-size:.9rem;color:var(--text);}
+.session-meta{font-size:.76rem;color:var(--text3);margin-top:2px;}
+.join-btn{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:6px 14px;background:var(--success);color:#fff;border-radius:7px;font-size:.76rem;font-weight:700;border:none;cursor:pointer;}
+.book-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+.slot-btn{padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);font-size:.78rem;font-weight:600;cursor:pointer;color:var(--text2);transition:all .2s;text-align:center;}
+.slot-btn:hover{border-color:var(--gold);color:var(--gold);background:var(--gold-dim);}
 .slot-btn.selected{background:var(--gold);color:#fff;border-color:var(--gold);}
-.session-card{padding:16px 18px;display:flex;align-items:flex-start;gap:14px;margin-bottom:10px;}
-.session-icon{width:40px;height:40px;border-radius:10px;background:var(--gold-glow);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1rem;flex-shrink:0;}
-.session-date{font-weight:700;font-size:.92rem;}
-.session-meta{font-size:.78rem;color:var(--muted);margin-top:2px;}
-.session-contact{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:6px 12px;background:var(--success);color:#fff;border-radius:6px;font-size:.75rem;font-weight:700;}
 
-/* ── TRADING TOOLS TAB ────────────────────────────────────────────────────── */
-.tools-subnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
-.tool-tab{padding:8px 14px;border-radius:20px;border:1px solid var(--nude-med);background:#fff;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all .2s;}
-.tool-tab.active{background:var(--gold);color:#fff;border-color:var(--gold);}
+/* ── PARTNER TAB ─────────────────────────────────────────────────── */
+.wallet-card{background:linear-gradient(135deg,#1a1206 0%,var(--surface2) 100%);border:1px solid rgba(200,169,126,.2);border-radius:16px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden;}
+.wallet-card::after{content:'◆';position:absolute;right:-10px;top:-10px;font-size:7rem;color:rgba(200,169,126,.04);line-height:1;}
+.wallet-lbl{font-size:.66rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(200,169,126,.5);margin-bottom:4px;}
+.wallet-amt{font-family:'Cormorant Garamond',serif;font-size:3.2rem;color:var(--gold);font-weight:700;line-height:1;}
+.wallet-currency{font-size:1rem;color:rgba(200,169,126,.6);margin-left:4px;}
+.wallet-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;padding-top:18px;border-top:1px solid rgba(200,169,126,.1);}
+.wallet-stat .lbl{font-size:.64rem;text-transform:uppercase;letter-spacing:1px;color:rgba(200,169,126,.4);}
+.wallet-stat .val{font-weight:700;color:var(--text);margin-top:2px;}
+.tier-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-weight:700;font-size:.78rem;}
+.tier-bronze{background:rgba(205,127,50,.12);color:#CD7F32;border:1px solid rgba(205,127,50,.25);}
+.tier-silver{background:rgba(168,168,168,.1);color:#A8A8A8;border:1px solid rgba(168,168,168,.2);}
+.tier-crown{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(200,169,126,.25);}
+.ref-link-box{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin:14px 0;}
+.ref-link-box code{flex:1;font-size:.76rem;color:var(--text);word-break:break-all;font-family:monospace;}
+.earnings-table{width:100%;border-collapse:collapse;font-size:.78rem;}
+.earnings-table th{padding:8px 12px;text-align:left;font-size:.64rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);border-bottom:1px solid var(--border);background:var(--surface2);}
+.earnings-table td{padding:9px 12px;border-bottom:1px solid var(--border);}
+.earnings-table tr:hover td{background:var(--surface2);}
+
+/* ── TRADING TOOLS ───────────────────────────────────────────────── */
+.tool-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:18px;background:var(--surface);padding:4px;border-radius:10px;border:1px solid var(--border);}
+.tool-tab{padding:7px 14px;border-radius:7px;border:none;background:transparent;font-size:.78rem;font-weight:600;cursor:pointer;color:var(--text2);transition:all .18s;}
+.tool-tab.active{background:var(--gold);color:#fff;}
 .tool-panel{display:none;}
 .tool-panel.active{display:block;}
-.calc-form{display:grid;gap:14px;max-width:500px;}
-.calc-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.calc-field label{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:5px;display:block;}
-.calc-field input,.calc-field select{width:100%;padding:10px 12px;border:1px solid var(--nude-med);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:.88rem;background:#fff;outline:none;transition:border .2s;}
+.calc-card{max-width:520px;}
+.calc-card h3{font-size:1.2rem;margin-bottom:4px;color:var(--text);}
+.calc-card .sub{font-size:.78rem;color:var(--text3);margin-bottom:18px;}
+.calc-field{margin-bottom:14px;}
+.calc-field label{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:5px;}
+.calc-field input,.calc-field select{width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.84rem;outline:none;transition:border .18s;}
 .calc-field input:focus,.calc-field select:focus{border-color:var(--gold);}
-.calc-result{background:linear-gradient(135deg,var(--charcoal),var(--charcoal-2));border-radius:12px;padding:20px 22px;color:#fff;margin-top:4px;}
-.calc-result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px;}
-.calc-result-item .val{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--gold);font-weight:700;}
-.calc-result-item .lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.5);margin-top:2px;}
-.rr-visual{display:flex;align-items:center;gap:0;height:40px;margin:16px 0;border-radius:6px;overflow:hidden;}
-.rr-sl{background:rgba(239,68,68,.35);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--danger);}
-.rr-entry{width:4px;background:var(--gold);}
-.rr-tp{background:rgba(16,185,129,.35);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--success);}
+.calc-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.result-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-top:4px;}
+.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px;}
+.result-item .v{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold);font-weight:700;}
+.result-item .l{font-size:.64rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-top:2px;}
+.rr-visual{display:flex;height:36px;border-radius:6px;overflow:hidden;margin:12px 0;}
+.rr-sl{background:rgba(239,68,68,.25);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:var(--danger);}
+.rr-entry{width:3px;background:var(--gold);}
+.rr-tp{background:rgba(34,197,94,.2);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:var(--success);}
+.rr-verdict{font-size:.78rem;color:var(--text2);margin-top:8px;}
 
-/* ── JOURNAL ────────────────────────────────────────────────────────────────── */
-.journal-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:18px;}
-.journal-stat{padding:14px;text-align:center;}
-.journal-stat .val{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;}
-.journal-stat .lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-top:2px;}
-.trade-table{width:100%;border-collapse:collapse;font-size:.8rem;}
-.trade-table th{padding:9px 12px;text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--nude-med);background:var(--nude-light);}
-.trade-table td{padding:10px 12px;border-bottom:1px solid rgba(212,200,188,.25);}
-.trade-table tr:hover td{background:var(--nude-light);}
-.outcome-win{color:var(--success);font-weight:700;}
-.outcome-loss{color:var(--danger);font-weight:700;}
-.outcome-be{color:var(--muted);font-weight:700;}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:16px;}
-.modal-overlay.show{display:flex;}
-.modal{background:#fff;border-radius:14px;padding:24px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;}
-.modal h3{font-size:1.35rem;margin-bottom:16px;}
+/* ── JOURNAL ─────────────────────────────────────────────────────── */
+.j-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;margin-bottom:16px;}
+.j-stat{padding:14px;text-align:center;}
+.j-stat .v{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;}
+.j-stat .l{font-size:.64rem;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);margin-top:2px;}
+.trades-table{width:100%;border-collapse:collapse;font-size:.76rem;}
+.trades-table th{padding:8px 10px;text-align:left;font-size:.62rem;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);border-bottom:1px solid var(--border);background:var(--surface2);}
+.trades-table td{padding:8px 10px;border-bottom:1px solid var(--border);}
+.trades-table tr:hover td{background:var(--surface2);}
+.win{color:var(--success);font-weight:700;}
+.loss{color:var(--danger);font-weight:700;}
+
+/* ── PAYMENTS ────────────────────────────────────────────────────── */
+.payment-row{padding:16px;display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+.payment-icon{width:42px;height:42px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1rem;flex-shrink:0;}
+.payment-title{font-weight:700;font-size:.88rem;}
+.payment-meta{font-size:.74rem;color:var(--text3);margin-top:2px;}
+
+/* ── PROFILE ─────────────────────────────────────────────────────── */
+.profile-wrap{max-width:500px;}
+.profile-section-title{font-size:1.25rem;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
 .form-field{margin-bottom:14px;}
-.form-field label{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:5px;display:block;}
-.form-field input,.form-field select,.form-field textarea{width:100%;padding:10px 12px;border:1px solid var(--nude-med);border-radius:8px;font-family:'Montserrat',sans-serif;font-size:.85rem;outline:none;transition:border .2s;}
-.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:var(--gold);}
+.form-field label{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:5px;}
+.form-field input{width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.84rem;outline:none;transition:border .18s;}
+.form-field input:focus{border-color:var(--gold);}
+.form-field input[readonly]{opacity:.5;cursor:not-allowed;}
+
+/* ── CHAT ────────────────────────────────────────────────────────── */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 200px);max-height:600px;}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{max-width:72%;padding:10px 14px;border-radius:12px;font-size:.84rem;line-height:1.5;}
+.chat-msg.me{background:var(--gold-dim);border:1px solid rgba(200,169,126,.2);color:var(--text);align-self:flex-end;border-radius:12px 12px 2px 12px;}
+.chat-msg.them{background:var(--surface2);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-radius:12px 12px 12px 2px;}
+.chat-msg .sender{font-size:.64rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:3px;}
+.chat-msg .time{font-size:.62rem;color:var(--text3);margin-top:4px;text-align:right;}
+.chat-input-wrap{padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;}
+.chat-input{flex:1;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:24px;color:var(--text);font-size:.84rem;outline:none;transition:border .18s;}
+.chat-input:focus{border-color:var(--gold);}
+.chat-send{width:38px;height:38px;border-radius:50%;background:var(--gold);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;flex-shrink:0;}
+
+/* ── MODALS ─────────────────────────────────────────────────────── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:center;justify-content:center;padding:16px;}
+.modal-bg.show{display:flex;}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;}
+.modal-box h3{font-size:1.3rem;margin-bottom:16px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 
-/* ── CROWN PARTNER TAB ────────────────────────────────────────────────────── */
-.wallet-card{background:linear-gradient(135deg,var(--charcoal),var(--charcoal-2));border-radius:14px;padding:24px;color:#fff;margin-bottom:16px;}
-.wallet-title{font-size:.72rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.45);margin-bottom:4px;}
-.wallet-amount{font-family:'Cormorant Garamond',serif;font-size:3rem;color:var(--gold);font-weight:700;line-height:1;}
-.wallet-currency{font-size:1rem;color:rgba(255,255,255,.6);margin-left:4px;}
-.wallet-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);}
-.wallet-stat .lbl{font-size:.66rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.4);}
-.wallet-stat .val{font-weight:700;color:#fff;margin-top:2px;font-size:.95rem;}
-.tier-badge{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:20px;font-weight:700;font-size:.82rem;}
-.tier-bronze{background:rgba(205,127,50,.15);color:#CD7F32;border:1px solid rgba(205,127,50,.3);}
-.tier-silver{background:rgba(168,168,168,.15);color:#888;border:1px solid rgba(168,168,168,.3);}
-.tier-crown{background:rgba(200,169,126,.15);color:var(--gold-dark);border:1px solid rgba(200,169,126,.3);}
-.referral-link-box{background:var(--nude-light);border:1px solid var(--nude-med);border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-.referral-link-box code{flex:1;font-size:.78rem;color:var(--charcoal);word-break:break-all;}
-.earnings-table{width:100%;border-collapse:collapse;font-size:.8rem;}
-.earnings-table th{padding:8px 12px;text-align:left;font-size:.67rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--nude-med);background:var(--nude-light);}
-.earnings-table td{padding:9px 12px;border-bottom:1px solid rgba(212,200,188,.25);}
+/* ── TOAST ─────────────────────────────────────────────────────── */
+.toast{position:fixed;bottom:20px;right:20px;padding:10px 16px;border-radius:10px;color:#fff;font-weight:600;font-size:.82rem;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:slideUp .3s ease;max-width:300px;}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
-/* ── PAYMENTS TAB ─────────────────────────────────────────────────────────── */
-.payment-item{padding:16px 18px;display:flex;align-items:center;gap:14px;margin-bottom:10px;}
-.payment-icon{width:40px;height:40px;border-radius:10px;background:var(--nude-light);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1rem;flex-shrink:0;}
-.payment-info{flex:1;}
-.payment-title{font-weight:700;font-size:.9rem;}
-.payment-meta{font-size:.76rem;color:var(--muted);margin-top:2px;}
+/* ── UPGRADE CARD ────────────────────────────────────────────────── */
+.upgrade-card{background:linear-gradient(135deg,var(--surface2),var(--surface));border:1px solid rgba(200,169,126,.2);border-radius:16px;padding:32px;text-align:center;}
+.upgrade-card h3{font-size:1.7rem;color:var(--gold2);margin-bottom:8px;}
+.upgrade-card p{color:var(--text2);font-size:.88rem;line-height:1.7;margin-bottom:16px;}
+.upgrade-price{font-family:'Cormorant Garamond',serif;font-size:2.6rem;color:var(--gold);font-weight:700;margin-bottom:20px;}
 
-/* ── PROFILE TAB ──────────────────────────────────────────────────────────── */
-.profile-section{max-width:520px;}
-.profile-section h3{font-size:1.3rem;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--nude-med);}
-
-/* ── DISCOVER TAB ─────────────────────────────────────────────────────────── */
-.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;}
-.catalog-card{padding:18px;text-align:center;transition:all .2s;cursor:pointer;}
-.catalog-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.07);}
-.catalog-icon{width:42px;height:42px;background:var(--nude-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--gold);margin:0 auto 10px;}
-.catalog-title{font-weight:700;font-size:.92rem;margin-bottom:3px;}
-.catalog-price{color:var(--gold-dark);font-weight:700;font-size:.82rem;margin-bottom:10px;}
-
-/* ── TOAST ────────────────────────────────────────────────────────────────── */
-.toast{position:fixed;bottom:22px;right:22px;padding:11px 16px;border-radius:9px;color:#fff;font-weight:600;font-size:.84rem;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,.15);animation:slideUp .3s ease;}
-@keyframes slideUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-
-/* ── RESPONSIVE ───────────────────────────────────────────────────────────── */
+/* ── RESPONSIVE ─────────────────────────────────────────────────── */
 @media(max-width:900px){
-  .sidebar{display:none;}
+  .nav{transform:translateX(-100%);}
+  .nav.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .menu-btn{display:block;}
+  .player-grid{grid-template-columns:1fr;}
   .stats-row{grid-template-columns:repeat(2,1fr);}
-  .home-grid{grid-template-columns:1fr;}
-  .player-layout{grid-template-columns:1fr;}
-  .calc-row{grid-template-columns:1fr;}
+  .streak-grid{grid-template-columns:1fr;}
+  .book-grid{grid-template-columns:1fr;}
 }
 @media(max-width:540px){
-  .content{padding:16px 14px;}
-  .courses-grid,.catalog-grid{grid-template-columns:1fr;}
-  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .content{padding:14px;}
   .wallet-stats{grid-template-columns:1fr 1fr;}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .result-grid{grid-template-columns:1fr 1fr;}
 }
 </style>
 </head>
 <body>
 
 <!-- WELCOME OVERLAY -->
-<div class="welcome-overlay" id="welcomeOverlay">
+<div class="welcome" id="welcomeOverlay">
   <div class="welcome-box">
     <div class="welcome-crown"><i class="fas fa-crown"></i></div>
-    <h1>Welcome to <span>Crown Trade Academy</span></h1>
-    <p id="welcomeMsg">Your enrollment has been approved. Your course is now unlocked.</p>
+    <h1>Welcome to the <span style="color:var(--gold);">Crown</span></h1>
+    <p id="welcomeMsg">Your enrollment has been approved. Your journey to trading mastery begins now.</p>
     <div class="welcome-member">
-      <div class="lbl">Your Member ID</div>
+      <div class="lbl">Member ID</div>
       <div class="val" id="welcomeMemberNum">#—</div>
     </div>
     <button class="btn-welcome" onclick="closeWelcome()">Enter Dashboard <i class="fas fa-arrow-right"></i></button>
   </div>
 </div>
 
-<!-- TRADE LOG MODAL -->
-<div class="modal-overlay" id="tradeModal">
-  <div class="modal">
-    <h3 id="tradeModalTitle">Log a Trade</h3>
-    <div class="form-row">
-      <div class="form-field">
-        <label>Pair</label>
-        <input type="text" id="tj_pair" placeholder="e.g. EURUSD" style="text-transform:uppercase;">
-      </div>
-      <div class="form-field">
-        <label>Direction</label>
-        <select id="tj_direction">
-          <option value="buy">Buy</option>
-          <option value="sell">Sell</option>
-        </select>
-      </div>
+<!-- BOOK SESSION MODAL -->
+<div class="modal-bg" id="bookModal">
+  <div class="modal-box">
+    <h3>Book a Session</h3>
+    <div class="form-field"><label>Date & Time</label><input type="datetime-local" id="book_dt"></div>
+    <div class="form-field"><label>Contact Method</label>
+      <select id="book_method" style="width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.84rem;outline:none;">
+        <option value="whatsapp">WhatsApp</option>
+        <option value="zoom">Zoom</option>
+      </select>
     </div>
-    <div class="form-row">
-      <div class="form-field"><label>Entry Price</label><input type="number" id="tj_entry" step="0.00001" placeholder="1.12345"></div>
-      <div class="form-field"><label>Stop Loss</label><input type="number" id="tj_sl" step="0.00001" placeholder="1.12000"></div>
+    <div class="form-field"><label>Notes for mentor (optional)</label>
+      <textarea id="book_notes" rows="2" style="width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.84rem;outline:none;resize:vertical;" placeholder="Topics you want to cover..."></textarea>
     </div>
-    <div class="form-row">
-      <div class="form-field"><label>Take Profit</label><input type="number" id="tj_tp" step="0.00001" placeholder="1.13000"></div>
-      <div class="form-field"><label>Setup Type</label><input type="text" id="tj_setup" placeholder="e.g. Supply Zone"></div>
-    </div>
-    <div class="form-field"><label>Notes</label><textarea id="tj_notes" rows="2" placeholder="Trade rationale..."></textarea></div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px;">
-      <button class="btn btn-ghost" onclick="closeTradeModal()">Cancel</button>
-      <button class="btn btn-gold" onclick="saveTrade()"><i class="fas fa-save"></i> Save Trade</button>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="document.getElementById('bookModal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-gold" onclick="submitBooking()"><i class="fas fa-calendar-check"></i> Book</button>
     </div>
   </div>
 </div>
 
 <!-- WITHDRAW MODAL -->
-<div class="modal-overlay" id="withdrawModal">
-  <div class="modal">
+<div class="modal-bg" id="withdrawModal">
+  <div class="modal-box">
     <h3>Request Withdrawal</h3>
     <div class="form-field"><label>Amount (KES)</label><input type="number" id="wd_amount" placeholder="500" min="500"></div>
     <div class="form-field"><label>M-Pesa Number</label><input type="tel" id="wd_mpesa" placeholder="0712345678"></div>
-    <div class="form-field"><label>M-Pesa Name</label><input type="text" id="wd_name" placeholder="Your M-Pesa registered name"></div>
-    <p style="font-size:.76rem;color:var(--muted);margin-bottom:14px;">Minimum withdrawal: KES 500. Processed within 48 hours.</p>
-    <div style="display:flex;gap:10px;justify-content:flex-end;">
+    <div class="form-field"><label>Registered Name</label><input type="text" id="wd_name" placeholder="M-Pesa account name"></div>
+    <p style="font-size:.74rem;color:var(--text3);margin-bottom:12px;">Minimum: KES 500 · Processed within 48 hours</p>
+    <div class="modal-actions">
       <button class="btn btn-ghost" onclick="document.getElementById('withdrawModal').classList.remove('show')">Cancel</button>
-      <button class="btn btn-gold" onclick="submitWithdrawal()"><i class="fas fa-paper-plane"></i> Submit Request</button>
+      <button class="btn btn-gold" onclick="submitWithdrawal()"><i class="fas fa-paper-plane"></i> Submit</button>
     </div>
   </div>
 </div>
 
-<!-- BOOK SESSION MODAL -->
-<div class="modal-overlay" id="bookModal">
-  <div class="modal">
-    <h3>Book a Session</h3>
-    <div class="form-field"><label>Date & Time</label><input type="datetime-local" id="book_datetime"></div>
-    <div class="form-field">
-      <label>Contact Method</label>
-      <select id="book_method">
-        <option value="whatsapp">WhatsApp</option>
-        <option value="zoom">Zoom</option>
-      </select>
-    </div>
-    <div class="form-field"><label>Notes for your mentor (optional)</label><textarea id="book_notes" rows="2" placeholder="Topics you want to cover..."></textarea></div>
-    <div style="display:flex;gap:10px;justify-content:flex-end;">
-      <button class="btn btn-ghost" onclick="document.getElementById('bookModal').classList.remove('show')">Cancel</button>
-      <button class="btn btn-gold" onclick="submitBooking()"><i class="fas fa-calendar-check"></i> Book Session</button>
-    </div>
-  </div>
-</div>
-
-<div class="app">
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="brand">Crown Trade</div>
-      <div class="brand-sub">Academy Portal</div>
-    </div>
-    <div class="sidebar-user">
-      <div class="user-avatar" id="userAvatar">C</div>
-      <div style="min-width:0;">
-        <div class="user-name" id="userName">Loading…</div>
-        <div class="member-tag" id="userMemberTag">Member #—</div>
+<!-- TRADE LOG MODAL -->
+<div class="modal-bg" id="tradeModal">
+  <div class="modal-box">
+    <h3 id="tradeModalTitle">Log a Trade</h3>
+    <div class="form-row">
+      <div class="form-field"><label>Pair</label><input type="text" id="tj_pair" placeholder="EURUSD" style="text-transform:uppercase;"></div>
+      <div class="form-field"><label>Direction</label>
+        <select id="tj_dir" style="width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.84rem;outline:none;">
+          <option value="buy">Buy</option><option value="sell">Sell</option>
+        </select>
       </div>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-section">Overview</div>
-      <a href="#" class="nav-item active" data-tab="home"><i class="fas fa-home"></i> Home</a>
-      <div class="nav-section">Learning</div>
-      <a href="#" class="nav-item" data-tab="courses"><i class="fas fa-play-circle"></i> My Courses</a>
-      <a href="#" class="nav-item" data-tab="discover"><i class="fas fa-compass"></i> Discover</a>
-      <a href="#" class="nav-item" id="mentorNavItem" data-tab="mentor" style="display:none;"><i class="fas fa-user-tie"></i> My Mentor</a>
-      <div class="nav-section">Tools</div>
-      <a href="#" class="nav-item" data-tab="tools"><i class="fas fa-chart-line"></i> Trading Tools</a>
-      <div class="nav-section">Account</div>
-      <a href="#" class="nav-item" id="partnerNavItem" data-tab="partner"><i class="fas fa-crown"></i> Crown Partner</a>
-      <a href="#" class="nav-item" data-tab="payments"><i class="fas fa-receipt"></i> Payments</a>
-      <a href="#" class="nav-item" data-tab="profile"><i class="fas fa-user"></i> Profile</a>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    <div class="form-row">
+      <div class="form-field"><label>Entry</label><input type="number" id="tj_entry" step="0.00001" placeholder="1.10000"></div>
+      <div class="form-field"><label>Stop Loss</label><input type="number" id="tj_sl" step="0.00001" placeholder="1.09500"></div>
     </div>
-  </aside>
+    <div class="form-row">
+      <div class="form-field"><label>Take Profit</label><input type="number" id="tj_tp" step="0.00001" placeholder="1.11000"></div>
+      <div class="form-field"><label>Setup Type</label><input type="text" id="tj_setup" placeholder="Supply Zone"></div>
+    </div>
+    <div class="form-field"><label>Notes</label>
+      <textarea id="tj_notes" rows="2" style="width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.84rem;outline:none;resize:vertical;"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="document.getElementById('tradeModal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveTrade()"><i class="fas fa-save"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <div class="nav-brand">
+      <div class="nav-brand-name">Crown Trade</div>
+      <div class="nav-brand-sub">Academy Portal</div>
+    </div>
+    <div class="nav-user">
+      <div class="nav-avatar" id="navAvatar">C</div>
+      <div style="min-width:0;">
+        <div class="nav-username" id="navName">Loading…</div>
+        <div class="nav-member" id="navMember">Member #—</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <div class="nav-group">Overview</div>
+      <button class="nav-item active" data-tab="home"><i class="fas fa-home"></i> Home</button>
+      <div class="nav-group">Learning</div>
+      <button class="nav-item" data-tab="courses"><i class="fas fa-play-circle"></i> My Courses</button>
+      <button class="nav-item" data-tab="discover"><i class="fas fa-compass"></i> Discover</button>
+      <button class="nav-item" id="mentorNavItem" data-tab="mentor" style="display:none;"><i class="fas fa-user-tie"></i> My Mentor</button>
+      <button class="nav-item" id="chatNavItem" data-tab="chat" style="display:none;"><i class="fas fa-comments"></i> Chat <span class="dot" id="chatDot" style="display:none;"></span></button>
+      <div class="nav-group">Trading</div>
+      <button class="nav-item" data-tab="tools"><i class="fas fa-chart-line"></i> Trading Tools</button>
+      <div class="nav-group">Account</div>
+      <button class="nav-item" id="partnerNavItem" data-tab="partner"><i class="fas fa-crown"></i> Crown Partner</button>
+      <button class="nav-item" data-tab="payments"><i class="fas fa-receipt"></i> Payments</button>
+      <button class="nav-item" data-tab="profile"><i class="fas fa-user"></i> Profile</button>
+    </div>
+    <div class="nav-bottom">
+      <button class="nav-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </nav>
 
   <!-- MAIN -->
   <div class="main">
     <div class="topbar">
-      <div class="topbar-title" id="pageTitle">Home</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="menu-btn" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-title" id="pageTitle">Home</div>
+      </div>
       <div class="topbar-right">
-        <span class="status-badge" id="statusBadge"><i class="fas fa-circle" style="font-size:.5rem;"></i> Active</span>
+        <div class="status-chip"><span class="status-dot"></span><span id="statusLabel">Active</span></div>
       </div>
     </div>
 
     <div class="content">
 
-      <!-- ══ HOME TAB ══ -->
-      <div id="home" class="tab-panel active">
-        <div id="continueStripWrap"></div>
-        <div class="home-grid">
-          <div class="card streak-card">
-            <div class="streak-icon">🔥</div>
+      <!-- ══ HOME ══ -->
+      <div id="home" class="tab active">
+        <div class="home-hero">
+          <div style="font-size:2.5rem;">👋</div>
+          <div class="home-hero-text">
+            <h2 id="heroGreeting">Good morning</h2>
+            <p id="heroSub">You're on a <strong id="heroStreak" style="color:var(--gold);">0 day</strong> learning streak. Keep it going!</p>
+          </div>
+        </div>
+        <div id="continueWrap"></div>
+        <div class="streak-grid">
+          <div class="card streak-card login">
+            <div class="streak-emoji">🔥</div>
             <div>
               <div class="streak-num" id="loginStreak">0</div>
               <div class="streak-label">Login Streak</div>
               <div class="streak-sub" id="loginStreakSub">Log in daily to keep it going</div>
             </div>
           </div>
-          <div class="card streak-card">
-            <div class="streak-icon">📚</div>
+          <div class="card streak-card module">
+            <div class="streak-emoji">📚</div>
             <div>
               <div class="streak-num" id="moduleStreak">0</div>
               <div class="streak-label">Learning Streak</div>
@@ -452,62 +511,72 @@ button{font-family:'Montserrat',sans-serif;cursor:pointer;}
             </div>
           </div>
         </div>
-        <div class="stats-row" id="statsRow">
-          <div class="card stat-card"><div class="stat-val" id="stat-enrolled">—</div><div class="stat-lbl">Courses</div></div>
-          <div class="card stat-card"><div class="stat-val" id="stat-modules">—</div><div class="stat-lbl">Modules Done</div></div>
-          <div class="card stat-card"><div class="stat-val" id="stat-session">—</div><div class="stat-lbl">Next Session</div></div>
-          <div class="card stat-card"><div class="stat-val" id="stat-earnings">—</div><div class="stat-lbl">Partner Earnings</div></div>
+        <div class="stats-row">
+          <div class="card stat-box"><div class="stat-val" id="st-courses">—</div><div class="stat-lbl">Courses</div></div>
+          <div class="card stat-box"><div class="stat-val" id="st-modules">—</div><div class="stat-lbl">Modules Done</div></div>
+          <div class="card stat-box"><div class="stat-val" id="st-session">—</div><div class="stat-lbl">Next Session</div></div>
+          <div class="card stat-box"><div class="stat-val gold" id="st-earnings">—</div><div class="stat-lbl">Partner Earnings</div></div>
         </div>
-
       </div>
 
-      <!-- ══ MY COURSES TAB ══ -->
-      <div id="courses" class="tab-panel">
-        <div class="section-label">My Enrolled Courses</div>
-        <div id="myCoursesGrid" class="courses-grid"><div class="spinner-wrap"><div class="spinner"></div></div></div>
-
-        <!-- COURSE PLAYER (nested inside courses tab) -->
-        <div id="playerView" class="player-view">
-          <button class="back-btn" onclick="closePlayer()"><i class="fas fa-arrow-left"></i> Back to My Courses</button>
-          <div class="player-layout">
+      <!-- ══ MY COURSES ══ -->
+      <div id="courses" class="tab">
+        <button class="player-back" id="playerBack" onclick="closePlayer()"><i class="fas fa-arrow-left"></i> Back to Courses</button>
+        <div id="coursesGrid" class="courses-grid"></div>
+        <div id="playerWrap" style="display:none;">
+          <div class="player-grid">
             <div>
-              <div class="video-wrap" id="videoWrap">
-                <iframe id="videoFrame" src="" allowfullscreen></iframe>
+              <div class="video-frame-wrap" id="videoWrap">
+                <div class="video-placeholder"><i class="fas fa-play-circle" style="font-size:2.5rem;color:var(--surface3);"></i><span>Select a module</span></div>
               </div>
-              <div class="video-title" id="videoTitle">—</div>
-              <div class="video-desc" id="videoDesc">—</div>
-              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <div class="lesson-info">
+                <div class="lesson-title" id="lessonTitle">—</div>
+                <div class="lesson-desc" id="lessonDesc">—</div>
+              </div>
+              <div class="lesson-actions">
                 <button class="btn btn-gold" id="markDoneBtn" onclick="handleMarkDone()"><i class="fas fa-check"></i> Mark Complete</button>
-                <button class="btn btn-ghost" onclick="goNextModule()"><i class="fas fa-forward"></i> Next Module</button>
+                <button class="btn btn-ghost" onclick="goNext()"><i class="fas fa-forward-step"></i> Next</button>
               </div>
-              <div class="materials-section" id="materialsSection" style="display:none;">
-                <div class="section-label" style="margin-bottom:8px;">Study Materials</div>
+              <div id="materialsWrap" style="display:none;" class="materials-wrap">
+                <div class="section-title">Study Materials</div>
                 <div id="materialsList"></div>
               </div>
-              <div id="quizPanel"></div>
+              <div id="quizWrap"></div>
             </div>
-            <div class="card module-sidebar">
-              <div class="module-sidebar-title" id="moduleSidebarTitle">Modules</div>
-              <div id="moduleListPlayer"></div>
+            <div class="card module-list" id="moduleListEl">
+              <div class="module-list-header" id="moduleListTitle">Modules</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ══ DISCOVER TAB ══ -->
-      <div id="discover" class="tab-panel">
-        <div class="section-label">Available Courses</div>
-        <div id="catalogGrid" class="catalog-grid"><div class="spinner-wrap"><div class="spinner"></div></div></div>
+      <!-- ══ DISCOVER ══ -->
+      <div id="discover" class="tab">
+        <div class="section-title">Available Courses</div>
+        <div id="catalogGrid" class="courses-grid"></div>
       </div>
 
-      <!-- ══ MY MENTOR TAB ══ -->
-      <div id="mentor" class="tab-panel">
-        <div id="mentorContent"><div class="spinner-wrap"><div class="spinner"></div></div></div>
+      <!-- ══ MY MENTOR ══ -->
+      <div id="mentor" class="tab">
+        <div id="mentorContent"></div>
       </div>
 
-      <!-- ══ TRADING TOOLS TAB ══ -->
-      <div id="tools" class="tab-panel">
-        <div class="tools-subnav">
+      <!-- ══ CHAT ══ -->
+      <div id="chat" class="tab">
+        <div class="card chat-wrap">
+          <div class="chat-messages" id="chatMessages">
+            <div class="empty"><i class="fas fa-comments"></i><span>No messages yet. Send your mentor a message.</span></div>
+          </div>
+          <div class="chat-input-wrap">
+            <input class="chat-input" id="chatInput" type="text" placeholder="Message your mentor…" onkeydown="if(event.key==='Enter')sendMessage()">
+            <button class="chat-send" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ TRADING TOOLS ══ -->
+      <div id="tools" class="tab">
+        <div class="tool-tabs">
           <button class="tool-tab active" onclick="switchTool('chart',this)"><i class="fas fa-chart-candlestick"></i> Live Chart</button>
           <button class="tool-tab" onclick="switchTool('calendar',this)"><i class="fas fa-calendar"></i> Economic Calendar</button>
           <button class="tool-tab" onclick="switchTool('possize',this)"><i class="fas fa-calculator"></i> Position Size</button>
@@ -517,12 +586,11 @@ button{font-family:'Montserrat',sans-serif;cursor:pointer;}
 
         <!-- Live Chart -->
         <div class="tool-panel active" id="tool-chart">
-          <div class="card" style="overflow:hidden;border-radius:12px;">
-            <div style="padding:12px 16px;border-bottom:1px solid rgba(212,200,188,.3);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-              <i class="fas fa-chart-line" style="color:var(--gold);"></i>
-              <strong style="font-size:.9rem;">TradingView Chart</strong>
-              <select id="chartSymbol" onchange="updateChartSymbol(this.value)" style="padding:5px 10px;border:1px solid var(--nude-med);border-radius:6px;font-size:.8rem;background:#fff;outline:none;">
-                <option value="OANDA:XAUUSD">XAU/USD (Gold)</option>
+          <div class="card" style="overflow:hidden;">
+            <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <strong style="font-size:.88rem;">TradingView</strong>
+              <select id="chartSymbol" onchange="reloadChart()" style="padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.78rem;outline:none;">
+                <option value="OANDA:XAUUSD">XAU/USD — Gold</option>
                 <option value="FX:EURUSD">EUR/USD</option>
                 <option value="FX:GBPUSD">GBP/USD</option>
                 <option value="FX:USDJPY">USD/JPY</option>
@@ -530,65 +598,58 @@ button{font-family:'Montserrat',sans-serif;cursor:pointer;}
                 <option value="FX:AUDUSD">AUD/USD</option>
                 <option value="FX:USDCAD">USD/CAD</option>
                 <option value="FX:NZDUSD">NZD/USD</option>
-                <option value="OANDA:XAGUSD">XAG/USD (Silver)</option>
-                <option value="NASDAQ:US100">US100 (Nasdaq)</option>
-                <option value="TVC:DXY">DXY (Dollar Index)</option>
+                <option value="OANDA:XAGUSD">XAG/USD — Silver</option>
+                <option value="NASDAQ:US100">US100 — Nasdaq</option>
+                <option value="TVC:DXY">DXY — Dollar Index</option>
+                <option value="OANDA:USOIL">WTI Crude Oil</option>
               </select>
-              <select id="chartInterval" onchange="updateChartSymbol(document.getElementById('chartSymbol').value)" style="padding:5px 10px;border:1px solid var(--nude-med);border-radius:6px;font-size:.8rem;background:#fff;outline:none;">
-                <option value="1">1m</option>
-                <option value="5">5m</option>
-                <option value="15">15m</option>
-                <option value="60" selected>1H</option>
-                <option value="240">4H</option>
-                <option value="D">1D</option>
-                <option value="W">1W</option>
+              <select id="chartTF" onchange="reloadChart()" style="padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.78rem;outline:none;">
+                <option value="1">1m</option><option value="5">5m</option><option value="15">15m</option>
+                <option value="60" selected>1H</option><option value="240">4H</option>
+                <option value="D">1D</option><option value="W">1W</option>
               </select>
             </div>
-            <div id="tvChartWrap" style="height:500px;"></div>
+            <div id="tvChartWrap" style="height:520px;"></div>
           </div>
         </div>
 
         <!-- Economic Calendar -->
         <div class="tool-panel" id="tool-calendar">
-          <div class="card" style="overflow:hidden;border-radius:12px;">
-            <div style="padding:12px 16px;border-bottom:1px solid rgba(212,200,188,.3);display:flex;align-items:center;gap:8px;">
+          <div class="card" style="overflow:hidden;">
+            <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
               <i class="fas fa-calendar" style="color:var(--gold);"></i>
-              <strong style="font-size:.9rem;">Economic Calendar</strong>
-              <span style="font-size:.76rem;color:var(--muted);">High-impact events — trade with caution around red folders</span>
+              <strong style="font-size:.88rem;">Economic Calendar</strong>
+              <span style="font-size:.74rem;color:var(--text3);">High-impact news events</span>
             </div>
-            <iframe id="calendarFrame" src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&features=datepicker,timezone&countries=25,32,6,37,72,22,17,39,14,10,35&calType=week&timeZone=67&lang=1" frameborder="0" allowtransparency="true" marginwidth="0" marginheight="0" style="width:100%;height:500px;display:block;"></iframe>
+            <iframe src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&features=datepicker,timezone&countries=25,32,6,37,72,22,17,39,14,10,35&calType=week&timeZone=67&lang=1" frameborder="0" allowtransparency="true" style="width:100%;height:520px;display:block;filter:invert(1) hue-rotate(180deg);"></iframe>
           </div>
         </div>
 
-        <!-- Position Size Calculator -->
+        <!-- Position Size -->
         <div class="tool-panel" id="tool-possize">
-          <div class="card" style="padding:22px;max-width:560px;">
-            <h3 style="font-size:1.3rem;margin-bottom:4px;">Position Size Calculator</h3>
-            <p style="font-size:.82rem;color:var(--muted);margin-bottom:20px;">Calculate your exact lot size based on your risk parameters.</p>
-            <div class="calc-form">
-              <div class="calc-row">
-                <div class="calc-field"><label>Account Balance</label><input type="number" id="ps_balance" value="1000" min="1"></div>
-                <div class="calc-field"><label>Risk %</label><input type="number" id="ps_risk" value="1" min="0.1" max="100" step="0.1"></div>
+          <div class="card card-p calc-card">
+            <h3>Position Size Calculator</h3>
+            <p class="sub">Know your exact lot size before entering a trade.</p>
+            <div class="calc-row">
+              <div class="calc-field"><label>Account Balance ($)</label><input type="number" id="ps_bal" value="1000" min="1"></div>
+              <div class="calc-field"><label>Risk %</label><input type="number" id="ps_risk" value="1" step="0.1" min="0.1" max="10"></div>
+            </div>
+            <div class="calc-row">
+              <div class="calc-field"><label>Stop Loss (pips)</label><input type="number" id="ps_sl" value="20" min="1"></div>
+              <div class="calc-field"><label>Pair Type</label>
+                <select id="ps_type">
+                  <option value="standard">Standard (EUR/USD etc.)</option>
+                  <option value="jpy">JPY Pair (USD/JPY etc.)</option>
+                </select>
               </div>
-              <div class="calc-row">
-                <div class="calc-field"><label>Stop Loss (pips)</label><input type="number" id="ps_sl" value="20" min="1"></div>
-                <div class="calc-field">
-                  <label>Pair / Account Currency</label>
-                  <select id="ps_pair">
-                    <option value="standard">Standard (EUR/USD etc.)</option>
-                    <option value="jpy">JPY Pair (USD/JPY etc.)</option>
-                    <option value="usd">USD/KES Proxy</option>
-                  </select>
-                </div>
-              </div>
-              <button class="btn btn-gold" onclick="calcPositionSize()"><i class="fas fa-calculator"></i> Calculate</button>
-              <div class="calc-result" id="ps_result" style="display:none;">
-                <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.45);">Result</div>
-                <div class="calc-result-grid">
-                  <div class="calc-result-item"><div class="val" id="ps_lots">—</div><div class="lbl">Lot Size</div></div>
-                  <div class="calc-result-item"><div class="val" id="ps_risk_amt">—</div><div class="lbl">$ at Risk</div></div>
-                  <div class="calc-result-item"><div class="val" id="ps_pip_val">—</div><div class="lbl">Pip Value</div></div>
-                </div>
+            </div>
+            <button class="btn btn-gold" onclick="calcPosSize()"><i class="fas fa-calculator"></i> Calculate</button>
+            <div class="result-box" id="ps_result" style="display:none;">
+              <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text3);">Result</div>
+              <div class="result-grid">
+                <div class="result-item"><div class="v" id="ps_lots">—</div><div class="l">Lot Size</div></div>
+                <div class="result-item"><div class="v" id="ps_usd">—</div><div class="l">$ at Risk</div></div>
+                <div class="result-item"><div class="v" id="ps_pip">—</div><div class="l">Pip Value</div></div>
               </div>
             </div>
           </div>
@@ -596,32 +657,31 @@ button{font-family:'Montserrat',sans-serif;cursor:pointer;}
 
         <!-- R:R Calculator -->
         <div class="tool-panel" id="tool-rrcalc">
-          <div class="card" style="padding:22px;max-width:560px;">
-            <h3 style="font-size:1.3rem;margin-bottom:4px;">Risk/Reward Calculator</h3>
-            <p style="font-size:.82rem;color:var(--muted);margin-bottom:20px;">Visualise your trade setup before entering the market.</p>
-            <div class="calc-form">
-              <div class="calc-row">
-                <div class="calc-field"><label>Entry Price</label><input type="number" id="rr_entry" step="0.00001" placeholder="1.10000"></div>
-                <div class="calc-field">
-                  <label>Direction</label>
-                  <select id="rr_dir" onchange="calcRR()">
-                    <option value="buy">Buy (Long)</option>
-                    <option value="sell">Sell (Short)</option>
-                  </select>
-                </div>
+          <div class="card card-p calc-card">
+            <h3>Risk / Reward Calculator</h3>
+            <p class="sub">Visualise your trade before pulling the trigger.</p>
+            <div class="calc-row">
+              <div class="calc-field"><label>Entry Price</label><input type="number" id="rr_e" step="0.00001" oninput="calcRR()"></div>
+              <div class="calc-field"><label>Direction</label>
+                <select id="rr_dir" onchange="calcRR()">
+                  <option value="buy">Buy (Long)</option>
+                  <option value="sell">Sell (Short)</option>
+                </select>
               </div>
-              <div class="calc-row">
-                <div class="calc-field"><label>Stop Loss</label><input type="number" id="rr_sl" step="0.00001" placeholder="1.09500" oninput="calcRR()"></div>
-                <div class="calc-field"><label>Take Profit</label><input type="number" id="rr_tp" step="0.00001" placeholder="1.11000" oninput="calcRR()"></div>
-              </div>
-              <div class="calc-result" id="rr_result" style="display:none;">
-                <div class="rr-visual" id="rr_visual"></div>
-                <div class="calc-result-grid">
-                  <div class="calc-result-item"><div class="val" id="rr_ratio">—</div><div class="lbl">R:R Ratio</div></div>
-                  <div class="calc-result-item"><div class="val" id="rr_sl_pips">—</div><div class="lbl">SL Pips</div></div>
-                  <div class="calc-result-item"><div class="val" id="rr_tp_pips">—</div><div class="lbl">TP Pips</div></div>
+            </div>
+            <div class="calc-row">
+              <div class="calc-field"><label>Stop Loss</label><input type="number" id="rr_sl" step="0.00001" oninput="calcRR()"></div>
+              <div class="calc-field"><label>Take Profit</label><input type="number" id="rr_tp" step="0.00001" oninput="calcRR()"></div>
+            </div>
+            <div id="rr_result" style="display:none;">
+              <div class="rr-visual" id="rr_visual"></div>
+              <div class="result-box">
+                <div class="result-grid">
+                  <div class="result-item"><div class="v" id="rr_ratio">—</div><div class="l">R:R Ratio</div></div>
+                  <div class="result-item"><div class="v" id="rr_slp">—</div><div class="l">SL Pips</div></div>
+                  <div class="result-item"><div class="v" id="rr_tpp">—</div><div class="l">TP Pips</div></div>
                 </div>
-                <div id="rr_verdict" style="margin-top:10px;font-size:.8rem;color:rgba(255,255,255,.65);"></div>
+                <div class="rr-verdict" id="rr_verdict"></div>
               </div>
             </div>
           </div>
@@ -629,926 +689,742 @@ button{font-family:'Montserrat',sans-serif;cursor:pointer;}
 
         <!-- Trade Journal -->
         <div class="tool-panel" id="tool-journal">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <div class="section-label" style="margin-bottom:0;">Trade Journal</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+            <div class="section-title" style="margin:0;">Trade Journal</div>
             <button class="btn btn-gold btn-sm" onclick="openTradeModal()"><i class="fas fa-plus"></i> Log Trade</button>
           </div>
-          <div class="journal-stats card" style="grid-template-columns:repeat(auto-fill,minmax(110px,1fr));margin-bottom:16px;" id="journalStats">
-            <div class="spinner-wrap"><div class="spinner"></div></div>
-          </div>
+          <div class="j-stats" id="jStats"></div>
           <div class="card" style="overflow:auto;">
-            <table class="trade-table" id="tradeTable">
+            <table class="trades-table">
               <thead><tr>
-                <th>Pair</th><th>Dir</th><th>Entry</th><th>SL</th><th>TP</th><th>Exit</th><th>Pips</th><th>R:R</th><th>Outcome</th><th>Setup</th><th></th>
+                <th>Pair</th><th>Dir</th><th>Entry</th><th>SL</th><th>TP</th><th>Pips</th><th>R:R</th><th>Outcome</th><th>Setup</th><th></th>
               </tr></thead>
-              <tbody id="tradeTableBody"><tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">No trades logged yet</td></tr></tbody>
+              <tbody id="tradesBody"><tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text3);">No trades logged yet</td></tr></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- ══ CROWN PARTNER TAB ══ -->
-      <div id="partner" class="tab-panel">
-        <div id="partnerContent"><div class="spinner-wrap"><div class="spinner"></div></div></div>
+      <!-- ══ CROWN PARTNER ══ -->
+      <div id="partner" class="tab">
+        <div id="partnerContent"><div class="loading"><div class="spinner"></div></div></div>
       </div>
 
-      <!-- ══ PAYMENTS TAB ══ -->
-      <div id="payments" class="tab-panel">
-        <div class="section-label">Payment History</div>
-        <div id="paymentsContent"><div class="spinner-wrap"><div class="spinner"></div></div></div>
+      <!-- ══ PAYMENTS ══ -->
+      <div id="payments" class="tab">
+        <div class="section-title">Payment Records</div>
+        <div id="paymentsContent"></div>
       </div>
 
-      <!-- ══ PROFILE TAB ══ -->
-      <div id="profile" class="tab-panel">
-        <div class="profile-section">
-          <h3>My Profile</h3>
-          <div class="form-field"><label>Full Name</label><input type="text" id="pf_name"></div>
-          <div class="form-field"><label>Email (read-only)</label><input type="text" id="pf_email" readonly style="background:var(--nude-light);cursor:not-allowed;"></div>
-          <div class="form-field"><label>Phone</label><input type="tel" id="pf_phone"></div>
-          <div class="form-field"><label>Member Number</label><input type="text" id="pf_member" readonly style="background:var(--nude-light);cursor:not-allowed;"></div>
+      <!-- ══ PROFILE ══ -->
+      <div id="profile" class="tab">
+        <div class="profile-wrap">
+          <h3 class="profile-section-title">My Profile</h3>
+          <div class="form-field"><label>Full Name</label><input id="pf_name" type="text"></div>
+          <div class="form-field"><label>Email (read-only)</label><input id="pf_email" type="email" readonly></div>
+          <div class="form-field"><label>Phone</label><input id="pf_phone" type="tel"></div>
+          <div class="form-field"><label>Member Number</label><input id="pf_member" type="text" readonly></div>
           <button class="btn btn-gold" onclick="saveProfile()" style="margin-bottom:28px;"><i class="fas fa-save"></i> Save Changes</button>
-
-          <h3>Change Password</h3>
-          <div class="form-field"><label>Current Password</label><input type="password" id="pw_current"></div>
-          <div class="form-field"><label>New Password</label><input type="password" id="pw_new"></div>
-          <div class="form-field"><label>Confirm New Password</label><input type="password" id="pw_confirm"></div>
+          <h3 class="profile-section-title">Change Password</h3>
+          <div class="form-field"><label>Current Password</label><input id="pw_cur" type="password"></div>
+          <div class="form-field"><label>New Password</label><input id="pw_new" type="password"></div>
+          <div class="form-field"><label>Confirm New Password</label><input id="pw_cf" type="password"></div>
           <button class="btn btn-gold" onclick="changePassword()"><i class="fas fa-lock"></i> Update Password</button>
         </div>
       </div>
 
     </div><!-- /content -->
   </div><!-- /main -->
-</div><!-- /app -->
+</div><!-- /shell -->
 
 <script>
+// ── CONFIG ─────────────────────────────────────────────────────────────────
+const BASE = 'https://crowntrade-academy-phai.onrender.com/api';
+
 // ── STATE ──────────────────────────────────────────────────────────────────
 let USER = null;
 let myCourses = [];
 let activeEnrollment = null;
-let activeCourseDetail = null;
-let activeModuleId = null;
 let activeModules = [];
-let partnerData = null;
-let tvChartWidget = null;
-let journalData = null;
+let activeModuleId = null;
+let editingTradeId = null;
 
 // ── BOOT ───────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  if (!getToken()) { window.location.href = 'login.html'; return; }
-
+  if (!getToken()) { location.href = 'login.html'; return; }
   try {
-    const data = await API.getMe();
-    USER = data.user;
-    setUser(USER);
-  } catch {
-    const cached = getUser();
-    if (!cached) { logout(); window.location.href = 'login.html'; return; }
-    USER = cached;
-  }
-
-  initUI();
-  await Promise.all([loadHome(), loadMyCourses(), loadCatalog()]);
-  loadPartnerTab();
-  loadPaymentsTab();
-  loadMentorTab();
+    const d = await apiFetch('/auth/me');
+    USER = d.user; setUser(USER);
+  } catch { USER = getUser(); if (!USER) { logout(); location.href = 'login.html'; return; } }
+  initShell();
+  await Promise.all([loadMyCourses(), loadCatalog()]);
+  loadHome();
+  loadPartner();
+  loadPayments();
+  loadMentor();
   loadJournal();
-  initChartWidget();
+  reloadChart();
 });
 
-function initUI() {
-  const name = USER.full_name || USER.email || 'Member';
-  document.getElementById('userName').textContent = name;
-  document.getElementById('userAvatar').textContent = name.charAt(0).toUpperCase();
-  document.getElementById('userMemberTag').textContent = `Member #${USER.member_number || '—'}`;
+// ── API HELPERS ────────────────────────────────────────────────────────────
+function getToken() { return localStorage.getItem('ct_token'); }
+function setToken(t) { localStorage.setItem('ct_token', t); }
+function getUser() { try { return JSON.parse(localStorage.getItem('ct_user')); } catch { return null; } }
+function setUser(u) { localStorage.setItem('ct_user', JSON.stringify(u)); }
+function logout() { localStorage.removeItem('ct_token'); localStorage.removeItem('ct_user'); }
+function doLogout() { logout(); location.href = 'login.html'; }
 
-  // Role-aware nav visibility
-  if (USER.has_mentorship) document.getElementById('mentorNavItem').style.display = 'flex';
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(BASE + path, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken(), ...(opts.headers || {}) }
+  });
+  const data = await res.json();
+  if (res.status === 401 || res.status === 403) { logout(); location.href = 'login.html'; throw new Error(data.error); }
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
 
-  // Profile tab prefill
+// ── SHELL ──────────────────────────────────────────────────────────────────
+function initShell() {
+  const name = USER.full_name || USER.email;
+  document.getElementById('navName').textContent = name;
+  document.getElementById('navMember').textContent = 'Member #' + (USER.member_number || '—');
+  document.getElementById('navAvatar').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('statusLabel').textContent = USER.has_mentorship && USER.has_partner_status ? 'Student + Partner' : USER.has_mentorship ? 'Student' : USER.has_partner_status ? 'Partner' : 'Active';
+  if (USER.has_mentorship) { document.getElementById('mentorNavItem').style.display = 'flex'; document.getElementById('chatNavItem').style.display = 'flex'; }
+
+  // Profile tab
   document.getElementById('pf_name').value = USER.full_name || '';
   document.getElementById('pf_email').value = USER.email || '';
   document.getElementById('pf_phone').value = USER.phone || '';
-  document.getElementById('pf_member').value = USER.member_number ? `#${USER.member_number}` : '—';
+  document.getElementById('pf_member').value = USER.member_number ? '#' + USER.member_number : '—';
 
-  // Status badge
-  const badge = document.getElementById('statusBadge');
-  const roles = [];
-  if (USER.has_mentorship) roles.push('Student');
-  if (USER.has_partner_status) roles.push('Partner');
-  if (!roles.length) roles.push('Pending');
-  badge.innerHTML = `<i class="fas fa-circle" style="font-size:.4rem;color:var(--success);"></i> ${roles.join(' + ')}`;
-
-  // Nav clicks
-  document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', e => { e.preventDefault(); switchTab(item.dataset.tab); });
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => { switchTab(btn.dataset.tab); if (window.innerWidth < 900) document.getElementById('nav').classList.remove('open'); });
   });
-
-  document.getElementById('logoutBtn').addEventListener('click', () => { logout(); window.location.href = 'login.html'; });
 }
 
-// ── TAB SWITCHING ──────────────────────────────────────────────────────────
 function switchTab(tab) {
   if (!tab) return;
-  closePlayer(false);
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(t => t.classList.remove('active'));
-  const navItem = document.querySelector(`[data-tab="${tab}"]`);
-  if (navItem) navItem.classList.add('active');
+  closePlayerUI(false);
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const btn = document.querySelector(`[data-tab="${tab}"]`);
+  if (btn) btn.classList.add('active');
   const panel = document.getElementById(tab);
   if (panel) panel.classList.add('active');
-  const titles = { home:'Home', courses:'My Courses', discover:'Discover', mentor:'My Mentor', tools:'Trading Tools', partner:'Crown Partner', payments:'Payments', profile:'Profile' };
+  const titles = { home:'Home', courses:'My Courses', discover:'Discover', mentor:'My Mentor', chat:'Chat', tools:'Trading Tools', partner:'Crown Partner', payments:'Payments', profile:'Profile' };
   document.getElementById('pageTitle').textContent = titles[tab] || tab;
 }
 
-// ── HOME TAB ───────────────────────────────────────────────────────────────
-async function loadHome() {
-  // Streaks
-  document.getElementById('loginStreak').textContent = USER.login_streak || 0;
-  document.getElementById('moduleStreak').textContent = USER.module_streak || 0;
-  const loginSub = USER.login_streak > 1 ? `${USER.login_streak} days in a row!` : 'Log in daily to keep it going';
-  const moduleSub = USER.module_streak > 1 ? `${USER.module_streak} days completing modules!` : 'Complete a module daily';
-  document.getElementById('loginStreakSub').textContent = loginSub;
-  document.getElementById('moduleStreakSub').textContent = moduleSub;
-}
+function toggleNav() { document.getElementById('nav').classList.toggle('open'); }
 
-function updateHomeStats() {
+// ── HOME ────────────────────────────────────────────────────────────────────
+function loadHome() {
+  const hr = new Date().getHours();
+  const greet = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('heroGreeting').textContent = greet + ', ' + (USER.full_name?.split(' ')[0] || 'Trader');
+
+  const ls = USER.login_streak || 0;
+  const ms = USER.module_streak || 0;
+  document.getElementById('loginStreak').textContent = ls;
+  document.getElementById('moduleStreak').textContent = ms;
+  document.getElementById('loginStreakSub').textContent = ls > 1 ? `${ls} days in a row! 🔥` : 'Log in daily to build your streak';
+  document.getElementById('moduleStreakSub').textContent = ms > 1 ? `${ms} consecutive days learning!` : 'Complete a module today';
+  document.getElementById('heroStreak').textContent = ms + ' day' + (ms !== 1 ? 's' : '');
+  document.getElementById('st-courses').textContent = myCourses.length;
+
   const approved = myCourses.filter(e => e.status === 'approved');
-  const totalDone = approved.reduce((s,e) => s + (e.completed_modules||[]).length, 0);
-  document.getElementById('stat-enrolled').textContent = myCourses.length;
-  document.getElementById('stat-modules').textContent = totalDone;
-  if (!USER.has_partner_status) document.getElementById('stat-earnings').textContent = '—';
+  const totalDone = approved.reduce((s, e) => s + (e.completed_modules || []).length, 0);
+  document.getElementById('st-modules').textContent = totalDone;
+
+  // Continue strip
+  const wrap = document.getElementById('continueWrap');
+  if (approved.length) {
+    const e = approved[0];
+    const done = (e.completed_modules || []).length;
+    const pct = e.total_modules ? Math.round(done / e.total_modules * 100) : 0;
+    wrap.innerHTML = `
+      <div class="continue-card" onclick="switchTab('courses');setTimeout(()=>openPlayer(${e.id}),100)">
+        <div class="continue-icon"><i class="fas ${e.course_icon || 'fa-graduation-cap'}"></i></div>
+        <div style="flex:1;">
+          <div class="continue-lbl">Continue Learning</div>
+          <div class="continue-title">${e.course_title}</div>
+          <div class="continue-sub">${done} module${done !== 1 ? 's' : ''} completed</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        </div>
+        <div style="font-size:.78rem;color:var(--gold);font-weight:700;">${pct}%</div>
+      </div>`;
+  } else { wrap.innerHTML = ''; }
 }
 
-function updateNextSession(sessions) {
-  const upcoming = (sessions||[]).filter(s => s.status !== 'cancelled' && new Date(s.scheduled_at) > new Date());
-  if (upcoming.length) {
-    const next = upcoming.sort((a,b) => new Date(a.scheduled_at)-new Date(b.scheduled_at))[0];
-    document.getElementById('stat-session').textContent = new Date(next.scheduled_at).toLocaleDateString('en-KE',{month:'short',day:'numeric'});
-  } else {
-    document.getElementById('stat-session').textContent = 'None';
-  }
-}
-
-// ── TRADINGVIEW CHART ──────────────────────────────────────────────────────
-function initChartWidget() {
-  updateChartSymbol('OANDA:XAUUSD');
-}
-
-function updateChartSymbol(symbol) {
-  const interval = document.getElementById('chartInterval')?.value || '60';
-  const wrap = document.getElementById('tvChartWrap');
-  if (!wrap) return;
-  // Encode symbol for URL
-  const enc = encodeURIComponent(symbol);
-  wrap.innerHTML = `<iframe
-    src="https://s.tradingview.com/widgetembed/?frameElementId=tv_chart&symbol=${enc}&interval=${interval}&hidesidetoolbar=0&hidetoptoolbar=0&symboledit=1&saveimage=1&toolbarbg=F9F6F2&studies=RSI%40tv-basicstudies&theme=light&style=1&timezone=Africa%2FNairobi&studies_overrides={}&overrides={}&enabled_features=[]&disabled_features=[]&locale=en&utm_source=crown"
-    style="width:100%;height:500px;border:none;"
-    allowtransparency="true"
-    allowfullscreen="true">
-  </iframe>`;
-}
-
-// ── MY COURSES ─────────────────────────────────────────────────────────────
+// ── MY COURSES ──────────────────────────────────────────────────────────────
 async function loadMyCourses() {
   try {
-    const data = await API.getMyCourses();
-    myCourses = data.enrollments || [];
+    const d = await apiFetch('/enrollments/my-courses');
+    myCourses = d.enrollments || [];
     const toWelcome = myCourses.find(e => e.show_welcome);
     if (toWelcome) {
-      document.getElementById('welcomeMemberNum').textContent = `#${USER.member_number||'—'}`;
-      document.getElementById('welcomeMsg').textContent = `Your enrollment in "${toWelcome.course_title}" is approved. Dive in!`;
+      document.getElementById('welcomeMemberNum').textContent = '#' + (USER.member_number || '—');
+      document.getElementById('welcomeMsg').textContent = `"${toWelcome.course_title}" is now unlocked. Time to trade smarter.`;
       document.getElementById('welcomeOverlay').classList.add('show');
     }
-    renderContinueStrip();
-    renderMyCoursesGrid();
-    updateHomeStats();
-  } catch {
-    document.getElementById('myCoursesGrid').innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load courses. Refresh to try again.</p></div>`;
-  }
+    renderCoursesGrid();
+  } catch { document.getElementById('coursesGrid').innerHTML = '<div class="empty"><i class="fas fa-exclamation-circle"></i><span>Could not load courses</span></div>'; }
 }
 
 function closeWelcome() { document.getElementById('welcomeOverlay').classList.remove('show'); }
 
-function renderContinueStrip() {
-  const wrap = document.getElementById('continueStripWrap');
-  const approved = myCourses.filter(e => e.status==='approved');
-  if (!approved.length) { wrap.innerHTML = ''; return; }
-  const t = approved[0];
-  const done = (t.completed_modules||[]).length;
-  wrap.innerHTML = `
-    <div class="continue-strip">
-      <div class="continue-icon"><i class="fas ${t.course_icon||'fa-graduation-cap'}"></i></div>
-      <div class="continue-info">
-        <div class="continue-lbl">Continue Learning</div>
-        <div class="continue-title">${t.course_title}</div>
-        <div class="continue-sub">${done} module${done!==1?'s':''} completed</div>
-      </div>
-      <a href="#" class="btn btn-gold" onclick="switchTab('courses');setTimeout(()=>openPlayer(${t.id}),100);return false;">Resume <i class="fas fa-play"></i></a>
-    </div>`;
-}
-
-function renderMyCoursesGrid() {
-  const container = document.getElementById('myCoursesGrid');
+function renderCoursesGrid() {
+  const el = document.getElementById('coursesGrid');
   if (!myCourses.length) {
-    container.innerHTML = `<div class="empty-state"><i class="fas fa-book-open"></i><p>No enrollments yet.</p><a href="courses.html" class="btn btn-gold" style="margin-top:12px;">Browse Courses</a></div>`;
+    el.innerHTML = '<div class="empty"><i class="fas fa-book-open"></i><span>No enrollments yet</span><a href="#" onclick="switchTab(\'discover\')" class="btn btn-gold btn-sm" style="margin-top:10px;">Browse Courses</a></div>';
     return;
   }
-  container.innerHTML = myCourses.map(e => {
-    const done = (e.completed_modules||[]).length;
-    const isApproved = e.status==='approved';
-    const statusBadge = e.status==='rejected' ? '<span class="badge badge-rejected">Not Approved</span>'
-      : e.status==='pending' && (!e.payment_proof||e.payment_status==='unpaid') ? '<span class="badge badge-payment">Payment Needed</span>'
-      : e.status==='pending' ? '<span class="badge badge-pending">Under Review</span>' : '';
-    const circumference = 2*Math.PI*22;
-    const pct = isApproved && e.total_modules ? done/e.total_modules : 0;
-    const offset = circumference - pct*circumference;
-    return `
-      <div class="card course-card" onclick="${isApproved?`openPlayer(${e.id})`:`handleLockedClick(${e.id})`}">
-        <div class="course-card-top">
-          <div class="ring-name-wrap">
-            <div class="progress-ring">
-              <svg width="52" height="52" viewBox="0 0 52 52">
-                <circle class="ring-bg" cx="26" cy="26" r="22"></circle>
-                ${isApproved?`<circle class="ring-fill" cx="26" cy="26" r="22" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle>`:''}
-              </svg>
-              <div class="ring-icon"><i class="fas ${isApproved?(e.course_icon||'fa-graduation-cap'):'fa-lock'}"></i></div>
-            </div>
-            <div>
-              <div class="course-title">${e.course_title}</div>
-              <div class="course-meta">${e.course_tagline||''}</div>
-            </div>
+  el.innerHTML = myCourses.map(e => {
+    const done = (e.completed_modules || []).length;
+    const isApproved = e.status === 'approved';
+    const circ = 2 * Math.PI * 20;
+    const pct = isApproved && e.total_modules ? done / e.total_modules : 0;
+    const offset = circ - pct * circ;
+    const statusHtml = e.status === 'pending' && (!e.payment_proof || e.payment_status === 'unpaid')
+      ? '<span class="badge badge-info">Payment needed</span>'
+      : e.status === 'pending' ? '<span class="badge badge-pending">Under review</span>'
+      : e.status === 'rejected' ? '<span class="badge badge-rejected">Not approved</span>' : '';
+    return `<div class="card course-card" onclick="${isApproved ? `openPlayer(${e.id})` : `switchTab('payments')`}">
+      <div class="course-card-top">
+        <div class="ring-wrap">
+          <div class="ring">
+            <svg width="48" height="48" viewBox="0 0 48 48">
+              <circle class="ring-bg" cx="24" cy="24" r="20"></circle>
+              ${isApproved ? `<circle class="ring-fill" cx="24" cy="24" r="20" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"></circle>` : ''}
+            </svg>
+            <div class="ring-icon"><i class="fas ${isApproved ? (e.course_icon || 'fa-graduation-cap') : 'fa-lock'}"></i></div>
           </div>
-          ${statusBadge}
+          <div><div class="course-title">${e.course_title}</div><div class="course-meta">${e.course_tagline || ''}</div></div>
         </div>
-        <div class="course-card-foot">
-          <span>${isApproved?`${done} modules done`:'Locked'}</span>
-          <span>${isApproved?'Open →':e.status==='pending'&&(!e.payment_proof||e.payment_status==='unpaid')?'Pay Now →':'Status →'}</span>
-        </div>
-      </div>`;
+        ${statusHtml}
+      </div>
+      <div class="course-card-foot">
+        <span>${isApproved ? done + ' done' : 'Locked'}</span>
+        <span>${isApproved ? 'Open →' : e.status === 'pending' && (!e.payment_proof || e.payment_status === 'unpaid') ? 'Pay →' : 'Status →'}</span>
+      </div>
+    </div>`;
   }).join('');
 }
 
-function handleLockedClick(id) {
-  const e = myCourses.find(x=>x.id===id);
-  if (!e) return;
-  if (!e.payment_proof || e.payment_status==='unpaid') {
-    switchTab('payments');
-  } else {
-    showToast(e.status==='rejected'?'Enrollment not approved. Contact support.':'Enrollment under review — check back soon.','info');
-  }
-}
-
-// ── COURSE PLAYER ──────────────────────────────────────────────────────────
-async function openPlayer(enrollmentId) {
+// ── PLAYER ──────────────────────────────────────────────────────────────────
+async function openPlayer(enrollId) {
   try {
-    const data = await API.getEnrollmentDetail(enrollmentId);
-    activeEnrollment = data.enrollment;
-    activeCourseDetail = data.course;
-    activeModules = data.modules || [];
-
-    document.getElementById('moduleSidebarTitle').textContent = activeCourseDetail.title;
+    const d = await apiFetch(`/enrollments/${enrollId}/detail`);
+    activeEnrollment = d.enrollment;
+    activeModules = d.modules || [];
+    document.getElementById('coursesGrid').style.display = 'none';
+    document.getElementById('playerWrap').style.display = 'block';
+    document.getElementById('playerBack').classList.add('show');
+    document.getElementById('moduleListTitle').textContent = d.course.title;
     renderModuleList();
-    document.getElementById('myCoursesGrid').style.display = 'none';
-    document.getElementById('playerView').classList.add('show');
-    document.getElementById('pageTitle').textContent = activeCourseDetail.title;
-
-    const completed = activeEnrollment.completed_modules||[];
-    const next = activeModules.find(m=>!completed.includes(m.id)) || activeModules[0];
-    if (next) loadModule(next);
-    else {
-      document.getElementById('videoTitle').textContent = activeCourseDetail.title;
-      document.getElementById('videoDesc').textContent = '🎉 Course complete!';
-      document.getElementById('videoWrap').innerHTML = `<div class="video-placeholder"><i class="fas fa-trophy" style="font-size:3rem;color:var(--gold);"></i><span>All modules complete!</span></div>`;
-    }
-  } catch(err) { showToast(err.message||'Could not open course','error'); }
+    const completed = activeEnrollment.completed_modules || [];
+    const next = activeModules.find(m => !completed.includes(m.id)) || activeModules[0];
+    if (next) selectModule(next);
+  } catch(err) { showToast(err.message || 'Could not open course', 'error'); }
 }
+
+function closePlayerUI(restoreTab = true) {
+  document.getElementById('coursesGrid').style.display = '';
+  document.getElementById('playerWrap').style.display = 'none';
+  document.getElementById('playerBack').classList.remove('show');
+  document.getElementById('videoWrap').innerHTML = '<div class="video-placeholder"><i class="fas fa-play-circle" style="font-size:2.5rem;color:var(--surface3);"></i><span>Select a module</span></div>';
+  document.getElementById('quizWrap').innerHTML = '';
+  activeEnrollment = null; activeModules = []; activeModuleId = null;
+  if (restoreTab) switchTab('courses');
+}
+function closePlayer() { closePlayerUI(true); }
 
 function renderModuleList() {
-  const completed = activeEnrollment.completed_modules||[];
-  const container = document.getElementById('moduleListPlayer');
-  container.innerHTML = activeModules.map(m => {
-    const isDone = completed.includes(m.id);
-    const isActive = m.id === activeModuleId;
-    const locked = !isDone && !isFirstIncomplete(m, completed);
-    return `
-      <div class="module-item ${isActive?'active':''} ${locked?'locked':''}" onclick="${locked?`showToast('Complete previous modules first','info')`:`loadModule(${JSON.stringify(m).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')})`}">
-        <div class="mod-num ${isDone?'mod-done':isActive?'mod-current':locked?'mod-locked':'mod-todo'}">${isDone?'<i class="fas fa-check"></i>':m.module_number}</div>
-        <div>
-          <div class="mod-title">${m.title}</div>
-          <div class="mod-dur">${m.duration_label||''} ${m.quiz_required?'<i class="fas fa-question-circle" title="Quiz required" style="color:var(--gold);font-size:.7rem;"></i>':''}</div>
+  const completed = activeEnrollment.completed_modules || [];
+  const el = document.getElementById('moduleListEl');
+  el.innerHTML = '<div class="module-list-header">' + document.getElementById('moduleListTitle').textContent + '</div>' +
+    activeModules.map((m, i) => {
+      const isDone = completed.includes(m.id);
+      const isActive = m.id === activeModuleId;
+      const prevDone = i === 0 || completed.includes(activeModules[i-1].id);
+      const locked = !isDone && !isActive && !prevDone;
+      return `<div class="module-item ${isActive?'active':''} ${locked?'locked':''}" onclick="${locked?`showToast('Complete previous modules first','info')`:`selectModuleById(${m.id})`}">
+        <div class="mod-circle ${isDone?'mod-done':isActive?'mod-active':locked?'mod-locked-c':'mod-todo'}">${isDone?'<i class="fas fa-check"></i>':m.module_number}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="mod-title-text">${m.title}</div>
+          <div class="mod-dur">${m.duration_label||''} ${m.quiz_required?'<i class="fas fa-question-circle" style="color:var(--gold);font-size:.65rem;"></i>':''}</div>
         </div>
       </div>`;
-  }).join('') || '<div style="padding:20px;text-align:center;color:var(--muted);font-size:.82rem;">No modules yet</div>';
+    }).join('');
 }
 
-function isFirstIncomplete(mod, completed) {
-  // A module is accessible if it's done OR it's the first undone one
-  const idx = activeModules.findIndex(m=>m.id===mod.id);
-  if (idx === 0) return true;
-  const prev = activeModules[idx-1];
-  return completed.includes(prev.id);
-}
+function selectModuleById(id) { const m = activeModules.find(x => x.id === id); if (m) selectModule(m); }
 
-function loadModule(mod) {
-  if (typeof mod === 'string') mod = JSON.parse(mod.replace(/&quot;/g,'"'));
+function selectModule(mod) {
   activeModuleId = mod.id;
-  document.getElementById('videoTitle').textContent = mod.title;
-  document.getElementById('videoDesc').textContent = mod.description||'';
-  document.getElementById('quizPanel').innerHTML = '';
+  document.getElementById('lessonTitle').textContent = mod.title;
+  document.getElementById('lessonDesc').textContent = mod.description || '';
+  document.getElementById('quizWrap').innerHTML = '';
 
   const wrap = document.getElementById('videoWrap');
   if (mod.video_id) {
-    const src = mod.video_provider==='youtube'
-      ? `https://www.youtube-nocookie.com/embed/${mod.video_id}?rel=0&modestbranding=1`
-      : `https://player.vimeo.com/video/${mod.video_id}?title=0&byline=0&portrait=0`;
+    const src = mod.video_provider === 'youtube'
+      ? `https://www.youtube-nocookie.com/embed/${mod.video_id}?rel=0`
+      : `https://player.vimeo.com/video/${mod.video_id}?title=0&byline=0&portrait=0&color=C8A97E`;
     wrap.innerHTML = `<iframe src="${src}" allowfullscreen></iframe>`;
   } else {
-    wrap.innerHTML = `<div class="video-placeholder"><i class="fas fa-film" style="font-size:2.5rem;"></i><span>Video coming soon</span></div>`;
+    wrap.innerHTML = '<div class="video-placeholder"><i class="fas fa-film" style="font-size:2.5rem;color:var(--surface3);"></i><span>Video coming soon</span></div>';
   }
 
-  const completed = activeEnrollment.completed_modules||[];
+  const completed = activeEnrollment.completed_modules || [];
   const isDone = completed.includes(mod.id);
   const btn = document.getElementById('markDoneBtn');
-  btn.innerHTML = isDone?'<i class="fas fa-check-circle"></i> Completed':'<i class="fas fa-check"></i> Mark Complete';
+  btn.innerHTML = isDone ? '<i class="fas fa-check-circle"></i> Completed' : '<i class="fas fa-check"></i> Mark Complete';
   btn.disabled = isDone;
+  btn.style.opacity = isDone ? '0.5' : '1';
 
   // Materials
-  const mats = JSON.parse(mod.materials_json||'[]');
-  const matsSection = document.getElementById('materialsSection');
+  const mats = JSON.parse(mod.materials_json || '[]');
+  const mw = document.getElementById('materialsWrap');
   if (mats.length) {
-    matsSection.style.display = 'block';
-    document.getElementById('materialsList').innerHTML = mats.map(mat=>`
-      <div class="material-item">
-        <i class="fas ${mat.type==='pdf'?'fa-file-pdf':mat.type==='video'?'fa-video':'fa-file'}" style="color:var(--gold);"></i>
-        <a href="${mat.url}" target="_blank">${mat.name}</a>
-      </div>`).join('');
-  } else { matsSection.style.display='none'; }
-
+    mw.style.display = 'block';
+    document.getElementById('materialsList').innerHTML = mats.map(mat => `
+      <div class="material-item"><i class="fas ${mat.type==='pdf'?'fa-file-pdf':'fa-file'}" style="color:var(--gold);"></i><a href="${mat.url}" target="_blank">${mat.name}</a></div>`).join('');
+  } else { mw.style.display = 'none'; }
   renderModuleList();
 }
 
 async function handleMarkDone() {
   if (!activeModuleId || !activeEnrollment) return;
-  const mod = activeModules.find(m=>m.id===activeModuleId);
+  const mod = activeModules.find(m => m.id === activeModuleId);
   if (!mod) return;
-
-  // If quiz required and not done yet — show quiz instead of marking complete
-  if (mod.quiz_required && mod.quiz && mod.quiz.length > 0) {
-    const completed = activeEnrollment.completed_modules||[];
-    if (!completed.includes(mod.id)) {
-      renderQuiz(mod);
-      return;
-    }
+  const completed = activeEnrollment.completed_modules || [];
+  if (completed.includes(mod.id)) return;
+  if (mod.quiz_required && JSON.parse(mod.quiz_json || '[]').length > 0) {
+    renderQuiz(mod); return;
   }
-  await markModuleComplete();
+  await markComplete();
 }
 
-async function markModuleComplete() {
+async function markComplete() {
   try {
-    const result = await API.completeModule(activeEnrollment.id, activeModuleId);
-    activeEnrollment.completed_modules = result.completed_modules;
-    const btn = document.getElementById('markDoneBtn');
-    btn.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
-    btn.disabled = true;
-    document.getElementById('quizPanel').innerHTML = '';
-    showToast('Module complete! 🎉','success');
-    USER.module_streak = (USER.module_streak||0)+1;
+    const d = await apiFetch(`/enrollments/${activeEnrollment.id}/complete-module`, { method:'POST', body:JSON.stringify({ module_id: activeModuleId }) });
+    activeEnrollment.completed_modules = d.completed_modules;
+    USER.module_streak = (USER.module_streak || 0) + 1;
     document.getElementById('moduleStreak').textContent = USER.module_streak;
-    renderModuleList();
-    loadMyCourses();
-  } catch(err) { showToast(err.message||'Failed to update progress','error'); }
+    document.getElementById('quizWrap').innerHTML = '';
+    const btn = document.getElementById('markDoneBtn');
+    btn.innerHTML = '<i class="fas fa-check-circle"></i> Completed'; btn.disabled = true; btn.style.opacity = '0.5';
+    showToast('Module complete! 🎉', 'success');
+    renderModuleList(); loadMyCourses(); loadHome();
+  } catch(err) { showToast(err.message || 'Failed', 'error'); }
 }
 
+function goNext() {
+  const idx = activeModules.findIndex(m => m.id === activeModuleId);
+  if (idx < activeModules.length - 1) selectModule(activeModules[idx + 1]);
+  else showToast('🎉 You\'ve reached the last module!', 'success');
+}
+
+// ── QUIZ ────────────────────────────────────────────────────────────────────
 function renderQuiz(mod) {
-  const quiz = mod.quiz||[];
-  if (!quiz.length) { markModuleComplete(); return; }
-  const selected = new Array(quiz.length).fill(null);
+  const quiz = JSON.parse(mod.quiz_json || '[]');
+  if (!quiz.length) { markComplete(); return; }
+  let selected = new Array(quiz.length).fill(null);
   let submitted = false;
+  let currentQ = 0;
 
-  document.getElementById('quizPanel').innerHTML = `
-    <div class="quiz-panel">
-      <h3>Module Quiz</h3>
-      <p class="quiz-sub">Score ${mod.quiz_pass_threshold||70}% or higher to complete this module.</p>
-      ${quiz.map((q,qi)=>`
-        <div class="question-block" id="qblock_${qi}">
-          <div class="question-text">${qi+1}. ${q.question}</div>
-          ${q.options.map((opt,oi)=>`
-            <button class="option-btn" id="opt_${qi}_${oi}" onclick="selectOption(${qi},${oi},${quiz.length})">${String.fromCharCode(65+oi)}. ${opt}</button>
-          `).join('')}
-        </div>`).join('')}
-      <button class="btn btn-gold" id="submitQuizBtn" onclick="submitQuiz()" style="margin-top:8px;" disabled><i class="fas fa-check"></i> Submit Quiz</button>
-      <div id="quizResultPanel"></div>
-    </div>`;
-
-  window._quizSelected = selected;
-  window._quizSubmitted = false;
-
-  function selectOption(qi, oi, total) {
-    if (window._quizSubmitted) return;
-    window._quizSelected[qi] = oi;
-    // Highlight selected
-    quiz[qi].options.forEach((_,i)=>{
-      const btn = document.getElementById(`opt_${qi}_${i}`);
-      btn.classList.toggle('selected', i===oi);
-    });
-    const allAnswered = window._quizSelected.every(v=>v!==null);
-    document.getElementById('submitQuizBtn').disabled = !allAnswered;
+  function renderQ() {
+    const q = quiz[currentQ];
+    document.getElementById('quizWrap').innerHTML = `
+      <div class="quiz-wrap">
+        <h3 class="quiz-title">Module Quiz</h3>
+        <p class="quiz-sub">Score ${mod.quiz_pass_threshold || 70}% or higher to unlock the next module.</p>
+        <div class="quiz-progress"><div class="quiz-progress-fill" style="width:${(currentQ/quiz.length)*100}%"></div></div>
+        <div class="question-num">Question ${currentQ+1} of ${quiz.length}</div>
+        <div class="question-text">${q.question}</div>
+        ${q.options.map((opt,oi) => `
+          <div class="option ${selected[currentQ]===oi?'selected':''}" onclick="selectOpt(${oi})">
+            <div class="option-letter">${String.fromCharCode(65+oi)}</div>
+            ${opt}
+          </div>`).join('')}
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+          ${currentQ > 0 ? `<button class="btn btn-ghost" onclick="goQ(-1)"><i class="fas fa-arrow-left"></i> Prev</button>` : ''}
+          ${currentQ < quiz.length - 1
+            ? `<button class="btn btn-gold" onclick="goQ(1)" ${selected[currentQ]===null?'disabled':''}>Next <i class="fas fa-arrow-right"></i></button>`
+            : `<button class="btn btn-gold" onclick="submitQuiz()" ${selected.some(v=>v===null)?'disabled':''}>Submit Quiz</button>`}
+        </div>
+      </div>`;
   }
-  window.selectOption = selectOption;
 
-  window.submitQuiz = async function() {
-    if (window._quizSubmitted) return;
-    window._quizSubmitted = true;
-    document.getElementById('submitQuizBtn').disabled = true;
+  window.selectOpt = (oi) => { if (submitted) return; selected[currentQ] = oi; renderQ(); };
+  window.goQ = (dir) => { currentQ = Math.max(0, Math.min(quiz.length-1, currentQ+dir)); renderQ(); };
+  window.submitQuiz = async () => {
+    if (submitted) return; submitted = true;
     try {
-      const result = await API.submitQuiz(activeModuleId, activeEnrollment.id, window._quizSelected);
-      // Show correct/wrong per question
-      result.results.forEach((r,qi)=>{
-        quiz[qi].options.forEach((_,oi)=>{
-          const btn = document.getElementById(`opt_${qi}_${oi}`);
-          if (oi===r.correct) btn.classList.add('correct');
-          else if (oi===window._quizSelected[qi] && !r.is_correct) btn.classList.add('wrong');
-          btn.onclick=null;
+      const d = await apiFetch('/quiz/attempt', { method:'POST', body:JSON.stringify({ module_id:activeModuleId, enrollment_id:activeEnrollment.id, answers:selected }) });
+      // Show results
+      let html = '<div class="quiz-wrap">';
+      d.results.forEach((r, qi) => {
+        const q = quiz[qi];
+        html += `<div style="margin-bottom:16px;"><div class="question-num">Q${qi+1}</div><div class="question-text">${q.question}</div>`;
+        q.options.forEach((opt,oi) => {
+          const cls = oi===r.correct?'correct':oi===selected[qi]&&!r.is_correct?'wrong':'';
+          html += `<div class="option ${cls}"><div class="option-letter">${String.fromCharCode(65+oi)}</div>${opt}</div>`;
         });
-        if (r.explanation) {
-          const exp = document.createElement('div');
-          exp.style.cssText='font-size:.76rem;color:var(--muted);margin-top:6px;padding:8px 10px;background:var(--nude-light);border-radius:6px;';
-          exp.textContent = '💡 '+r.explanation;
-          document.getElementById(`qblock_${qi}`).appendChild(exp);
-        }
+        if (r.explanation) html += `<div class="explanation">💡 ${r.explanation}</div>`;
+        html += '</div>';
       });
-      const passed = result.passed;
-      document.getElementById('quizResultPanel').innerHTML = `
-        <div class="quiz-result ${passed?'pass':'fail'}" style="margin-top:14px;">
-          <div class="quiz-score ${passed?'pass':'fail'}">${result.score}%</div>
-          <div style="margin-top:6px;font-weight:600;">${result.message}</div>
-          ${!passed?`<button class="btn btn-ghost" onclick="renderQuiz(activeModules.find(m=>m.id===activeModuleId))" style="margin-top:12px;"><i class="fas fa-redo"></i> Try Again</button>`:''}
-        </div>`;
-      if (passed) {
+      html += `<div class="quiz-result ${d.passed?'pass':'fail'}">
+        <div class="quiz-score ${d.passed?'pass':'fail'}">${d.score}%</div>
+        <div style="margin-top:8px;font-weight:600;font-size:.95rem;">${d.message}</div>
+        ${!d.passed ? `<button class="btn btn-outline" style="margin-top:12px;" onclick="renderQuiz(activeModules.find(m=>m.id===activeModuleId))"><i class="fas fa-redo"></i> Try Again</button>` : ''}
+      </div></div>`;
+      document.getElementById('quizWrap').innerHTML = html;
+      if (d.passed) {
         activeEnrollment.completed_modules = [...(activeEnrollment.completed_modules||[]), activeModuleId];
         const btn = document.getElementById('markDoneBtn');
-        btn.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
-        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Completed'; btn.disabled = true; btn.style.opacity='0.5';
         USER.module_streak = (USER.module_streak||0)+1;
         document.getElementById('moduleStreak').textContent = USER.module_streak;
-        renderModuleList();
-        loadMyCourses();
+        renderModuleList(); loadMyCourses(); loadHome();
       }
-    } catch(err) { showToast(err.message||'Failed to submit quiz','error'); window._quizSubmitted=false; document.getElementById('submitQuizBtn').disabled=false; }
+    } catch(err) { showToast(err.message||'Failed to submit quiz','error'); submitted=false; }
   };
+  renderQ();
 }
 
-async function goNextModule() {
-  const idx = activeModules.findIndex(m=>m.id===activeModuleId);
-  if (idx>=0 && idx<activeModules.length-1) {
-    const next = activeModules[idx+1];
-    const completed = activeEnrollment.completed_modules||[];
-    if (!completed.includes(activeModuleId)) { showToast('Complete this module first','info'); return; }
-    loadModule(next);
-  } else { showToast("🎉 You've reached the last module!",'success'); }
-}
-
-function closePlayer(restoreTab=true) {
-  document.getElementById('playerView').classList.remove('show');
-  document.getElementById('myCoursesGrid').style.display = '';
-  const frame = document.getElementById('videoFrame');
-  if(frame) frame.src='';
-  activeEnrollment=null; activeCourseDetail=null; activeModuleId=null; activeModules=[];
-  if (restoreTab) {
-    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-    document.querySelector('[data-tab="courses"]').classList.add('active');
-    document.getElementById('courses').classList.add('active');
-    document.getElementById('pageTitle').textContent='My Courses';
-  }
-}
-
-// ── DISCOVER TAB ───────────────────────────────────────────────────────────
+// ── DISCOVER ────────────────────────────────────────────────────────────────
 async function loadCatalog() {
   try {
-    const data = await API.getCourses();
-    const enrolledIds = new Set(myCourses.map(e=>e.course_id));
-    const unenrolled = (data.courses||[]).filter(c=>!enrolledIds.has(c.id));
-    if (!unenrolled.length) {
-      document.getElementById('catalogGrid').innerHTML=`<div class="empty-state"><i class="fas fa-check-circle"></i><p>You're enrolled in all available courses! Check back for new ones.</p></div>`;
-      return;
-    }
-    document.getElementById('catalogGrid').innerHTML = unenrolled.map(c=>`
-      <div class="card catalog-card">
-        <div class="catalog-icon"><i class="fas ${c.icon||'fa-graduation-cap'}"></i></div>
-        <div class="catalog-title">${c.title}</div>
-        ${c.tagline?`<div style="font-size:.76rem;color:var(--muted);margin-bottom:6px;">${c.tagline}</div>`:''}
-        <div class="catalog-price">KES ${c.price.toLocaleString()}</div>
-        <button class="btn btn-gold btn-sm" onclick="quickEnroll(${c.id},'${c.title}',${c.price})">
-          <i class="fas fa-plus"></i> Enroll Now
-        </button>
+    const d = await apiFetch('/courses');
+    const enrolledIds = new Set(myCourses.map(e => e.course_id));
+    const unenrolled = (d.courses||[]).filter(c => !enrolledIds.has(c.id));
+    const el = document.getElementById('catalogGrid');
+    if (!unenrolled.length) { el.innerHTML = '<div class="empty"><i class="fas fa-check-circle"></i><span>You\'re enrolled in all available courses!</span></div>'; return; }
+    el.innerHTML = unenrolled.map(c => `
+      <div class="card course-card">
+        <div class="course-card-top">
+          <div class="ring-wrap">
+            <div style="width:48px;height:48px;background:var(--surface2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--gold);">
+              <i class="fas ${c.icon||'fa-graduation-cap'}"></i>
+            </div>
+            <div><div class="course-title">${c.title}</div><div class="course-meta">${c.tagline||''}</div></div>
+          </div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold);font-weight:700;margin-top:6px;">KES ${c.price.toLocaleString()}</div>
+        </div>
+        <div class="course-card-foot">
+          <span style="color:var(--text3);">Not enrolled</span>
+          <button class="btn btn-gold btn-sm" onclick="quickEnroll(${c.id},'${c.title.replace(/'/g,"\\'")}',${c.price})">Enroll</button>
+        </div>
       </div>`).join('');
-  } catch { document.getElementById('catalogGrid').innerHTML=`<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load courses.</p></div>`; }
+  } catch { document.getElementById('catalogGrid').innerHTML = '<div class="empty"><i class="fas fa-exclamation-circle"></i><span>Could not load courses</span></div>'; }
 }
 
-// In-dashboard enrollment for already-logged-in users
-// No re-registration needed — uses their existing account
-async function quickEnroll(courseId, courseTitle, price) {
-  const confirmed = confirm(`Enroll in "${courseTitle}" for KES ${price.toLocaleString()}?\n\nYou'll need to upload payment proof after enrolling.`);
-  if (!confirmed) return;
+async function quickEnroll(courseId, title, price) {
+  if (!confirm(`Enroll in "${title}" for KES ${price.toLocaleString()}?\n\nYou'll upload payment proof on the next step.`)) return;
   try {
-    const data = await API.enrollInCourse({
-      course_id: courseId,
-      full_name: USER.full_name,
-      email: USER.email,
-      phone: USER.phone || ''
-    });
-    showToast(`Enrolled in ${courseTitle}! Upload payment proof to unlock.`, 'success');
-    await loadMyCourses();
-    loadPaymentsTab();
-    loadCatalog();
-    switchTab('payments');
-  } catch(err) {
-    if (err.message && err.message.includes('already enrolled')) {
-      showToast('You're already enrolled in this course.', 'info');
-      switchTab('courses');
-    } else {
-      showToast(err.message || 'Enrollment failed', 'error');
-    }
-  }
+    await apiFetch('/enrollments/enroll', { method:'POST', body:JSON.stringify({ course_id:courseId, full_name:USER.full_name, email:USER.email, phone:USER.phone||'' }) });
+    showToast('Enrolled! Upload payment proof to unlock.', 'success');
+    await loadMyCourses(); loadCatalog(); loadPayments(); switchTab('payments');
+  } catch(err) { showToast(err.message||'Enrollment failed','error'); }
 }
 
-// ── MY MENTOR TAB ──────────────────────────────────────────────────────────
-async function loadMentorTab() {
-  const container = document.getElementById('mentorContent');
+// ── MENTOR ──────────────────────────────────────────────────────────────────
+async function loadMentor() {
+  const c = document.getElementById('mentorContent');
   if (!USER.has_mentorship) {
-    container.innerHTML = `
-      <div class="upgrade-card">
-        <i class="fas fa-lock" style="font-size:2.2rem;color:var(--gold);margin-bottom:12px;display:block;"></i>
-        <h3>Unlock Full Mentorship</h3>
-        <p>Get a dedicated trading mentor, 1-on-1 sessions, personalised feedback, and access to all course modules.</p>
-        <div class="price">KES 3,500</div>
-        <a href="mentorship-form.html" class="btn-welcome">Apply for Mentorship <i class="fas fa-arrow-right"></i></a>
-      </div>`;
-    return;
+    c.innerHTML = `<div class="upgrade-card">
+      <i class="fas fa-lock" style="font-size:2.5rem;color:var(--gold);margin-bottom:14px;display:block;"></i>
+      <h3>Unlock Full Mentorship</h3>
+      <p>Get a dedicated mentor, 1-on-1 sessions, live feedback on your trades, and full course access.</p>
+      <div class="upgrade-price">KES 3,500</div>
+      <a href="mentorship-form.html" class="btn-welcome">Apply Now <i class="fas fa-arrow-right"></i></a>
+    </div>`; return;
   }
   if (!USER.mentor_id) {
-    container.innerHTML = `
-      <div class="card" style="padding:28px;text-align:center;">
-        <i class="fas fa-user-clock" style="font-size:2.2rem;color:var(--gold);margin-bottom:12px;display:block;"></i>
-        <h3 style="font-size:1.3rem;margin-bottom:8px;">Mentor Assignment Pending</h3>
-        <p style="color:var(--muted);font-size:.88rem;">Your mentor will be assigned within 24 hours of enrollment approval. You'll see them here once assigned.</p>
-      </div>`;
-    return;
+    c.innerHTML = `<div class="card card-p" style="text-align:center;">
+      <i class="fas fa-user-clock" style="font-size:2.5rem;color:var(--gold);margin-bottom:12px;display:block;"></i>
+      <h3>Mentor Being Assigned</h3>
+      <p style="color:var(--text2);margin-top:8px;font-size:.88rem;">Your dedicated mentor will be assigned within 24 hours. Check back soon.</p>
+    </div>`; return;
   }
   try {
-    const [sessionsData, avData] = await Promise.all([
-      API.getMySessions(),
-      API.getMentorAvailability(USER.mentor_id)
-    ]);
-    updateNextSession(sessionsData.sessions);
-    const upcoming = (sessionsData.sessions||[]).filter(s=>s.status!=='cancelled'&&new Date(s.scheduled_at)>new Date());
-    const past = (sessionsData.sessions||[]).filter(s=>s.status==='completed');
+    const [sessData] = await Promise.all([apiFetch('/sessions/my-sessions')]);
+    const sessions = sessData.sessions || [];
+    const upcoming = sessions.filter(s => s.status !== 'cancelled' && new Date(s.scheduled_at) > new Date()).sort((a,b) => new Date(a.scheduled_at)-new Date(b.scheduled_at));
+    const past = sessions.filter(s => s.status === 'completed').slice(0,5);
+    const nextSess = upcoming[0];
+    if (nextSess) document.getElementById('st-session').textContent = new Date(nextSess.scheduled_at).toLocaleDateString('en-KE',{month:'short',day:'numeric'});
 
-    container.innerHTML = `
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    c.innerHTML = `
+      <div style="display:grid;grid-template-columns:280px 1fr;gap:16px;flex-wrap:wrap;">
         <div>
-          <div class="card mentor-card" style="margin-bottom:14px;">
-            <div class="mentor-avatar-lg">${(USER.mentor_name||'M').charAt(0)}</div>
-            <div class="mentor-name">${USER.mentor_display_name||'Your Mentor'}</div>
-            <div class="mentor-bio">${USER.mentor_bio||'Your dedicated trading mentor.'}</div>
-            <div style="text-align:center;">
-              <button class="btn btn-gold" onclick="document.getElementById('bookModal').classList.add('show')"><i class="fas fa-calendar-plus"></i> Book a Session</button>
-            </div>
+          <div class="card mentor-hero">
+            <div class="mentor-avatar-lg">${(USER.mentor_display_name||'M').charAt(0)}</div>
+            <div class="mentor-name-lg">${USER.mentor_display_name||'Your Mentor'}</div>
+            <p class="mentor-bio-text">${USER.mentor_bio||'Your dedicated trading mentor.'}</p>
+            <button class="btn btn-gold" style="margin-top:14px;" onclick="document.getElementById('bookModal').classList.add('show')"><i class="fas fa-calendar-plus"></i> Book Session</button>
           </div>
         </div>
         <div>
-          <div class="section-label">Upcoming Sessions</div>
-          ${upcoming.length?upcoming.map(s=>`
-            <div class="card session-card">
-              <div class="session-icon"><i class="fas fa-${s.contact_method==='zoom'?'video':'whatsapp'}"></i></div>
-              <div>
-                <div class="session-date">${new Date(s.scheduled_at).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'})}</div>
-                <div class="session-meta">${s.duration_minutes} min · ${s.contact_method} · <span class="badge badge-${s.status==='confirmed'?'approved':'pending'}">${s.status}</span></div>
-                ${s.status==='confirmed'&&s.contact_link?`<a href="${s.contact_link}" target="_blank" class="session-contact"><i class="fas fa-${s.contact_method==='zoom'?'video':'whatsapp'}"></i> Join Session</a>`:''}
-                ${s.client_notes?`<div style="font-size:.76rem;color:var(--muted);margin-top:6px;">${s.client_notes}</div>`:''}
-                <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--danger);border:none;margin-top:8px;" onclick="cancelSession(${s.id})">Cancel</button>
-              </div>
-            </div>`).join(''):`<div class="empty-state" style="padding:20px;"><i class="fas fa-calendar-xmark"></i><p>No upcoming sessions</p></div>`}
-          
-          ${past.length?`<div class="section-label" style="margin-top:16px;">Past Sessions</div>${past.map(s=>`
-            <div class="card session-card">
-              <div class="session-icon" style="background:rgba(16,185,129,.1);"><i class="fas fa-check" style="color:var(--success);"></i></div>
-              <div>
-                <div class="session-date">${new Date(s.scheduled_at).toLocaleDateString('en-KE',{dateStyle:'medium'})}</div>
-                ${s.mentor_notes?`<div style="font-size:.78rem;color:var(--muted);margin-top:4px;font-style:italic;">"${s.mentor_notes}"</div>`:''}
-              </div>
-            </div>`).join('')}`:''}
+          <div class="section-title">Upcoming Sessions</div>
+          ${upcoming.length ? upcoming.map(s => sessionCard(s, false)).join('') : '<div class="card card-p" style="color:var(--text3);font-size:.84rem;">No upcoming sessions. Book one with your mentor.</div>'}
+          ${past.length ? `<div class="section-title" style="margin-top:18px;">Past Sessions</div>${past.map(s=>sessionCard(s,true)).join('')}` : ''}
         </div>
       </div>`;
-  } catch(err) { container.innerHTML=`<div class="empty-state"><i class="fas fa-exclamation-circle"></i><p>Could not load mentor info.</p></div>`; }
+  } catch(err) { c.innerHTML = `<div class="empty"><i class="fas fa-exclamation-circle"></i><span>${err.message}</span><button class="btn btn-ghost btn-sm" onclick="loadMentor()">Retry</button></div>`; }
+}
+
+function sessionCard(s, isPast) {
+  return `<div class="card session-card">
+    <div class="session-dot ${isPast?'completed':'upcoming'}"><i class="fas fa-${s.contact_method==='zoom'?'video':'whatsapp'}"></i></div>
+    <div>
+      <div class="session-date">${new Date(s.scheduled_at).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'})}</div>
+      <div class="session-meta">${s.duration_minutes}min · ${s.contact_method} · <span class="badge badge-${s.status==='confirmed'?'approved':s.status==='completed'?'info':'pending'}">${s.status}</span></div>
+      ${s.client_notes?`<div style="font-size:.74rem;color:var(--text3);margin-top:3px;">${s.client_notes}</div>`:''}
+      ${s.status==='confirmed'&&s.contact_link?`<button class="join-btn" onclick="window.open('${s.contact_link}','_blank')"><i class="fas fa-${s.contact_method==='zoom'?'video':'whatsapp'}"></i> Join Session</button>`:''}
+      ${isPast&&s.mentor_notes?`<div style="font-size:.76rem;color:var(--text2);font-style:italic;margin-top:6px;padding:6px 10px;background:var(--surface2);border-radius:7px;">"${s.mentor_notes}"</div>`:''}
+      ${!isPast&&s.status!=='cancelled'?`<button class="btn btn-danger btn-sm" style="margin-top:8px;" onclick="cancelSess(${s.id})"><i class="fas fa-times"></i> Cancel</button>`:''}
+    </div>
+  </div>`;
 }
 
 async function submitBooking() {
-  const dt = document.getElementById('book_datetime').value;
-  const method = document.getElementById('book_method').value;
-  const notes = document.getElementById('book_notes').value;
-  if (!dt) { showToast('Please select a date and time','info'); return; }
+  const dt = document.getElementById('book_dt').value;
+  if (!dt) { showToast('Select date and time','info'); return; }
   try {
-    await API.bookSession({ scheduled_at: new Date(dt).toISOString(), contact_method: method, client_notes: notes, duration_minutes: 60 });
+    await apiFetch('/sessions/book', { method:'POST', body:JSON.stringify({ scheduled_at:new Date(dt).toISOString(), contact_method:document.getElementById('book_method').value, client_notes:document.getElementById('book_notes').value, duration_minutes:60 }) });
     document.getElementById('bookModal').classList.remove('show');
-    showToast('Session booked! Your mentor will confirm shortly.','success');
-    loadMentorTab();
-  } catch(err) { showToast(err.message||'Failed to book session','error'); }
+    showToast('Session booked! Mentor will confirm shortly.','success');
+    loadMentor();
+  } catch(err) { showToast(err.message||'Failed','error'); }
 }
 
-async function cancelSession(id) {
+async function cancelSess(id) {
   if (!confirm('Cancel this session?')) return;
-  try { await API.cancelSession(id); showToast('Session cancelled','info'); loadMentorTab(); }
-  catch(err) { showToast(err.message||'Failed to cancel','error'); }
+  try { await apiFetch(`/sessions/${id}/cancel`, {method:'PATCH',body:'{}'}); showToast('Session cancelled','info'); loadMentor(); }
+  catch(err) { showToast(err.message||'Failed','error'); }
 }
 
-// ── TRADING TOOLS ──────────────────────────────────────────────────────────
+// ── CHAT (placeholder — real chat needs websockets, stub for now) ───────────
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const el = document.getElementById('chatMessages');
+  // Remove empty state
+  el.querySelector('.empty')?.remove();
+  const div = document.createElement('div');
+  div.className = 'chat-msg me';
+  div.innerHTML = `<div class="sender">You</div>${msg}<div class="time">${new Date().toLocaleTimeString('en-KE',{timeStyle:'short'})}</div>`;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+  input.value = '';
+  // Stub reply
+  setTimeout(() => {
+    const reply = document.createElement('div');
+    reply.className = 'chat-msg them';
+    reply.innerHTML = `<div class="sender">Mentor</div>Got your message. I'll get back to you soon.<div class="time">${new Date().toLocaleTimeString('en-KE',{timeStyle:'short'})}</div>`;
+    el.appendChild(reply); el.scrollTop = el.scrollHeight;
+  }, 1200);
+}
+
+// ── TRADING TOOLS ────────────────────────────────────────────────────────────
 function switchTool(tool, btn) {
   document.querySelectorAll('.tool-tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tool-panel').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
   document.getElementById(`tool-${tool}`).classList.add('active');
+  if (tool === 'chart') reloadChart();
 }
 
-function calcPositionSize() {
-  const balance = parseFloat(document.getElementById('ps_balance').value)||0;
+function reloadChart() {
+  const sym = encodeURIComponent(document.getElementById('chartSymbol')?.value || 'OANDA:XAUUSD');
+  const tf = document.getElementById('chartTF')?.value || '60';
+  const wrap = document.getElementById('tvChartWrap');
+  if (!wrap) return;
+  wrap.innerHTML = `<iframe src="https://s.tradingview.com/widgetembed/?frameElementId=tv_chart&symbol=${sym}&interval=${tf}&hidesidetoolbar=0&hidetoptoolbar=0&symboledit=1&saveimage=1&toolbarbg=18181B&studies=RSI%40tv-basicstudies&theme=dark&style=1&timezone=Africa%2FNairobi&locale=en" style="width:100%;height:520px;border:none;" allowfullscreen></iframe>`;
+}
+
+function calcPosSize() {
+  const bal = parseFloat(document.getElementById('ps_bal').value)||0;
   const risk = parseFloat(document.getElementById('ps_risk').value)||1;
   const sl = parseFloat(document.getElementById('ps_sl').value)||20;
-  const pair = document.getElementById('ps_pair').value;
-  if (!balance||!sl) return;
-
-  const riskAmt = balance * risk/100;
-  const isJpy = pair==='jpy';
-  const pipValue = isJpy ? 0.01 : 0.0001;
-  const pipValuePerStdLot = isJpy ? 1000 : 10; // USD per standard lot per pip
-  const lots = riskAmt / (sl * pipValuePerStdLot);
-  const pipVal = lots * pipValuePerStdLot;
-
-  document.getElementById('ps_result').style.display='block';
+  const isJpy = document.getElementById('ps_type').value === 'jpy';
+  const riskAmt = bal * risk / 100;
+  const pipVal = isJpy ? 1000 : 10;
+  const lots = riskAmt / (sl * pipVal);
+  document.getElementById('ps_result').style.display = 'block';
   document.getElementById('ps_lots').textContent = lots.toFixed(2);
-  document.getElementById('ps_risk_amt').textContent = '$'+riskAmt.toFixed(2);
-  document.getElementById('ps_pip_val').textContent = '$'+pipVal.toFixed(2);
+  document.getElementById('ps_usd').textContent = '$' + riskAmt.toFixed(2);
+  document.getElementById('ps_pip').textContent = '$' + (lots * pipVal).toFixed(2);
 }
 
 function calcRR() {
-  const entry = parseFloat(document.getElementById('rr_entry').value);
+  const e = parseFloat(document.getElementById('rr_e').value);
   const sl = parseFloat(document.getElementById('rr_sl').value);
   const tp = parseFloat(document.getElementById('rr_tp').value);
-  const dir = document.getElementById('rr_dir').value;
-  if (!entry||!sl||!tp) return;
-
-  const isJpy = false;
-  const mult = isJpy?100:10000;
-  const slPips = Math.abs(entry-sl)*mult;
-  const tpPips = Math.abs(tp-entry)*mult;
-  const rr = slPips>0?(tpPips/slPips):0;
-
-  document.getElementById('rr_result').style.display='block';
+  if (!e||!sl||!tp) return;
+  const mult = 10000;
+  const slP = Math.abs(e-sl)*mult; const tpP = Math.abs(tp-e)*mult;
+  const rr = slP > 0 ? tpP/slP : 0;
+  document.getElementById('rr_result').style.display = 'block';
   document.getElementById('rr_ratio').textContent = rr.toFixed(2)+':1';
-  document.getElementById('rr_sl_pips').textContent = slPips.toFixed(1);
-  document.getElementById('rr_tp_pips').textContent = tpPips.toFixed(1);
-
-  const slW = Math.round(slPips/(slPips+tpPips)*100);
-  const tpW = 100-slW;
-  document.getElementById('rr_visual').innerHTML = `
-    <div class="rr-sl" style="width:${slW}%;padding:8px;">SL ${slPips.toFixed(0)}p</div>
-    <div class="rr-entry"></div>
-    <div class="rr-tp" style="width:${tpW}%;padding:8px;">TP ${tpPips.toFixed(0)}p</div>`;
-
-  const verdict = rr>=2?'✅ Good trade setup — reward outweighs risk':rr>=1?'⚠️ Acceptable but aim for 2:1 or better':'❌ Risk outweighs reward — reconsider entry or exit';
-  document.getElementById('rr_verdict').textContent=verdict;
+  document.getElementById('rr_slp').textContent = slP.toFixed(1);
+  document.getElementById('rr_tpp').textContent = tpP.toFixed(1);
+  const slW = Math.round(slP/(slP+tpP)*100);
+  document.getElementById('rr_visual').innerHTML = `<div class="rr-sl" style="width:${slW}%">SL</div><div class="rr-entry"></div><div class="rr-tp" style="width:${100-slW}%">TP</div>`;
+  document.getElementById('rr_verdict').textContent = rr>=2?'✅ Strong setup — good R:R':rr>=1?'⚠️ Acceptable — aim for 2:1 or better':'❌ Risk exceeds reward — reconsider';
 }
 
-// ── TRADE JOURNAL ──────────────────────────────────────────────────────────
-let editingTradeId = null;
+// ── TRADE JOURNAL ────────────────────────────────────────────────────────────
 function openTradeModal(trade=null) {
-  editingTradeId = trade?trade.id:null;
-  document.getElementById('tradeModalTitle').textContent = trade?'Update Trade':'Log a Trade';
-  document.getElementById('tj_pair').value = trade?.pair||'';
-  document.getElementById('tj_direction').value = trade?.direction||'buy';
-  document.getElementById('tj_entry').value = trade?.entry_price||'';
-  document.getElementById('tj_sl').value = trade?.sl_price||'';
-  document.getElementById('tj_tp').value = trade?.tp_price||'';
-  document.getElementById('tj_setup').value = trade?.setup_type||'';
-  document.getElementById('tj_notes').value = trade?.notes||'';
+  editingTradeId = trade?.id||null;
+  document.getElementById('tradeModalTitle').textContent = trade ? 'Update Trade' : 'Log a Trade';
+  ['tj_pair','tj_entry','tj_sl','tj_tp','tj_setup','tj_notes'].forEach(id=>document.getElementById(id).value=trade?.(id.replace('tj_',''))||'');
+  if (trade) { document.getElementById('tj_pair').value=trade.pair||''; document.getElementById('tj_entry').value=trade.entry_price||''; document.getElementById('tj_sl').value=trade.sl_price||''; document.getElementById('tj_tp').value=trade.tp_price||''; document.getElementById('tj_setup').value=trade.setup_type||''; document.getElementById('tj_notes').value=trade.notes||''; }
   document.getElementById('tradeModal').classList.add('show');
 }
-function closeTradeModal() { document.getElementById('tradeModal').classList.remove('show'); editingTradeId=null; }
 
 async function saveTrade() {
-  const data = {
-    pair: document.getElementById('tj_pair').value.trim().toUpperCase(),
-    direction: document.getElementById('tj_direction').value,
-    entry_price: parseFloat(document.getElementById('tj_entry').value),
-    sl_price: parseFloat(document.getElementById('tj_sl').value),
-    tp_price: parseFloat(document.getElementById('tj_tp').value),
-    setup_type: document.getElementById('tj_setup').value.trim(),
-    notes: document.getElementById('tj_notes').value.trim()
-  };
+  const data = { pair:document.getElementById('tj_pair').value.trim().toUpperCase(), direction:document.getElementById('tj_dir').value, entry_price:parseFloat(document.getElementById('tj_entry').value), sl_price:parseFloat(document.getElementById('tj_sl').value), tp_price:parseFloat(document.getElementById('tj_tp').value), setup_type:document.getElementById('tj_setup').value.trim(), notes:document.getElementById('tj_notes').value.trim() };
   if (!data.pair||!data.entry_price||!data.sl_price||!data.tp_price) { showToast('Fill in pair, entry, SL and TP','info'); return; }
   try {
-    if (editingTradeId) await API.updateTrade(editingTradeId, data);
-    else await API.logTrade(data);
-    closeTradeModal();
+    if (editingTradeId) await apiFetch(`/journal/${editingTradeId}`, {method:'PATCH',body:JSON.stringify(data)});
+    else await apiFetch('/journal', {method:'POST',body:JSON.stringify(data)});
+    document.getElementById('tradeModal').classList.remove('show');
     showToast(editingTradeId?'Trade updated':'Trade logged','success');
     loadJournal();
-  } catch(err) { showToast(err.message||'Failed to save trade','error'); }
+  } catch(err) { showToast(err.message||'Failed','error'); }
 }
 
 async function loadJournal() {
   try {
-    const data = await API.getJournal();
-    journalData = data;
-    renderJournalStats(data.stats);
-    renderTradeTable(data.trades);
-    if (USER.has_partner_status && data.stats) {
-      document.getElementById('stat-earnings').textContent = `KES ${(data.stats.total_pips||0).toFixed(0)}p`;
-    }
+    const d = await apiFetch('/journal');
+    const s = d.stats || {};
+    const jStats = document.getElementById('jStats');
+    jStats.innerHTML = [
+      {v:s.total_trades||0,l:'Trades',c:''},
+      {v:(s.win_rate||0)+'%',l:'Win Rate',c:s.win_rate>=50?'win':'loss'},
+      {v:(s.total_pips||0).toFixed(1)+'p',l:'Total Pips',c:(s.total_pips||0)>=0?'win':'loss'},
+      {v:s.avg_rr||0,l:'Avg R:R',c:''},
+      {v:s.wins||0,l:'Wins',c:'win'},
+      {v:s.losses||0,l:'Losses',c:'loss'}
+    ].map(x=>`<div class="card j-stat"><div class="v ${x.c}">${x.v}</div><div class="l">${x.l}</div></div>`).join('');
+
+    const trades = d.trades || [];
+    document.getElementById('tradesBody').innerHTML = trades.length ? trades.map(t=>`
+      <tr>
+        <td><strong>${t.pair}</strong></td>
+        <td style="color:${t.direction==='buy'?'var(--success)':'var(--danger)'};">${t.direction.toUpperCase()}</td>
+        <td>${parseFloat(t.entry_price).toFixed(5)}</td>
+        <td>${parseFloat(t.sl_price).toFixed(5)}</td>
+        <td>${parseFloat(t.tp_price).toFixed(5)}</td>
+        <td class="${t.pips_result>0?'win':t.pips_result<0?'loss':''}">${t.pips_result!=null?parseFloat(t.pips_result).toFixed(1)+'p':'—'}</td>
+        <td>${t.rr_result?parseFloat(t.rr_result).toFixed(2)+':1':'—'}</td>
+        <td class="${t.outcome==='win'?'win':t.outcome==='loss'?'loss':''}">${t.outcome||'open'}</td>
+        <td>${t.setup_type||'—'}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn btn-ghost btn-sm" onclick="openTradeModal(${JSON.stringify(t).replace(/"/g,'&quot;')})">Edit</button>
+          <button class="btn btn-danger btn-sm" style="margin-left:4px;" onclick="deleteTrade(${t.id})"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>`).join('') : '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text3);">No trades logged yet</td></tr>';
   } catch {}
-}
-
-function renderJournalStats(stats) {
-  if (!stats) return;
-  const container = document.getElementById('journalStats');
-  const wr = stats.win_rate||0;
-  container.style.display='grid';
-  container.innerHTML = `
-    <div class="journal-stat card"><div class="val">${stats.total_trades||0}</div><div class="lbl">Total Trades</div></div>
-    <div class="journal-stat card"><div class="val" style="color:${wr>=50?'var(--success)':'var(--danger)'}">${wr}%</div><div class="lbl">Win Rate</div></div>
-    <div class="journal-stat card"><div class="val" style="color:${(stats.total_pips||0)>=0?'var(--success)':'var(--danger)'}">${(stats.total_pips||0).toFixed(1)}</div><div class="lbl">Total Pips</div></div>
-    <div class="journal-stat card"><div class="val">${stats.avg_rr||0}</div><div class="lbl">Avg R:R</div></div>
-    <div class="journal-stat card"><div class="val">${stats.wins||0}</div><div class="lbl">Wins</div></div>
-    <div class="journal-stat card"><div class="val">${stats.losses||0}</div><div class="lbl">Losses</div></div>`;
-}
-
-function renderTradeTable(trades) {
-  const tbody = document.getElementById('tradeTableBody');
-  if (!trades||!trades.length) {
-    tbody.innerHTML='<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted);">No trades logged yet. Click "Log Trade" to start.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = trades.map(t=>`
-    <tr>
-      <td><strong>${t.pair}</strong></td>
-      <td><span style="color:${t.direction==='buy'?'var(--success)':'var(--danger)'};">${t.direction.toUpperCase()}</span></td>
-      <td>${parseFloat(t.entry_price).toFixed(5)}</td>
-      <td>${parseFloat(t.sl_price).toFixed(5)}</td>
-      <td>${parseFloat(t.tp_price).toFixed(5)}</td>
-      <td>${t.exit_price?parseFloat(t.exit_price).toFixed(5):'—'}</td>
-      <td class="${t.pips_result>0?'outcome-win':t.pips_result<0?'outcome-loss':''}">${t.pips_result!=null?parseFloat(t.pips_result).toFixed(1)+'p':'—'}</td>
-      <td>${t.rr_result?parseFloat(t.rr_result).toFixed(2)+':1':'—'}</td>
-      <td class="${t.outcome==='win'?'outcome-win':t.outcome==='loss'?'outcome-loss':'outcome-be'}">${t.outcome||'open'}</td>
-      <td>${t.setup_type||'—'}</td>
-      <td style="white-space:nowrap;">
-        <button class="btn btn-sm btn-ghost" onclick="openTradeModal(${JSON.stringify(t).replace(/"/g,'&quot;')})" style="margin-right:4px;">Edit</button>
-        <button class="btn btn-sm" style="background:rgba(239,68,68,.1);color:var(--danger);border:none;" onclick="deleteTrade(${t.id})">Del</button>
-      </td>
-    </tr>`).join('');
 }
 
 async function deleteTrade(id) {
   if (!confirm('Delete this trade?')) return;
-  try { await API.deleteTrade(id); showToast('Trade deleted','info'); loadJournal(); }
-  catch(err) { showToast(err.message||'Failed to delete','error'); }
+  try { await apiFetch(`/journal/${id}`, {method:'DELETE'}); showToast('Deleted','info'); loadJournal(); }
+  catch(err) { showToast(err.message||'Failed','error'); }
 }
 
-// ── CROWN PARTNER TAB ──────────────────────────────────────────────────────
-async function loadPartnerTab() {
-  const container = document.getElementById('partnerContent');
-
+// ── CROWN PARTNER ────────────────────────────────────────────────────────────
+async function loadPartner() {
+  const c = document.getElementById('partnerContent');
   if (!USER.has_partner_status) {
-    container.innerHTML = `
-      <div class="upgrade-card">
-        <i class="fas fa-crown" style="font-size:2.2rem;color:var(--gold);margin-bottom:12px;display:block;"></i>
-        <h3>Become a Crown Partner</h3>
-        <p>Earn commissions by referring traders to Crown Trade Academy. Join our affiliate program and build passive income alongside your trading journey.</p>
-        <div class="price">KES 500</div>
-        <a href="referral-register.html" class="btn-welcome">Apply as Crown Partner <i class="fas fa-arrow-right"></i></a>
-      </div>`;
-    return;
+    c.innerHTML = `<div class="upgrade-card">
+      <i class="fas fa-crown" style="font-size:2.5rem;color:var(--gold);margin-bottom:14px;display:block;"></i>
+      <h3>Become a Crown Partner</h3>
+      <p>Earn commissions by referring traders. Build passive income alongside your trading journey.</p>
+      <div class="upgrade-price">KES 500</div>
+      <a href="referral-register.html" class="btn-welcome">Apply Now <i class="fas fa-arrow-right"></i></a>
+    </div>`; return;
   }
-
-  container.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div><p style="margin-top:10px;color:var(--muted);font-size:.82rem;">Loading partner data…</p></div>';
-
+  c.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   try {
-    const data = await API.getReferralDashboard();
-    partnerData = data;
-    const agent = data.agent;
-
-    if (!agent) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <i class="fas fa-clock"></i>
-          <p>Your Crown Partner application is under review. Check back once approved.</p>
-        </div>`;
-      return;
-    }
-
-    document.getElementById('stat-earnings').textContent = `KES ${(agent.wallet?.available||0).toLocaleString()}`;
-    const tierClass = `tier-${agent.tier||'bronze'}`;
-
-    container.innerHTML = `
+    const d = await apiFetch('/referral/dashboard');
+    const a = d.agent;
+    if (!a) { c.innerHTML = '<div class="empty"><i class="fas fa-hourglass-half"></i><span>Application under review</span></div>'; return; }
+    document.getElementById('st-earnings').textContent = 'KES ' + (a.wallet?.available||0).toLocaleString();
+    const tierClass = `tier-${a.tier||'bronze'}`;
+    c.innerHTML = `
       <div class="wallet-card">
-        <div class="wallet-title">Available Balance</div>
-        <div><span class="wallet-amount">${(agent.wallet?.available||0).toLocaleString()}</span><span class="wallet-currency">KES</span></div>
+        <div class="wallet-lbl">Available Balance</div>
+        <div><span class="wallet-amt">${(a.wallet?.available||0).toLocaleString()}</span><span class="wallet-currency">KES</span></div>
         <div class="wallet-stats">
-          <div class="wallet-stat"><div class="lbl">Pending</div><div class="val">KES ${(agent.wallet?.pending||0).toLocaleString()}</div></div>
-          <div class="wallet-stat"><div class="lbl">Lifetime Earned</div><div class="val">KES ${(agent.wallet?.lifetime_earned||0).toLocaleString()}</div></div>
-          <div class="wallet-stat"><div class="lbl">Withdrawn</div><div class="val">KES ${(agent.wallet?.total_withdrawn||0).toLocaleString()}</div></div>
+          <div class="wallet-stat"><div class="lbl">Pending</div><div class="val">KES ${(a.wallet?.pending||0).toLocaleString()}</div></div>
+          <div class="wallet-stat"><div class="lbl">Lifetime</div><div class="val">KES ${(a.wallet?.lifetime_earned||0).toLocaleString()}</div></div>
+          <div class="wallet-stat"><div class="lbl">Withdrawn</div><div class="val">KES ${(a.wallet?.total_withdrawn||0).toLocaleString()}</div></div>
         </div>
       </div>
-
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
         <div>
-          <span class="tier-badge ${tierClass}"><i class="fas fa-crown"></i> ${agent.tier_label||agent.tier}</span>
-          <span style="margin-left:10px;font-size:.8rem;color:var(--muted);">${agent.total_referrals||0} referral${(agent.total_referrals||0)!==1?'s':''}</span>
-          ${agent.next_tier
-            ? `<span style="margin-left:8px;font-size:.76rem;color:var(--muted);">— ${agent.next_tier.min - (agent.total_referrals||0)} more to ${agent.next_tier.label}</span>`
-            : '<span style="margin-left:8px;font-size:.76rem;color:var(--gold);">🏆 Max tier!</span>'}
+          <span class="tier-badge ${tierClass}"><i class="fas fa-crown"></i> ${a.tier_label||a.tier}</span>
+          <span style="margin-left:10px;font-size:.8rem;color:var(--text3);">${a.total_referrals||0} referral${(a.total_referrals||0)!==1?'s':''}</span>
+          ${a.next_tier?`<span style="font-size:.74rem;color:var(--text3);margin-left:8px;">— ${a.next_tier.min-(a.total_referrals||0)} more to ${a.next_tier.label}</span>`:'<span style="font-size:.74rem;color:var(--gold);margin-left:8px;">🏆 Max tier!</span>'}
         </div>
-        <button class="btn btn-gold" onclick="document.getElementById('withdrawModal').classList.add('show')">
-          <i class="fas fa-money-bill-wave"></i> Withdraw
-        </button>
+        <button class="btn btn-gold" onclick="document.getElementById('withdrawModal').classList.add('show')"><i class="fas fa-money-bill-wave"></i> Withdraw</button>
       </div>
-
-      <div class="section-label">Your Referral Link</div>
-      <div class="referral-link-box" style="margin-bottom:20px;">
-        <code id="refLink">${agent.referral_link||''}</code>
-        <button class="btn btn-ghost btn-sm" onclick="copyRefLink()"><i class="fas fa-copy"></i> Copy</button>
-        <button class="btn btn-ghost btn-sm" onclick="shareRefLink('${agent.referral_link||''}')"><i class="fas fa-share-alt"></i> Share</button>
+      <div class="section-title">Your Referral Link</div>
+      <div class="ref-link-box">
+        <code id="refLink">${a.referral_link||''}</code>
+        <button class="btn btn-ghost btn-sm" onclick="copyRef()"><i class="fas fa-copy"></i></button>
+        <button class="btn btn-ghost btn-sm" onclick="shareRef('${a.referral_link||''}')"><i class="fas fa-share-alt"></i></button>
       </div>
-
-      <div class="section-label">Recent Earnings</div>
+      <div class="section-title">Recent Earnings</div>
       <div class="card" style="overflow:auto;">
         <table class="earnings-table">
           <thead><tr><th>Referred</th><th>Amount</th><th>Type</th><th>Status</th><th>Date</th></tr></thead>
-          <tbody>
-            ${(data.earnings||[]).length
-              ? (data.earnings||[]).slice(0,10).map(e=>`
-                  <tr>
-                    <td>${e.referred_name||e.referred_email||'—'}</td>
-                    <td><strong>KES ${e.amount}</strong></td>
-                    <td>${e.commission_type==='first_referral'?'🎁 First Referral':'Standard'}</td>
-                    <td><span class="badge ${e.status==='paid'?'badge-approved':e.status==='available'?'badge-gold':'badge-pending'}">${e.status}</span></td>
-                    <td>${new Date(e.created_at).toLocaleDateString('en-KE')}</td>
-                  </tr>`).join('')
-              : '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">No earnings yet — share your referral link to start earning!</td></tr>'}
+          <tbody>${(d.earnings||[]).length?(d.earnings||[]).slice(0,12).map(e=>`
+            <tr>
+              <td>${e.referred_name||e.referred_email||'—'}</td>
+              <td><strong>KES ${e.amount}</strong></td>
+              <td>${e.commission_type==='first_referral'?'🎁 First':'Standard'}</td>
+              <td><span class="badge ${e.status==='paid'?'badge-approved':e.status==='available'?'badge-gold':'badge-pending'}">${e.status}</span></td>
+              <td>${new Date(e.created_at).toLocaleDateString('en-KE')}</td>
+            </tr>`).join(''):'<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text3);">No earnings yet. Share your link!</td></tr>'}
           </tbody>
         </table>
       </div>
-
-      ${(data.withdrawals||[]).length ? `
-        <div class="section-label" style="margin-top:20px;">Withdrawal History</div>
+      ${(d.withdrawals||[]).length?`
+        <div class="section-title" style="margin-top:20px;">Withdrawal History</div>
         <div class="card" style="overflow:auto;">
           <table class="earnings-table">
-            <thead><tr><th>Amount</th><th>M-Pesa</th><th>Status</th><th>M-Pesa Code</th><th>Date</th></tr></thead>
-            <tbody>
-              ${data.withdrawals.map(w=>`
-                <tr>
-                  <td><strong>KES ${w.amount}</strong></td>
-                  <td>${w.mpesa_number}</td>
-                  <td><span class="badge ${w.status==='paid'?'badge-approved':w.status==='rejected'?'badge-rejected':'badge-pending'}">${w.status}</span></td>
-                  <td>${w.mpesa_code||'—'}</td>
-                  <td>${new Date(w.requested_at).toLocaleDateString('en-KE')}</td>
-                </tr>`).join('')}
-            </tbody>
+            <thead><tr><th>Amount</th><th>M-Pesa</th><th>Status</th><th>Code</th><th>Date</th></tr></thead>
+            <tbody>${d.withdrawals.map(w=>`<tr>
+              <td><strong>KES ${w.amount}</strong></td><td>${w.mpesa_number}</td>
+              <td><span class="badge ${w.status==='paid'?'badge-approved':w.status==='rejected'?'badge-rejected':'badge-pending'}">${w.status}</span></td>
+              <td>${w.mpesa_code||'—'}</td><td>${new Date(w.requested_at).toLocaleDateString('en-KE')}</td>
+            </tr>`).join('')}</tbody>
           </table>
-        </div>` : ''}`;
-
+        </div>`:''}`; 
   } catch(err) {
-    console.error('Partner tab error:', err);
-    // Check if it's a "no application" error vs a real failure
-    if (err.message && (err.message.includes('not found') || err.message.includes('No partner'))) {
-      container.innerHTML = `
-        <div class="empty-state">
-          <i class="fas fa-hourglass-half"></i>
-          <p>Your Crown Partner application is under review. You'll see your dashboard here once approved.</p>
-        </div>`;
-    } else {
-      container.innerHTML = `
-        <div class="empty-state">
-          <i class="fas fa-exclamation-circle"></i>
-          <p>Could not load partner data. <button class="btn btn-ghost btn-sm" onclick="loadPartnerTab()" style="margin-top:8px;"><i class="fas fa-redo"></i> Retry</button></p>
-        </div>`;
-    }
+    c.innerHTML = `<div class="empty"><i class="fas fa-exclamation-circle"></i><span>Could not load partner data</span><button class="btn btn-ghost btn-sm" onclick="loadPartner()" style="margin-top:10px;">Retry</button></div>`;
   }
 }
 
-function shareRefLink(link) {
-  if (navigator.share) {
-    navigator.share({ title: 'Join Crown Trade Academy', text: 'Learn forex trading with expert mentors. Use my link:', url: link })
-      .catch(()=>{});
-  } else {
-    copyRefLink();
-  }
+function copyRef() {
+  const l = document.getElementById('refLink')?.textContent;
+  if (!l) return;
+  navigator.clipboard.writeText(l).then(()=>showToast('Copied!','success')).catch(()=>{const e=document.createElement('textarea');e.value=l;document.body.appendChild(e);e.select();document.execCommand('copy');document.body.removeChild(e);showToast('Copied!','success');});
 }
-
-function copyRefLink() {
-  const link = document.getElementById('refLink')?.textContent;
-  if (!link) return;
-  navigator.clipboard.writeText(link).then(()=>showToast('Referral link copied!','success')).catch(()=>{
-    const el=document.createElement('textarea'); el.value=link; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); showToast('Copied!','success');
-  });
+function shareRef(link) {
+  if (navigator.share) navigator.share({title:'Crown Trade Academy',text:'Join with my link:',url:link}).catch(()=>{});
+  else copyRef();
 }
 
 async function submitWithdrawal() {
@@ -1558,88 +1434,81 @@ async function submitWithdrawal() {
   if (!amount||amount<500) { showToast('Minimum withdrawal is KES 500','info'); return; }
   if (!mpesa) { showToast('M-Pesa number required','info'); return; }
   try {
-    await API.requestWithdrawal({ amount, mpesa_number: mpesa, mpesa_name: name });
+    await apiFetch('/referral/withdraw', {method:'POST',body:JSON.stringify({amount,mpesa_number:mpesa,mpesa_name:name})});
     document.getElementById('withdrawModal').classList.remove('show');
-    showToast('Withdrawal request submitted!','success');
-    loadPartnerTab();
-  } catch(err) { showToast(err.message||'Failed to submit','error'); }
+    showToast('Withdrawal request submitted!','success'); loadPartner();
+  } catch(err) { showToast(err.message||'Failed','error'); }
 }
 
-// ── PAYMENTS TAB ───────────────────────────────────────────────────────────
-async function loadPaymentsTab() {
-  const container = document.getElementById('paymentsContent');
-  if (!myCourses.length) { container.innerHTML='<div class="empty-state"><i class="fas fa-receipt"></i><p>No payment records yet.</p></div>'; return; }
-  container.innerHTML = myCourses.map(e=>`
-    <div class="card payment-item" style="margin-bottom:10px;">
+// ── PAYMENTS ─────────────────────────────────────────────────────────────────
+async function loadPayments() {
+  const c = document.getElementById('paymentsContent');
+  if (!myCourses.length) { c.innerHTML = '<div class="empty"><i class="fas fa-receipt"></i><span>No payment records yet</span></div>'; return; }
+  c.innerHTML = myCourses.map(e => `
+    <div class="card payment-row">
       <div class="payment-icon"><i class="fas fa-graduation-cap"></i></div>
-      <div class="payment-info">
+      <div class="payment-info" style="flex:1;">
         <div class="payment-title">${e.course_title}</div>
         <div class="payment-meta">
           Amount: KES ${(e.amount||0).toLocaleString()} ·
-          Payment: <span class="badge ${e.payment_status==='verified'?'badge-approved':e.payment_status==='pending'?'badge-pending':'badge-payment'}">${e.payment_status||'unpaid'}</span> ·
-          Enrollment: <span class="badge ${e.status==='approved'?'badge-approved':e.status==='rejected'?'badge-rejected':'badge-pending'}">${e.status}</span>
+          Payment: <span class="badge ${e.payment_status==='verified'?'badge-approved':e.payment_status==='pending'?'badge-pending':'badge-info'}">${e.payment_status||'unpaid'}</span> ·
+          Status: <span class="badge ${e.status==='approved'?'badge-approved':e.status==='rejected'?'badge-rejected':'badge-pending'}">${e.status}</span>
         </div>
         ${(!e.payment_proof||e.payment_status==='unpaid')?`
           <div style="margin-top:10px;">
-            <label style="font-size:.76rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:6px;">Upload Payment Proof</label>
-            <input type="file" accept="image/*,application/pdf" id="proof_${e.id}" style="font-size:.8rem;">
-            <button class="btn btn-gold btn-sm" style="margin-top:8px;" onclick="uploadProof(${e.id},'${e.email||USER.email}')"><i class="fas fa-upload"></i> Upload</button>
-          </div>`:''}
+            <label style="font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:5px;">Upload Payment Proof</label>
+            <input type="file" accept="image/*,application/pdf" id="proof_${e.id}" style="font-size:.76rem;color:var(--text2);">
+            <button class="btn btn-gold btn-sm" style="margin-top:6px;" onclick="uploadProof(${e.id})"><i class="fas fa-upload"></i> Upload</button>
+          </div>`:
+          e.payment_status==='pending'?`<div style="font-size:.74rem;color:var(--warning);margin-top:6px;"><i class="fas fa-clock"></i> Proof submitted — awaiting verification</div>`:
+          `<div style="font-size:.74rem;color:var(--success);margin-top:6px;"><i class="fas fa-check-circle"></i> Payment verified</div>`}
       </div>
     </div>`).join('');
 }
 
-async function uploadProof(enrollmentId, email) {
-  const fileInput = document.getElementById(`proof_${enrollmentId}`);
-  if (!fileInput.files.length) { showToast('Select a file first','info'); return; }
+async function uploadProof(enrollId) {
+  const file = document.getElementById(`proof_${enrollId}`)?.files[0];
+  if (!file) { showToast('Select a file first','info'); return; }
   try {
-    const uploadData = await API.uploadPaymentProof(fileInput.files[0]);
-    await API.submitEnrollmentProof(email, enrollmentId, uploadData.url);
-    showToast('Payment proof submitted!','success');
-    loadMyCourses();
-    loadPaymentsTab();
+    const form = new FormData(); form.append('proof', file);
+    const res = await fetch(BASE+'/upload/payment-proof', {method:'POST',headers:{'Authorization':'Bearer '+getToken()},body:form});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    await apiFetch('/enrollments/payment-proof', {method:'POST',body:JSON.stringify({email:USER.email,enrollment_id:enrollId,proof_url:data.url})});
+    showToast('Payment proof submitted!','success'); await loadMyCourses(); loadPayments();
   } catch(err) { showToast(err.message||'Upload failed','error'); }
 }
 
-// ── PROFILE TAB ────────────────────────────────────────────────────────────
+// ── PROFILE ──────────────────────────────────────────────────────────────────
 async function saveProfile() {
   const name = document.getElementById('pf_name').value.trim();
-  const phone = document.getElementById('pf_phone').value.trim();
   if (!name) { showToast('Name cannot be empty','info'); return; }
   try {
-    await API.updateProfile({ full_name:name, phone });
-    USER.full_name=name; USER.phone=phone; setUser(USER);
-    document.getElementById('userName').textContent=name;
-    document.getElementById('userAvatar').textContent=name.charAt(0).toUpperCase();
-    showToast('Profile updated','success');
-  } catch(err) { showToast(err.message||'Failed to update','error'); }
+    await apiFetch('/auth/profile', {method:'PATCH',body:JSON.stringify({full_name:name,phone:document.getElementById('pf_phone').value.trim()})});
+    USER.full_name=name; setUser(USER);
+    document.getElementById('navName').textContent=name;
+    document.getElementById('navAvatar').textContent=name.charAt(0).toUpperCase();
+    showToast('Profile saved','success');
+  } catch(err) { showToast(err.message||'Failed','error'); }
 }
 
 async function changePassword() {
-  const cur = document.getElementById('pw_current').value;
-  const nw = document.getElementById('pw_new').value;
-  const cf = document.getElementById('pw_confirm').value;
+  const cur=document.getElementById('pw_cur').value, nw=document.getElementById('pw_new').value, cf=document.getElementById('pw_cf').value;
   if (!cur||!nw) { showToast('Fill in both passwords','info'); return; }
-  if (nw!==cf) { showToast('New passwords do not match','info'); return; }
-  if (nw.length<6) { showToast('Password must be at least 6 characters','info'); return; }
+  if (nw!==cf) { showToast('Passwords do not match','info'); return; }
+  if (nw.length<6) { showToast('Minimum 6 characters','info'); return; }
   try {
-    await API.changePassword({ current_password:cur, new_password:nw });
-    document.getElementById('pw_current').value='';
-    document.getElementById('pw_new').value='';
-    document.getElementById('pw_confirm').value='';
+    await apiFetch('/auth/change-password', {method:'POST',body:JSON.stringify({current_password:cur,new_password:nw})});
+    ['pw_cur','pw_new','pw_cf'].forEach(id=>document.getElementById(id).value='');
     showToast('Password updated','success');
-  } catch(err) { showToast(err.message||'Failed to change password','error'); }
+  } catch(err) { showToast(err.message||'Failed','error'); }
 }
 
-// ── TOAST ──────────────────────────────────────────────────────────────────
+// ── TOAST ─────────────────────────────────────────────────────────────────────
 function showToast(msg, type='info') {
-  const colors={success:'var(--success)',error:'var(--danger)',info:'var(--gold)'};
-  const t=document.createElement('div');
-  t.className='toast';
-  t.style.background=colors[type]||colors.info;
-  t.textContent=msg;
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(),3200);
+  const bg={success:'#22C55E',error:'#EF4444',info:'#C8A97E'}[type]||'#C8A97E';
+  const t=document.createElement('div'); t.className='toast'; t.style.background=bg; t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),3200);
 }
 </script>
 </body>
