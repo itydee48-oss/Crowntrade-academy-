@@ -452,8 +452,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!TOKEN) { location.href = 'admin-login.html'; return; }
   try {
     const d = await api('/auth/me');
-    if (d.user.type !== 'admin') throw new Error('Not admin');
-  } catch { location.href = 'admin-login.html'; return; }
+    if (!d.user || (d.user.type !== 'admin' && d.user.role !== 'admin')) {
+      console.error('Not admin — user type:', d.user?.type);
+      alert('This account does not have admin access. Please log in as admin.');
+      location.href = 'admin-login.html'; return;
+    }
+  } catch(err) {
+    console.error('Auth check failed:', err.message);
+    // If network error, try to proceed with saved user
+    const saved = JSON.parse(localStorage.getItem('ct_user')||'{}');
+    if (saved.type !== 'admin' && saved.role !== 'admin') {
+      location.href = 'admin-login.html'; return;
+    }
+  }
 
   initShell();
   await loadOverview();
