@@ -1443,40 +1443,89 @@ async function submitWithdrawal() {
 // ── PAYMENTS ─────────────────────────────────────────────────────────────────
 async function loadPayments() {
   const c = document.getElementById('paymentsContent');
-  if (!myCourses.length) { c.innerHTML = '<div class="empty"><i class="fas fa-receipt"></i><span>No payment records yet</span></div>'; return; }
-  c.innerHTML = myCourses.map(e => `
+  if (!myCourses.length) {
+    c.innerHTML = '<div class="empty"><i class="fas fa-receipt"></i><span>No payment records yet</span></div>';
+    return;
+  }
+
+  // Also load Pesapal payment history
+  let pesapalPayments = [];
+  try {
+    const pd = await apiFetch('/payments/my-payments');
+    pesapalPayments = pd.payments || [];
+  } catch {}
+
+  c.innerHTML = myCourses.map(e => {
+    const pesapalPay = pesapalPayments.find(p => p.callback_ref === `enrollment:${e.id}`);
+    const isPaid = e.payment_status === 'verified' || pesapalPay?.status === 'completed';
+    const isPending = e.payment_status === 'pending' || pesapalPay?.status === 'pending';
+    const needsPayment = !isPaid && !isPending;
+
+    return `
     <div class="card payment-row">
       <div class="payment-icon"><i class="fas fa-graduation-cap"></i></div>
       <div class="payment-info" style="flex:1;">
         <div class="payment-title">${e.course_title}</div>
-        <div class="payment-meta">
-          Amount: KES ${(e.amount||0).toLocaleString()} ·
-          Payment: <span class="badge ${e.payment_status==='verified'?'badge-approved':e.payment_status==='pending'?'badge-pending':'badge-info'}">${e.payment_status||'unpaid'}</span> ·
-          Status: <span class="badge ${e.status==='approved'?'badge-approved':e.status==='rejected'?'badge-rejected':'badge-pending'}">${e.status}</span>
+        <div class="payment-meta" style="margin-top:4px;">
+          Amount: <strong>KES ${(e.amount||0).toLocaleString()}</strong> ·
+          Payment: <span class="badge ${isPaid?'badge-approved':isPending?'badge-pending':'badge-info'}">${isPaid?'Verified':isPending?'Pending':'Unpaid'}</span> ·
+          Access: <span class="badge ${e.status==='approved'?'badge-approved':e.status==='rejected'?'badge-rejected':'badge-pending'}">${e.status}</span>
         </div>
-        ${(!e.payment_proof||e.payment_status==='unpaid')?`
+        ${isPaid ? `
+          <div style="font-size:.76rem;color:var(--success);margin-top:8px;display:flex;align-items:center;gap:5px;">
+            <i class="fas fa-check-circle"></i> Payment verified ${pesapalPay?.payment_method?`via ${pesapalPay.payment_method}`:''}
+          </div>` :
+        isPending ? `
+          <div style="font-size:.76rem;color:var(--warning);margin-top:8px;display:flex;align-items:center;gap:5px;">
+            <i class="fas fa-clock"></i> Payment processing — your access will unlock automatically
+          </div>` :
+        needsPayment ? `
           <div style="margin-top:10px;">
-            <label style="font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:5px;">Upload Payment Proof</label>
-            <input type="file" accept="image/*,application/pdf" id="proof_${e.id}" style="font-size:.76rem;color:var(--text2);">
-            <button class="btn btn-gold btn-sm" style="margin-top:6px;" onclick="uploadProof(${e.id})"><i class="fas fa-upload"></i> Upload</button>
-          </div>`:
-          e.payment_status==='pending'?`<div style="font-size:.74rem;color:var(--warning);margin-top:6px;"><i class="fas fa-clock"></i> Proof submitted — awaiting verification</div>`:
-          `<div style="font-size:.74rem;color:var(--success);margin-top:6px;"><i class="fas fa-check-circle"></i> Payment verified</div>`}
+            <p style="font-size:.78rem;color:var(--text2);margin-bottom:10px;">Pay securely via M-Pesa, Visa, or Mastercard through Pesapal.</p>
+            <button class="btn btn-gold" onclick="initiatePayment('enrollment',${e.id})">
+              <i class="fas fa-credit-card"></i> Pay KES ${(e.amount||0).toLocaleString()} Now
+            </button>
+          </div>` : ''}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+
+  // Show referral/mentorship application payments too
+  if (USER.has_partner_status) {
+    const refPay = pesapalPayments.find(p => p.callback_ref?.startsWith('referral:'));
+    if (refPay) {
+      c.innerHTML += `
+        <div class="card payment-row">
+          <div class="payment-icon"><i class="fas fa-crown"></i></div>
+          <div class="payment-info" style="flex:1;">
+            <div class="payment-title">Crown Partner Registration</div>
+            <div class="payment-meta">Amount: KES 500 · <span class="badge ${refPay.status==='completed'?'badge-approved':'badge-pending'}">${refPay.status==='completed'?'Paid':'Pending'}</span></div>
+          </div>
+        </div>`;
+    }
+  }
 }
 
-async function uploadProof(enrollId) {
-  const file = document.getElementById(`proof_${enrollId}`)?.files[0];
-  if (!file) { showToast('Select a file first','info'); return; }
+async function initiatePayment(type, id) {
   try {
-    const form = new FormData(); form.append('proof', file);
-    const res = await fetch(BASE+'/upload/payment-proof', {method:'POST',headers:{'Authorization':'Bearer '+getToken()},body:form});
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-    await apiFetch('/enrollments/payment-proof', {method:'POST',body:JSON.stringify({email:USER.email,enrollment_id:enrollId,proof_url:data.url})});
-    showToast('Payment proof submitted!','success'); await loadMyCourses(); loadPayments();
-  } catch(err) { showToast(err.message||'Upload failed','error'); }
+    showToast('Initiating payment...', 'info');
+    const body = type === 'enrollment' ? { enrollment_id: id } :
+                 type === 'mentorship' ? { mentorship_application_id: id } :
+                 { referral_application_id: id };
+
+    const data = await apiFetch('/payments/initiate', { method:'POST', body: JSON.stringify(body) });
+
+    if (data.redirect_url) {
+      // Save tracking ID for later status check
+      localStorage.setItem('pending_payment_tracking', data.order_tracking_id);
+      // Redirect to Pesapal checkout
+      window.location.href = data.redirect_url;
+    } else {
+      showToast('Could not initiate payment. Try again.', 'error');
+    }
+  } catch(err) {
+    showToast(err.message || 'Payment failed to start', 'error');
+  }
 }
 
 // ── PROFILE ──────────────────────────────────────────────────────────────────
