@@ -1,0 +1,118 @@
+/**
+ * Crown Trade Academy — Shared Styles
+ * Import this in every page: <link rel="stylesheet" href="shared.css">
+ */
+
+:root {
+  --nude-light: #F9F6F2;
+  --nude-med: #E8DFD6;
+  --nude-dark: #D4C8BB;
+  --gold: #C8A97E;
+  --gold-dark: #B89463;
+  --gold-glow: rgba(200,169,126,.15);
+  --charcoal: #1C1C1E;
+  --charcoal-2: #2d2d35;
+  --muted: #7A7A7A;
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --info: #3B82F6;
+  --radius: 12px;
+  --shadow: 0 4px 20px rgba(0,0,0,.08);
+  --transition: all .25s cubic-bezier(.165,.84,.44,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', 'Montserrat', sans-serif; background: var(--nude-light); color: var(--charcoal); line-height: 1.6; overflow-x: hidden; }
+h1,h2,h3,h4,h5 { font-family: 'Cormorant Garamond', serif; font-weight: 700; line-height: 1.3; }
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; }
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--nude-light); }
+::-webkit-scrollbar-thumb { background: var(--nude-dark); border-radius: 4px; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 22px; border-radius: 8px; font-weight: 600; font-size: .88rem; letter-spacing: .3px; transition: var(--transition); border: 1px solid transparent; cursor: pointer; }
+.btn-gold { background: var(--gold); color: #fff; border-color: var(--gold); }
+.btn-gold:hover { background: var(--gold-dark); border-color: var(--gold-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,169,126,.3); }
+.btn-outline { background: transparent; color: var(--gold); border-color: var(--gold); }
+.btn-outline:hover { background: var(--gold); color: #fff; }
+.btn-dark { background: var(--charcoal); color: #fff; border-color: var(--charcoal); }
+.btn-dark:hover { background: var(--charcoal-2); transform: translateY(-2px); }
+.btn-sm { padding: 7px 14px; font-size: .78rem; }
+.btn-lg { padding: 14px 32px; font-size: 1rem; }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; }
+
+/* Cards */
+.card { background: #fff; border-radius: var(--radius); border: 1px solid rgba(212,200,188,.3); box-shadow: var(--shadow); }
+.card-p { padding: 24px; }
+
+/* Badges */
+.badge { display: inline-block; font-size: .65rem; padding: 3px 9px; border-radius: 20px; font-weight: 700; letter-spacing: .5px; }
+.badge-pending { background: rgba(245,158,11,.12); color: var(--warning); }
+.badge-approved { background: rgba(16,185,129,.1); color: var(--success); }
+.badge-rejected { background: rgba(239,68,68,.1); color: var(--danger); }
+.badge-gold { background: var(--gold-glow); color: var(--gold-dark); border: 1px solid rgba(200,169,126,.2); }
+.badge-info { background: rgba(59,130,246,.1); color: var(--info); }
+
+/* Form fields */
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin-bottom: 6px; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 11px 14px; border: 1.5px solid var(--nude-dark);
+  border-radius: 9px; font-size: .88rem; background: #fff; outline: none;
+  transition: var(--transition); color: var(--charcoal);
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,169,126,.1); }
+.form-group input[readonly] { background: var(--nude-light); cursor: not-allowed; opacity: .7; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-error { color: var(--danger); font-size: .78rem; margin-top: 5px; }
+
+/* Toast */
+.toast-wrap { position: fixed; bottom: 22px; right: 22px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { padding: 11px 18px; border-radius: 10px; color: #fff; font-weight: 600; font-size: .84rem; box-shadow: 0 6px 24px rgba(0,0,0,.15); animation: toastIn .3s ease; max-width: 320px; }
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+.toast.info { background: var(--gold); }
+@keyframes toastIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+
+/* Spinner */
+.spinner { display: inline-block; width: 22px; height: 22px; border: 2.5px solid rgba(200,169,126,.2); border-top-color: var(--gold); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-wrap { display: flex; align-items: center; justify-content: center; padding: 48px; color: var(--muted); gap: 12px; }
+
+/* Modal */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1000; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px); }
+.modal-overlay.show { display: flex; }
+.modal-box { background: #fff; border-radius: 16px; padding: 28px; max-width: 500px; width: 100%; max-height: 92vh; overflow-y: auto; animation: modalIn .25s ease; }
+.modal-box h3 { font-size: 1.4rem; margin-bottom: 18px; color: var(--charcoal); }
+@keyframes modalIn { from { opacity:0; transform: scale(.96); } to { opacity:1; transform: scale(1); } }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+/* Progress */
+.progress-bar { background: var(--nude-med); border-radius: 20px; height: 5px; overflow: hidden; }
+.progress-fill { background: linear-gradient(90deg, var(--gold), var(--gold-dark)); height: 5px; border-radius: 20px; transition: width .6s ease; }
+
+/* Section label */
+.section-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; }
+
+/* Animations */
+.fade-in { animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+
+/* Gold divider */
+.gold-divider { width: 50px; height: 2px; background: var(--gold); margin: 12px auto; }
+
+/* Responsive helpers */
+@media (max-width: 768px) {
+  .form-row { grid-template-columns: 1fr; }
+  .hide-mobile { display: none !important; }
+}
+@media (min-width: 769px) {
+  .hide-desktop { display: none !important; }
+}

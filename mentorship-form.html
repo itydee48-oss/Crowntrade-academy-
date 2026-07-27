@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply for Mentorship — Crown Trade Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+body{background:var(--nude-light);}
+.page-nav{background:#fff;border-bottom:1px solid var(--nude-med);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.page-nav .logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--charcoal);}
+.page-nav .logo span{color:var(--gold);}
+.page-wrap{max-width:760px;margin:0 auto;padding:40px 24px 80px;}
+.page-header{text-align:center;margin-bottom:36px;}
+.page-header h1{font-size:2.4rem;color:var(--charcoal);margin-bottom:8px;}
+.page-header p{color:var(--muted);font-size:.92rem;line-height:1.7;}
+.step-indicators{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:36px;}
+.step-dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;border:2px solid var(--nude-dark);color:var(--muted);background:#fff;transition:all .3s;flex-shrink:0;}
+.step-dot.active{background:var(--gold);border-color:var(--gold);color:#fff;}
+.step-dot.done{background:var(--success);border-color:var(--success);color:#fff;}
+.step-line{flex:1;height:2px;background:var(--nude-dark);max-width:80px;transition:background .3s;}
+.step-line.done{background:var(--success);}
+.form-card{background:#fff;border-radius:16px;border:1px solid rgba(212,200,188,.3);box-shadow:0 4px 20px rgba(0,0,0,.06);padding:32px;margin-bottom:16px;}
+.form-card h3{font-size:1.2rem;color:var(--charcoal);margin-bottom:4px;}
+.form-card .sub{font-size:.82rem;color:var(--muted);margin-bottom:22px;}
+.radio-group{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;}
+.radio-option{border:1.5px solid var(--nude-dark);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:10px;}
+.radio-option:hover{border-color:var(--gold);background:var(--gold-glow);}
+.radio-option.selected{border-color:var(--gold);background:var(--gold-glow);}
+.radio-option input[type=radio]{accent-color:var(--gold);margin-top:3px;flex-shrink:0;}
+.radio-label{font-size:.84rem;font-weight:600;color:var(--charcoal);}
+.radio-sub{font-size:.74rem;color:var(--muted);margin-top:2px;}
+.referral-check{background:var(--nude-light);border:1px solid var(--nude-med);border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-top:6px;}
+.referral-check i{color:var(--gold);}
+.referral-check .info{font-size:.82rem;}
+.referral-check .code{font-weight:700;color:var(--gold-dark);}
+.payment-box{background:linear-gradient(135deg,var(--charcoal),var(--charcoal-2));border-radius:14px;padding:24px;color:#fff;margin-bottom:20px;}
+.payment-box h3{font-size:1.3rem;margin-bottom:4px;}
+.payment-box p{color:rgba(255,255,255,.55);font-size:.84rem;margin-bottom:18px;}
+.payment-amount{font-family:'Cormorant Garamond',serif;font-size:3rem;color:var(--gold);font-weight:700;margin-bottom:16px;}
+.payment-methods{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.pay-method{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:7px;padding:6px 12px;font-size:.74rem;font-weight:700;color:rgba(255,255,255,.7);}
+.summary-box{background:var(--nude-light);border:1px solid var(--nude-med);border-radius:10px;padding:16px;margin-bottom:20px;}
+.summary-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--nude-med);font-size:.84rem;}
+.summary-row:last-child{border-bottom:none;font-weight:700;}
+.nav-btns{display:flex;gap:10px;justify-content:space-between;margin-top:20px;}
+.error-box{background:#FEE2E2;border:1px solid #FECACA;color:#991B1B;padding:10px 14px;border-radius:8px;font-size:.8rem;margin-bottom:14px;display:none;}
+</style>
+</head>
+<body>
+<nav class="page-nav">
+  <a href="index.html" class="logo">Crown<span>Trade</span></a>
+  <a href="login.html" class="btn btn-outline btn-sm">Sign In</a>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <h1>Apply for <span style="color:var(--gold);">Elite Mentorship</span></h1>
+    <p>Tell us about yourself and your trading goals. Your mentor will be matched within 24 hours of approval.</p>
+  </div>
+
+  <!-- Step indicators -->
+  <div class="step-indicators">
+    <div class="step-dot active" id="dot-1">1</div>
+    <div class="step-line" id="line-1"></div>
+    <div class="step-dot" id="dot-2">2</div>
+    <div class="step-line" id="line-2"></div>
+    <div class="step-dot" id="dot-3">3</div>
+  </div>
+
+  <div class="error-box" id="mainError"></div>
+
+  <!-- STEP 1: Personal Info -->
+  <div id="step-1">
+    <div class="form-card">
+      <h3>Personal Information</h3>
+      <p class="sub">We use this to create your account and match you with the right mentor.</p>
+      <div class="form-row">
+        <div class="form-group"><label>Full Name *</label><input type="text" id="f_name" placeholder="James Mwangi"></div>
+        <div class="form-group"><label>Email Address *</label><input type="email" id="f_email" placeholder="james@example.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Phone Number *</label><input type="tel" id="f_phone" placeholder="0712345678"></div>
+        <div class="form-group"><label>Password *</label><input type="password" id="f_password" placeholder="Min 6 characters"></div>
+      </div>
+      <div class="form-group">
+        <label>Referral Code (optional)</label>
+        <input type="text" id="f_refcode" placeholder="Enter partner code if you were referred" oninput="checkRefCode(this.value)">
+        <div id="refcode-feedback" style="margin-top:6px;display:none;"></div>
+      </div>
+    </div>
+    <div class="form-card">
+      <h3>Trading Background</h3>
+      <p class="sub">Be honest — there are no wrong answers. This helps us tailor your learning path.</p>
+      <div class="form-group">
+        <label>Current Experience Level *</label>
+        <div class="radio-group">
+          <label class="radio-option" onclick="selectRadio(this,'experience')">
+            <input type="radio" name="experience" value="complete_beginner">
+            <div><div class="radio-label">Complete Beginner</div><div class="radio-sub">Never traded before</div></div>
+          </label>
+          <label class="radio-option" onclick="selectRadio(this,'experience')">
+            <input type="radio" name="experience" value="some_knowledge">
+            <div><div class="radio-label">Some Knowledge</div><div class="radio-sub">Understand basics, not profitable</div></div>
+          </label>
+          <label class="radio-option" onclick="selectRadio(this,'experience')">
+            <input type="radio" name="experience" value="intermediate">
+            <div><div class="radio-label">Intermediate</div><div class="radio-sub">Trading but inconsistent</div></div>
+          </label>
+          <label class="radio-option" onclick="selectRadio(this,'experience')">
+            <input type="radio" name="experience" value="experienced">
+            <div><div class="radio-label">Experienced</div><div class="radio-sub">Profitable but want to scale</div></div>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Markets You Want to Trade *</label>
+        <div class="radio-group">
+          <label class="radio-option" onclick="selectRadio(this,'markets')">
+            <input type="radio" name="markets" value="forex"><div><div class="radio-label">Forex</div><div class="radio-sub">EUR/USD, GBP/USD etc.</div></div>
+          </label>
+          <label class="radio-option" onclick="selectRadio(this,'markets')">
+            <input type="radio" name="markets" value="gold"><div><div class="radio-label">Gold (XAU/USD)</div><div class="radio-sub">Most popular in Kenya</div></div>
+          </label>
+          <label class="radio-option" onclick="selectRadio(this,'markets')">
+            <input type="radio" name="markets" value="crypto"><div><div class="radio-label">Crypto</div><div class="radio-sub">BTC, ETH etc.</div></div>
+          </label>
+          <label class="radio-option" onclick="selectRadio(this,'markets')">
+            <input type="radio" name="markets" value="all"><div><div class="radio-label">All Markets</div><div class="radio-sub">I want to learn everything</div></div>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>How Many Hours Per Week Can You Dedicate? *</label>
+        <div class="radio-group">
+          <label class="radio-option" onclick="selectRadio(this,'time')">
+            <input type="radio" name="time" value="1-5hrs"><div><div class="radio-label">1–5 Hours</div><div class="radio-sub">Part-time learner</div></div>
+          </label>
+          <label class="radio-option" onclick="selectRadio(this,'time')">
+            <input type="radio" name="time" value="5-15hrs"><div><div class="radio-label">5–15 Hours</div><div class="radio-sub">Serious student</div></div>
+          </label>
+          <label class="radio-option" onclick="selectRadio(this,'time')">
+            <input type="radio" name="time" value="15+hrs"><div><div class="radio-label">15+ Hours</div><div class="radio-sub">Full commitment</div></div>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>What's Your Main Goal? *</label>
+        <textarea id="f_goal" rows="3" placeholder="E.g. I want to quit my 9-5 and trade full time within 12 months. I want to make KES 30,000/month consistently..."></textarea>
+      </div>
+    </div>
+    <div class="nav-btns">
+      <a href="index.html" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back</a>
+      <button class="btn btn-gold" onclick="goStep2()">Continue <i class="fas fa-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Review -->
+  <div id="step-2" style="display:none;">
+    <div class="form-card">
+      <h3>Review Your Application</h3>
+      <p class="sub">Check everything is correct before proceeding to payment.</p>
+      <div class="summary-box" id="summaryBox"></div>
+    </div>
+    <div class="nav-btns">
+      <button class="btn btn-outline" onclick="goStep(1)"><i class="fas fa-arrow-left"></i> Edit</button>
+      <button class="btn btn-gold" onclick="goStep3()">Proceed to Payment <i class="fas fa-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Payment -->
+  <div id="step-3" style="display:none;">
+    <div class="payment-box">
+      <h3>Complete Your Payment</h3>
+      <p>Pay securely via M-Pesa, Visa, or Mastercard. Your access unlocks instantly after payment.</p>
+      <div class="payment-amount">KES 3,500</div>
+      <div class="payment-methods">
+        <div class="pay-method"><i class="fas fa-mobile-alt"></i> M-Pesa</div>
+        <div class="pay-method"><i class="fab fa-cc-visa"></i> Visa</div>
+        <div class="pay-method"><i class="fab fa-cc-mastercard"></i> Mastercard</div>
+      </div>
+      <p style="font-size:.76rem;color:rgba(255,255,255,.4);">Powered by Pesapal · PCI DSS Compliant · 256-bit SSL</p>
+    </div>
+    <div class="form-card">
+      <div id="paymentStatus" style="text-align:center;padding:10px 0;">
+        <p style="color:var(--muted);font-size:.88rem;">Click the button below to be redirected to our secure payment page.</p>
+      </div>
+      <button class="btn btn-gold" style="width:100%;justify-content:center;" id="payBtn" onclick="submitAndPay()">
+        <i class="fas fa-lock"></i> Pay KES 3,500 Securely
+      </button>
+    </div>
+    <div class="nav-btns">
+      <button class="btn btn-outline" onclick="goStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
+    </div>
+  </div>
+</div>
+
+<script src="api.js"></script>
+<script>
+let refCodeValid = false;
+let refCodeData = null;
+let applicationId = null;
+
+function selectRadio(el, name) {
+  document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+    r.closest('.radio-option').classList.remove('selected');
+  });
+  el.classList.add('selected');
+}
+
+async function checkRefCode(code) {
+  const fb = document.getElementById('refcode-feedback');
+  if (!code || code.length < 3) { fb.style.display = 'none'; refCodeValid = false; return; }
+  try {
+    const d = await API.checkReferralCode(code);
+    refCodeValid = true;
+    refCodeData = d;
+    fb.style.display = 'block';
+    fb.innerHTML = `<div class="referral-check"><i class="fas fa-check-circle" style="color:var(--success);"></i><div class="info">Valid code from <span class="code">${d.partner_name}</span></div></div>`;
+  } catch {
+    refCodeValid = false;
+    fb.style.display = 'block';
+    fb.innerHTML = `<div class="referral-check"><i class="fas fa-times-circle" style="color:var(--danger);"></i><div class="info" style="color:var(--danger);">Invalid referral code</div></div>`;
+  }
+}
+
+function goStep2() {
+  const name = document.getElementById('f_name').value.trim();
+  const email = document.getElementById('f_email').value.trim();
+  const phone = document.getElementById('f_phone').value.trim();
+  const password = document.getElementById('f_password').value;
+  const experience = document.querySelector('input[name="experience"]:checked')?.value;
+  const markets = document.querySelector('input[name="markets"]:checked')?.value;
+  const time = document.querySelector('input[name="time"]:checked')?.value;
+  const goal = document.getElementById('f_goal').value.trim();
+
+  const err = document.getElementById('mainError');
+  err.style.display = 'none';
+
+  if (!name || !email || !phone || !password) { err.textContent = 'Please fill in all personal information fields.'; err.style.display = 'block'; return; }
+  if (password.length < 6) { err.textContent = 'Password must be at least 6 characters.'; err.style.display = 'block'; return; }
+  if (!experience) { err.textContent = 'Please select your experience level.'; err.style.display = 'block'; return; }
+  if (!markets) { err.textContent = 'Please select markets you want to trade.'; err.style.display = 'block'; return; }
+  if (!time) { err.textContent = 'Please select your time commitment.'; err.style.display = 'block'; return; }
+  if (!goal) { err.textContent = 'Please tell us your main trading goal.'; err.style.display = 'block'; return; }
+
+  // Build summary
+  document.getElementById('summaryBox').innerHTML = `
+    <div class="summary-row"><span>Full Name</span><span>${name}</span></div>
+    <div class="summary-row"><span>Email</span><span>${email}</span></div>
+    <div class="summary-row"><span>Phone</span><span>${phone}</span></div>
+    <div class="summary-row"><span>Experience</span><span>${experience.replace(/_/g,' ')}</span></div>
+    <div class="summary-row"><span>Target Markets</span><span>${markets}</span></div>
+    <div class="summary-row"><span>Time Per Week</span><span>${time}</span></div>
+    ${document.getElementById('f_refcode').value?`<div class="summary-row"><span>Referred By</span><span style="color:var(--gold-dark);">${document.getElementById('f_refcode').value}</span></div>`:''}
+    <div class="summary-row"><span style="font-weight:700;">Total</span><span style="color:var(--gold);font-size:1.1rem;">KES 3,500</span></div>`;
+
+  goStep(2);
+}
+
+function goStep3() { goStep(3); }
+
+function goStep(n) {
+  [1,2,3].forEach(i => {
+    document.getElementById(`step-${i}`).style.display = i === n ? 'block' : 'none';
+    const dot = document.getElementById(`dot-${i}`);
+    dot.classList.toggle('active', i === n);
+    dot.classList.toggle('done', i < n);
+    dot.innerHTML = i < n ? '<i class="fas fa-check" style="font-size:.7rem;"></i>' : i;
+    if (i < 3) {
+      const line = document.getElementById(`line-${i}`);
+      line.classList.toggle('done', i < n);
+    }
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function submitAndPay() {
+  const btn = document.getElementById('payBtn');
+  setLoading(btn, true);
+  const err = document.getElementById('mainError');
+  err.style.display = 'none';
+
+  try {
+    // Submit application first
+    const appData = await API.applyMentorship({
+      full_name: document.getElementById('f_name').value.trim(),
+      email: document.getElementById('f_email').value.trim(),
+      phone: document.getElementById('f_phone').value.trim(),
+      password: document.getElementById('f_password').value,
+      experience_level: document.querySelector('input[name="experience"]:checked').value,
+      preferred_markets: document.querySelector('input[name="markets"]:checked').value,
+      time_commitment: document.querySelector('input[name="time"]:checked').value,
+      goals: document.getElementById('f_goal').value.trim(),
+      referral_code: document.getElementById('f_refcode').value.trim() || undefined,
+    });
+
+    applicationId = appData.application_id || appData.id;
+
+    // Set token if returned (new user created)
+    if (appData.token) {
+      Auth.setToken(appData.token);
+      Auth.setUser(appData.user);
+    }
+
+    // Initiate Pesapal payment
+    const payData = await API.initiatePayment({ mentorship_application_id: applicationId });
+
+    if (payData.redirect_url) {
+      window.location.href = payData.redirect_url;
+    } else {
+      throw new Error('Could not get payment URL. Please try again.');
+    }
+  } catch(err2) {
+    err.textContent = err2.message || 'Something went wrong. Please try again.';
+    err.style.display = 'block';
+    setLoading(btn, false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+</script>
+</body>
+</html>

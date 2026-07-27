@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — Crown Trade Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--charcoal);padding:20px;}
+.box{background:#fff;border-radius:18px;padding:40px 36px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.4);}
+.crown{font-size:2.2rem;color:var(--gold);text-align:center;display:block;margin-bottom:10px;}
+.brand{font-family:'Cormorant Garamond',serif;font-size:1.6rem;text-align:center;font-weight:700;margin-bottom:4px;}
+.role{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;background:rgba(239,68,68,.08);color:var(--danger);border:1px solid rgba(239,68,68,.2);padding:3px 10px;border-radius:20px;margin:0 auto 24px;display:flex;justify-content:center;}
+.error-box{background:#FEE2E2;border:1px solid #FECACA;color:#991B1B;padding:10px 14px;border-radius:8px;font-size:.8rem;margin-bottom:14px;display:none;}
+.input-wrap{position:relative;}
+.input-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:.82rem;}
+.input-wrap input{padding-left:36px !important;}
+.back{text-align:center;margin-top:16px;font-size:.8rem;color:var(--muted);}
+.back a{color:var(--gold-dark);font-weight:600;}
+</style>
+</head>
+<body>
+<div class="box">
+  <i class="fas fa-shield-halved crown"></i>
+  <div class="brand">Admin Access</div>
+  <div class="role"><i class="fas fa-lock" style="font-size:.65rem;"></i> Restricted Area</div>
+  <div class="error-box" id="err"></div>
+  <div class="form-group"><label>Username</label>
+    <div class="input-wrap"><i class="fas fa-user"></i><input type="text" id="username" placeholder="admin" autocomplete="username"></div>
+  </div>
+  <div class="form-group"><label>Password</label>
+    <div class="input-wrap"><i class="fas fa-lock"></i><input type="password" id="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+  </div>
+  <button class="btn btn-gold" style="width:100%;justify-content:center;" id="loginBtn" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+  <div class="back"><a href="index.html"><i class="fas fa-arrow-left"></i> Back to Academy</a></div>
+</div>
+<script src="api.js"></script>
+<script>
+async function doLogin() {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const err = document.getElementById('err');
+  err.style.display = 'none';
+  if (!username||!password) { err.textContent='Enter username and password.'; err.style.display='block'; return; }
+  const btn = document.getElementById('loginBtn');
+  setLoading(btn, true);
+  try {
+    const d = await API.adminLogin(username, password);
+    localStorage.setItem('ct_admin_token', d.token);
+    localStorage.setItem('ct_token', d.token);
+    localStorage.setItem('ct_user', JSON.stringify({...d.user, type:'admin'}));
+    window.location.href = 'admin-dashboard.html';
+  } catch(e) {
+    err.textContent = e.message||'Invalid credentials.'; err.style.display='block';
+    setLoading(btn, false);
+  }
+}
+</script>
+</body>
+</html>
