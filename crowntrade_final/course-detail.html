@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Course Detail — Crown Trade Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="api.js"></script>
+<style>
+:root{--nude-light:#F9F6F2;--nude-medium:#E8DFD6;--nude-dark:#D4C8BC;--gold:#C8A97E;--gold-dark:#B89463;--charcoal:#1C1C1E;--text-light:#7A7A7A;--transition:all 0.4s cubic-bezier(0.165,0.84,0.44,1);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Montserrat',sans-serif;background:var(--nude-light);color:var(--charcoal);line-height:1.6;}
+h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:600;}
+.premium-header{background:rgba(249,246,242,0.95);backdrop-filter:blur(10px);position:fixed;width:100%;z-index:1000;border-bottom:1px solid rgba(212,200,188,0.3);}
+.premium-nav{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;padding:1.2rem 2rem;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--charcoal);text-decoration:none;}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--charcoal);font-size:0.9rem;font-weight:500;transition:var(--transition);}
+.nav-links a:hover{color:var(--gold);}
+
+/* Hero */
+.course-hero{background:linear-gradient(135deg,#1C1C1E 0%,#2d2d35 100%);color:#fff;padding:9rem 2rem 4rem;}
+.hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:3rem;align-items:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(200,169,126,0.15);border:1px solid rgba(200,169,126,0.3);color:var(--gold);padding:6px 16px;border-radius:30px;font-size:0.76rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:1.2rem;}
+.hero-title{font-size:2.8rem;margin-bottom:0.8rem;line-height:1.2;}
+.hero-tagline{color:rgba(255,255,255,0.65);font-size:1.05rem;margin-bottom:1.8rem;max-width:560px;}
+.hero-meta{display:flex;gap:1.5rem;flex-wrap:wrap;}
+.hero-meta-item{display:flex;align-items:center;gap:7px;font-size:0.88rem;color:rgba(255,255,255,0.6);}
+.hero-meta-item i{color:var(--gold);}
+.price-card{background:rgba(255,255,255,0.05);border:1px solid rgba(200,169,126,0.3);border-radius:12px;padding:2rem;min-width:240px;text-align:center;}
+.price-label{font-size:0.76rem;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.4);margin-bottom:8px;}
+.price-amount{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;color:var(--gold);margin-bottom:1.2rem;}
+.btn-enroll{display:block;background:var(--gold);color:#fff;padding:1rem 2rem;border-radius:4px;text-decoration:none;font-weight:700;font-size:0.95rem;letter-spacing:0.5px;transition:var(--transition);margin-bottom:0.8rem;}
+.btn-enroll:hover{background:var(--gold-dark);}
+.price-note{font-size:0.78rem;color:rgba(255,255,255,0.4);}
+
+/* Body */
+.page-body{max-width:1100px;margin:0 auto;padding:4rem 2rem;display:grid;grid-template-columns:1fr 320px;gap:3rem;}
+
+/* Description */
+.section-title{font-size:1.7rem;margin-bottom:1.2rem;position:relative;padding-bottom:0.8rem;}
+.section-title::after{content:'';position:absolute;bottom:0;left:0;width:40px;height:2px;background:var(--gold);}
+.description-text{color:var(--text-light);line-height:1.8;margin-bottom:2rem;}
+
+/* What you'll learn */
+.learn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:2.5rem;}
+.learn-item{display:flex;align-items:flex-start;gap:10px;padding:12px;background:#fff;border-radius:8px;border:1px solid var(--nude-medium);font-size:0.88rem;}
+.learn-item i{color:var(--gold);margin-top:2px;flex-shrink:0;}
+
+/* Module preview */
+.module-preview{margin-bottom:2.5rem;}
+.module-preview-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid rgba(212,200,188,0.4);}
+.module-preview-item:last-child{border-bottom:none;}
+.mod-num-badge{width:30px;height:30px;background:var(--nude-medium);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.76rem;font-weight:700;color:var(--charcoal);flex-shrink:0;}
+.mod-preview-title{font-weight:600;font-size:0.9rem;}
+.mod-preview-dur{font-size:0.78rem;color:var(--text-light);}
+.mod-lock{color:var(--text-light);font-size:0.8rem;margin-left:auto;}
+.modules-teaser{text-align:center;padding:1.2rem;background:var(--nude-medium);border-radius:8px;font-size:0.88rem;color:var(--text-light);margin-top:8px;}
+
+/* Sticky sidebar */
+.sticky-sidebar{position:sticky;top:100px;height:fit-content;}
+.sidebar-card{background:#fff;border:1px solid var(--nude-medium);border-radius:12px;padding:1.8rem;box-shadow:0 8px 24px rgba(0,0,0,0.06);}
+.sidebar-card::before{content:'';display:block;width:100%;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-dark));border-radius:4px 4px 0 0;margin:-1.8rem -1.8rem 1.5rem;width:calc(100% + 3.6rem);}
+.sidebar-price{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:700;color:var(--gold-dark);text-align:center;margin-bottom:1.2rem;}
+.btn-sidebar-enroll{display:block;background:var(--gold);color:#fff;padding:1rem;border-radius:4px;text-decoration:none;font-weight:700;font-size:0.95rem;letter-spacing:0.5px;text-align:center;transition:var(--transition);margin-bottom:1rem;}
+.btn-sidebar-enroll:hover{background:var(--gold-dark);}
+.sidebar-features{list-style:none;margin-top:1.2rem;}
+.sidebar-features li{display:flex;align-items:center;gap:9px;font-size:0.86rem;color:var(--text-light);padding:7px 0;border-bottom:1px solid rgba(212,200,188,0.3);}
+.sidebar-features li:last-child{border-bottom:none;}
+.sidebar-features li i{color:var(--gold);width:16px;}
+
+/* Loading/error */
+.loading-state,.error-state{text-align:center;padding:8rem 2rem;min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;}
+
+footer{background:var(--charcoal);padding:2.5rem 2rem;color:rgba(255,255,255,0.5);text-align:center;font-size:0.85rem;}
+
+@media(max-width:900px){.hero-inner{grid-template-columns:1fr;}.price-card{display:none;}.page-body{grid-template-columns:1fr;}.sticky-sidebar{position:static;}.learn-grid{grid-template-columns:1fr;}}
+@media(max-width:600px){.hero-title{font-size:2rem;}.nav-links{display:none;}}
+</style>
+</head>
+<body>
+
+<header class="premium-header">
+  <nav class="premium-nav">
+    <a href="index.html" class="logo">Crown Trade Academy</a>
+    <ul class="nav-links">
+      <li><a href="courses.html">Courses</a></li>
+      <li><a href="login.html">Login</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Loading state -->
+<div class="loading-state" id="loadingState" style="margin-top:80px;">
+  <i class="fas fa-spinner fa-spin" style="font-size:2.5rem;color:var(--gold);"></i>
+  <p style="color:var(--text-light);">Loading course details…</p>
+</div>
+
+<!-- Error state -->
+<div class="error-state" id="errorState" style="display:none;margin-top:80px;">
+  <i class="fas fa-exclamation-circle" style="font-size:2.5rem;color:var(--gold);"></i>
+  <h2>Course Not Found</h2>
+  <p style="color:var(--text-light);">This course doesn't exist or is no longer available.</p>
+  <a href="courses.html" style="background:var(--gold);color:#fff;padding:0.8rem 1.8rem;text-decoration:none;border-radius:4px;font-weight:700;margin-top:0.5rem;">View All Courses</a>
+</div>
+
+<!-- Course content (hidden until loaded) -->
+<div id="courseContent" style="display:none;">
+
+  <!-- Hero -->
+  <section class="course-hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge" id="heroBadge"><i class="fas fa-graduation-cap" id="heroIcon"></i> <span id="heroLabel">Course</span></div>
+        <h1 class="hero-title" id="heroTitle">—</h1>
+        <p class="hero-tagline" id="heroTagline">—</p>
+        <div class="hero-meta">
+          <div class="hero-meta-item"><i class="fas fa-film"></i> <span id="heroModuleCount">—</span></div>
+          <div class="hero-meta-item"><i class="fas fa-tag"></i> <span id="heroPrice">—</span></div>
+          <div class="hero-meta-item"><i class="fas fa-certificate"></i> Certificate of completion</div>
+        </div>
+      </div>
+      <div class="price-card">
+        <div class="price-label">Enroll Today</div>
+        <div class="price-amount" id="heroCardPrice">—</div>
+        <a href="#" class="btn-enroll" id="heroEnrollBtn">Enroll Now <i class="fas fa-arrow-right"></i></a>
+        <div class="price-note">One-time payment · Lifetime access</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Body -->
+  <div class="page-body">
+    <div>
+      <!-- Description -->
+      <h2 class="section-title">About This Course</h2>
+      <div class="description-text" id="courseDescription">—</div>
+
+      <!-- What you'll learn -->
+      <h2 class="section-title">What You'll Learn</h2>
+      <div class="learn-grid" id="learnGrid"></div>
+
+      <!-- Module preview -->
+      <h2 class="section-title">Course Content</h2>
+      <div class="module-preview" id="modulePreview"></div>
+    </div>
+
+    <!-- Sticky sidebar -->
+    <aside class="sticky-sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-price" id="sidebarPrice">—</div>
+        <a href="#" class="btn-sidebar-enroll" id="sidebarEnrollBtn">Enroll Now</a>
+        <ul class="sidebar-features">
+          <li><i class="fas fa-infinity"></i> Lifetime access</li>
+          <li><i class="fas fa-film"></i> <span id="sidebarModuleCount">—</span></li>
+          <li><i class="fas fa-certificate"></i> Certificate of completion</li>
+          <li><i class="fas fa-comments"></i> Mentor support</li>
+          <li><i class="fas fa-mobile-alt"></i> Access on any device</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+
+</div>
+
+<footer>&copy; 2025 Crown Trade Academy. All rights reserved.</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get('course');
+  if (!slug) { showError(); return; }
+
+  try {
+    const data = await API.getCourse(slug);
+    renderCourse(data.course, data.modules || []);
+  } catch (err) {
+    showError();
+  }
+});
+
+function showError() {
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('errorState').style.display = 'flex';
+}
+
+function renderCourse(course, modules) {
+  document.title = `${course.title} — Crown Trade Academy`;
+
+  document.getElementById('heroIcon').className = `fas ${course.icon || 'fa-graduation-cap'}`;
+  document.getElementById('heroLabel').textContent = course.is_flagship ? 'Flagship Course' : 'Course';
+  document.getElementById('heroTitle').textContent = course.title;
+  document.getElementById('heroTagline').textContent = course.tagline || '';
+  document.getElementById('heroModuleCount').textContent = `${modules.length} module${modules.length !== 1 ? 's' : ''}`;
+  document.getElementById('heroPrice').textContent = `KES ${course.price.toLocaleString()} one-time`;
+  document.getElementById('heroCardPrice').textContent = `KES ${course.price.toLocaleString()}`;
+  document.getElementById('sidebarPrice').textContent = `KES ${course.price.toLocaleString()}`;
+  document.getElementById('sidebarModuleCount').textContent = `${modules.length} module${modules.length !== 1 ? 's' : ''}`;
+
+  const enrollUrl = `enroll.html?course=${course.slug}`;
+  document.getElementById('heroEnrollBtn').href = enrollUrl;
+  document.getElementById('sidebarEnrollBtn').href = enrollUrl;
+
+  document.getElementById('courseDescription').textContent = course.description || 'Full course details coming soon.';
+
+  // What you'll learn — build from description or modules
+  const learns = modules.length
+    ? modules.slice(0, 8).map(m => m.title)
+    : ['Practical skills you can apply immediately', 'Industry-standard techniques', 'Strategic thinking frameworks', 'Real-world application'];
+
+  document.getElementById('learnGrid').innerHTML = learns.map(l => `
+    <div class="learn-item"><i class="fas fa-check"></i><span>${l}</span></div>`).join('');
+
+  // Module preview list
+  const previewContainer = document.getElementById('modulePreview');
+  if (!modules.length) {
+    previewContainer.innerHTML = '<p style="color:var(--text-light);font-size:0.9rem;">Module list will be published soon.</p>';
+  } else {
+    const showAll = modules.length <= 6;
+    const toShow = showAll ? modules : modules.slice(0, 5);
+    previewContainer.innerHTML = toShow.map(m => `
+      <div class="module-preview-item">
+        <div class="mod-num-badge">${m.module_number}</div>
+        <div>
+          <div class="mod-preview-title">${m.title}</div>
+          ${m.duration_label ? `<div class="mod-preview-dur"><i class="fas fa-clock" style="margin-right:4px;font-size:0.7rem;"></i>${m.duration_label}</div>` : ''}
+        </div>
+        <div class="mod-lock"><i class="fas fa-lock"></i></div>
+      </div>`).join('') + (!showAll ? `<div class="modules-teaser"><i class="fas fa-plus-circle" style="margin-right:6px;color:var(--gold);"></i>${modules.length - 5} more modules unlocked after enrollment</div>` : '');
+  }
+
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('courseContent').style.display = 'block';
+}
+</script>
+</body>
+</html>

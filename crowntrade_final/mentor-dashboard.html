@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mentor Dashboard — Crown Trade Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+:root{--nw:220px;}
+body{background:#F5F3F0;display:flex;min-height:100vh;}
+.sidebar{width:var(--nw);background:#fff;border-right:1px solid rgba(212,200,188,.3);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:200;overflow-y:auto;}
+.sb-b{padding:18px 14px 12px;border-bottom:1px solid rgba(212,200,188,.2);}
+.sb-logo{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;}
+.sb-logo span{color:var(--gold);}
+.sb-role{font-size:.62rem;color:var(--muted);margin-top:2px;}
+.sb-links{flex:1;padding:6px;}
+.sg{font-size:.56rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#C5BDB5;padding:10px 10px 3px;}
+.si{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:500;color:var(--muted);border:none;background:none;width:100%;text-align:left;transition:all .15s;position:relative;}
+.si:hover{background:var(--nude-light);color:var(--charcoal);}
+.si.active{background:var(--gold-glow);color:var(--gold-dark);font-weight:600;}
+.si.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:55%;background:var(--gold);border-radius:0 2px 2px 0;}
+.si i{width:14px;text-align:center;font-size:.8rem;}
+.sb-bot{padding:8px;border-top:1px solid rgba(212,200,188,.2);}
+.sb-lo{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;background:rgba(239,68,68,.06);color:var(--danger);border:1px solid rgba(239,68,68,.12);cursor:pointer;font-size:.78rem;font-weight:600;width:100%;}
+.sb-lo:hover{background:var(--danger);color:#fff;}
+.main{margin-left:var(--nw);flex:1;display:flex;flex-direction:column;}
+.topbar{background:#fff;border-bottom:1px solid rgba(212,200,188,.3);padding:13px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.tb-t{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:700;}
+.mentor-chip{display:inline-flex;align-items:center;gap:5px;font-size:.65rem;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--gold-glow);color:var(--gold-dark);border:1px solid rgba(200,169,126,.2);}
+.content{flex:1;padding:18px 22px 40px;}
+.tab{display:none;animation:fadeIn .2s ease;}
+.tab.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+/* Common */
+table{width:100%;border-collapse:collapse;font-size:.8rem;}
+th{padding:9px 12px;text-align:left;font-size:.62rem;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);border-bottom:1px solid rgba(212,200,188,.3);background:var(--nude-light);}
+td{padding:9px 12px;border-bottom:1px solid rgba(212,200,188,.2);}
+tr:last-child td{border-bottom:none;}
+.tw{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);overflow:hidden;overflow-x:auto;}
+.ph{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+.lw{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--muted);gap:10px;}
+.badge{display:inline-block;font-size:.62rem;padding:2px 7px;border-radius:20px;font-weight:700;}
+.bp{background:rgba(245,158,11,.12);color:var(--warning);}
+.ba{background:rgba(16,185,129,.1);color:var(--success);}
+.br{background:rgba(239,68,68,.1);color:var(--danger);}
+.bg{background:var(--gold-glow);color:var(--gold-dark);}
+.acts{display:flex;gap:4px;flex-wrap:wrap;}
+/* Module builder */
+.module-row{background:#fff;border:1px solid rgba(212,200,188,.3);border-radius:12px;padding:16px;margin-bottom:10px;}
+.module-row.collapsed .mc{display:none;}
+.mh{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.mn{width:28px;height:28px;border-radius:50%;background:var(--gold-glow);color:var(--gold-dark);display:flex;align-items:center;justify-content:center;font-size:.76rem;font-weight:700;flex-shrink:0;}
+.mt{font-weight:700;flex:1;}
+.mc{margin-top:14px;border-top:1px solid var(--nude-med);padding-top:14px;}
+/* Quiz builder */
+.quiz-q-item{background:var(--nude-light);border-radius:10px;padding:14px;margin-bottom:10px;}
+.opt-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.opt-row input[type=radio]{accent-color:var(--gold);}
+.opt-row input[type=text]{flex:1;padding:6px 10px;border:1px solid var(--nude-dark);border-radius:7px;font-size:.8rem;outline:none;}
+.opt-row input[type=text]:focus{border-color:var(--gold);}
+/* Avatar */
+.av-wrap{position:relative;width:72px;height:72px;margin-bottom:14px;}
+.av{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8B6340);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.8rem;font-weight:700;cursor:pointer;overflow:hidden;}
+.av img{width:100%;height:100%;object-fit:cover;}
+.av-edit{position:absolute;bottom:0;right:0;width:22px;height:22px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.6rem;cursor:pointer;}
+@media(max-width:768px){.sidebar{transform:translateX(-100%);}.main{margin-left:0;}}
+</style>
+</head>
+<body>
+
+<!-- MODULE MODAL -->
+<div class="modal-overlay" id="modModal">
+  <div class="modal-box" style="max-width:580px;">
+    <h3 id="modModalTitle">Add Module</h3>
+    <input type="hidden" id="mm_id">
+    <input type="hidden" id="mm_courseId">
+    <div class="form-row">
+      <div class="form-group"><label>Module Number *</label><input type="number" id="mm_num" placeholder="1"></div>
+      <div class="form-group"><label>Title *</label><input type="text" id="mm_title" placeholder="Introduction to Trading"></div>
+    </div>
+    <div class="form-group"><label>Description</label><textarea id="mm_desc" rows="2"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Video Provider</label><select id="mm_vprov"><option value="vimeo">Vimeo</option><option value="youtube">YouTube</option></select></div>
+      <div class="form-group"><label>Video ID</label><input type="text" id="mm_vid" placeholder="e.g. 123456789"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Duration Label</label><input type="text" id="mm_dur" placeholder="e.g. 25 min"></div>
+      <div class="form-group"><label>Quiz Required?</label><select id="mm_quiz"><option value="false">No</option><option value="true">Yes</option></select></div>
+    </div>
+    <div id="quizBuilder" style="display:none;">
+      <div style="font-weight:700;font-size:.88rem;margin-bottom:10px;">Quiz Questions</div>
+      <div id="quizQuestions"></div>
+      <button class="btn btn-outline btn-sm" onclick="addQuizQ()" style="margin-bottom:10px;"><i class="fas fa-plus"></i> Add Question</button>
+    </div>
+    <div style="font-weight:700;font-size:.88rem;margin-bottom:10px;">Study Materials</div>
+    <div id="materialsBuilder"></div>
+    <button class="btn btn-outline btn-sm" onclick="addMaterial()" style="margin-bottom:10px;"><i class="fas fa-plus"></i> Add Material URL</button>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="document.getElementById('modModal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveModule()"><i class="fas fa-save"></i> Save Module</button>
+    </div>
+  </div>
+</div>
+
+<aside class="sidebar">
+  <div class="sb-b">
+    <div class="sb-logo">Crown<span>Trade</span></div>
+    <div class="sb-role" id="mentorRole">Mentor</div>
+  </div>
+  <div class="sb-links">
+    <div class="sg">My Dashboard</div>
+    <button class="si active" data-tab="clients"><i class="fas fa-users"></i> My Clients</button>
+    <button class="si" data-tab="sessions"><i class="fas fa-calendar-check"></i> Sessions</button>
+    <button class="si" data-tab="availability"><i class="fas fa-clock"></i> Availability</button>
+    <div class="sg">Content</div>
+    <button class="si" data-tab="content"><i class="fas fa-book-open"></i> Course Content</button>
+    <div class="sg">Account</div>
+    <button class="si" data-tab="profile"><i class="fas fa-user-circle"></i> Profile</button>
+  </div>
+  <div class="sb-bot"><button class="sb-lo" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button></div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="tb-t" id="pageTitle">My Clients</div>
+    <div class="mentor-chip"><i class="fas fa-user-tie"></i> <span id="mentorName">Mentor</span></div>
+  </div>
+  <div class="content">
+
+    <!-- CLIENTS -->
+    <div class="tab active" id="tab-clients">
+      <div id="clientsContent"><div class="lw"><div class="spinner"></div> Loading...</div></div>
+    </div>
+
+    <!-- SESSIONS -->
+    <div class="tab" id="tab-sessions">
+      <div class="ph">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;">Sessions</div>
+      </div>
+      <div id="sessContent"><div class="lw"><div class="spinner"></div> Loading...</div></div>
+    </div>
+
+    <!-- AVAILABILITY -->
+    <div class="tab" id="tab-availability">
+      <div style="max-width:560px;">
+        <div style="background:#fff;border-radius:14px;border:1px solid rgba(212,200,188,.3);padding:22px;">
+          <h3 style="font-size:1.2rem;margin-bottom:16px;">Set Your Availability</h3>
+          <p style="font-size:.84rem;color:var(--muted);margin-bottom:18px;">Select the days and times you're available for client sessions.</p>
+          <div id="availSlots"></div>
+          <button class="btn btn-outline btn-sm" onclick="addSlot()" style="margin-bottom:16px;"><i class="fas fa-plus"></i> Add Time Slot</button>
+          <br>
+          <button class="btn btn-gold" onclick="saveAvailability()"><i class="fas fa-save"></i> Save Availability</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="tab" id="tab-content">
+      <div id="contentCourseSelect" style="margin-bottom:16px;">
+        <div style="font-size:.8rem;color:var(--muted);margin-bottom:8px;">Select a course to manage modules:</div>
+        <div id="courseButtons" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+      </div>
+      <div id="contentArea"></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="tab" id="tab-profile">
+      <div style="max-width:520px;">
+        <div style="background:#fff;border-radius:14px;border:1px solid rgba(212,200,188,.3);padding:24px;margin-bottom:14px;">
+          <h3 style="font-size:1.2rem;margin-bottom:16px;">My Profile</h3>
+          <div class="av-wrap" onclick="triggerAvatarUpload()">
+            <div class="av" id="mentorAv">M</div>
+            <div class="av-edit"><i class="fas fa-camera"></i></div>
+          </div>
+          <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="uploadAvatar(this)">
+          <div class="form-group"><label>Display Name</label><input type="text" id="p_disp" placeholder="Coach James"></div>
+          <div class="form-group"><label>Full Name</label><input type="text" id="p_name" placeholder="James Mwangi"></div>
+          <div class="form-group"><label>Email</label><input type="text" id="p_email" readonly style="background:var(--nude-light);color:var(--muted);cursor:not-allowed;"></div>
+          <div class="form-group"><label>Phone</label><input type="tel" id="p_phone" placeholder="+254712345678"></div>
+          <div class="form-group"><label>Bio</label><textarea id="p_bio" rows="3" placeholder="Brief professional bio..."></textarea></div>
+          <button class="btn btn-gold btn-sm" onclick="saveProfile()"><i class="fas fa-save"></i> Save Profile</button>
+        </div>
+        <div style="background:#fff;border-radius:14px;border:1px solid rgba(212,200,188,.3);padding:24px;">
+          <h3 style="font-size:1.2rem;margin-bottom:16px;">Change Password</h3>
+          <div class="form-group"><label>Current Password</label><input type="password" id="p_cpw" placeholder="Current password"></div>
+          <div class="form-group"><label>New Password</label><input type="password" id="p_npw" placeholder="New password"></div>
+          <button class="btn btn-gold btn-sm" onclick="changePassword()"><i class="fas fa-lock"></i> Update Password</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="api.js"></script>
+<script>
+let MENTOR={}, myClients=[], myCourses=[], activeCourseId=null, quizData=[], materialsData=[], slots=[], editingModuleId=null;
+
+document.addEventListener('DOMContentLoaded', async()=>{
+  if(!Auth.isMentor()){location.href='mentor-login.html';return;}
+  try{
+    const d=await API.getMentorProfile();
+    MENTOR=d.mentor;
+    document.getElementById('mentorName').textContent=MENTOR.display_name||MENTOR.full_name||'Mentor';
+    document.getElementById('mentorRole').textContent=MENTOR.display_name||MENTOR.full_name;
+    const av=document.getElementById('mentorAv');
+    if(MENTOR.avatar_url){av.innerHTML=`<img src="${MENTOR.avatar_url}" alt="Avatar">`;}
+    else{av.textContent=(MENTOR.display_name||MENTOR.full_name||'M')[0].toUpperCase();}
+    loadProfile();
+    loadClients();
+    loadCourseContent();
+  }catch(e){Auth.logout();location.href='mentor-login.html';}
+});
+
+document.querySelectorAll('.si[data-tab]').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+
+function switchTab(tab){
+  document.querySelectorAll('.si[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`tab-${tab}`)?.classList.add('active');
+  const titles={clients:'My Clients',sessions:'Client Sessions',availability:'Availability',content:'Course Content',profile:'My Profile'};
+  document.getElementById('pageTitle').textContent=titles[tab]||tab;
+  if(tab==='sessions')loadSessions();
+}
+function doLogout(){Auth.logout();location.href='mentor-login.html';}
+
+// CLIENTS
+async function loadClients(){
+  document.getElementById('clientsContent').innerHTML='<div class="lw"><div class="spinner"></div> Loading...</div>';
+  try{
+    const d=await API.getMentorClients();
+    myClients=d.clients||[];
+    if(!myClients.length){document.getElementById('clientsContent').innerHTML='<div style="text-align:center;padding:60px;color:var(--muted);"><i class="fas fa-users" style="font-size:2.5rem;color:var(--nude-dark);display:block;margin-bottom:14px;"></i><div style="font-weight:700;">No clients assigned yet</div><p style="font-size:.84rem;margin-top:6px;">Contact admin to assign students to you.</p></div>';return;}
+    document.getElementById('clientsContent').innerHTML=`<div class="tw"><table><thead><tr><th>Student</th><th>Member #</th><th>Course</th><th>Progress</th><th>Login Streak</th><th>Sessions</th><th>Actions</th></tr></thead>
+      <tbody>${myClients.map(c=>`<tr>
+        <td><div style="font-weight:700;">${c.full_name}</div><div style="font-size:.72rem;color:var(--muted);">${c.email}</div></td>
+        <td>#${c.member_number||'—'}</td>
+        <td style="font-size:.78rem;">${c.course_title||'—'}</td>
+        <td style="font-size:.78rem;">${(c.completed_modules||[]).length} modules done</td>
+        <td><span style="font-weight:700;color:var(--gold);">${c.login_streak||0}</span> days</td>
+        <td>${c.session_count||0} sessions</td>
+        <td><div class="acts">
+          <button class="btn btn-outline btn-sm" style="font-size:.7rem;" onclick="viewScores(${c.id},'${c.full_name.replace(/'/g,"\\'")}')"><i class="fas fa-chart-bar"></i> Scores</button>
+          <button class="btn btn-gold btn-sm" style="font-size:.7rem;" onclick="requestReassign(${c.id},'${c.full_name.replace(/'/g,"\\'")}')"><i class="fas fa-exchange-alt"></i></button>
+        </div></td>
+      </tr>`).join('')}</tbody></table></div>`;
+  }catch(e){document.getElementById('clientsContent').innerHTML=`<div style="padding:40px;text-align:center;color:var(--danger);">${e.message}</div>`;}
+}
+
+async function viewScores(clientId,name){
+  try{
+    const d=await API.getClientQuizScores(clientId);
+    const attempts=d.attempts||[];
+    alert(`Quiz scores for ${name}:\n\n${attempts.length?attempts.map(a=>`${a.module_title}: ${a.score}% (${a.passed?'PASSED':'FAILED'}) — ${new Date(a.attempted_at).toLocaleDateString()}`).join('\n'):'No quiz attempts yet.'}`);
+  }catch(e){showToast(e.message,'error');}
+}
+
+async function requestReassign(clientId,name){
+  const reason=prompt(`Request reassignment for ${name}.\nReason:`);
+  if(!reason) return;
+  try{await API.requestReassignment({client_user_id:clientId,reason});showToast('Reassignment request sent to admin','success');}
+  catch(e){showToast(e.message,'error');}
+}
+
+// SESSIONS
+async function loadSessions(){
+  document.getElementById('sessContent').innerHTML='<div class="lw"><div class="spinner"></div> Loading...</div>';
+  try{
+    const d=await API.getMentorSessions();
+    const sess=d.sessions||[];
+    if(!sess.length){document.getElementById('sessContent').innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);">No sessions yet</div>';return;}
+    document.getElementById('sessContent').innerHTML=`<div class="tw"><table><thead><tr><th>Client</th><th>Date & Time</th><th>Method</th><th>Duration</th><th>Status</th><th>Notes</th><th>Actions</th></tr></thead>
+      <tbody>${sess.map(s=>`<tr>
+        <td><div style="font-weight:700;">${s.client_name}</div><div style="font-size:.72rem;color:var(--muted);">${s.client_phone||''}</div></td>
+        <td style="font-size:.78rem;white-space:nowrap;">${new Date(s.scheduled_at).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'})}</td>
+        <td>${s.contact_method}</td>
+        <td>${s.duration_minutes}min</td>
+        <td><span class="badge ${s.status==='confirmed'?'ba':s.status==='cancelled'?'br':'bp'}">${s.status}</span></td>
+        <td style="font-size:.74rem;max-width:150px;">${s.client_notes||'—'}</td>
+        <td><div class="acts">
+          ${s.status==='pending'?`<button class="btn ba btn-sm" style="font-size:.7rem;" onclick="updateSess(${s.id},'confirmed')"><i class="fas fa-check"></i> Confirm</button>`:''}
+          ${s.status==='confirmed'?`<button class="btn btn-gold btn-sm" style="font-size:.7rem;" onclick="updateSess(${s.id},'completed')"><i class="fas fa-check-double"></i> Done</button>`:''}
+          <button class="btn btn-outline btn-sm" style="font-size:.7rem;" onclick="addLink(${s.id})"><i class="fas fa-link"></i> Link</button>
+        </div></td>
+      </tr>`).join('')}</tbody></table></div>`;
+  }catch(e){document.getElementById('sessContent').innerHTML=`<div style="padding:40px;text-align:center;color:var(--danger);">${e.message}</div>`;}
+}
+
+async function updateSess(id,status){
+  try{await API.updateMentorSession(id,{status});showToast('Session updated','success');loadSessions();}
+  catch(e){showToast(e.message,'error');}
+}
+async function addLink(id){
+  const link=prompt('Enter session link (Zoom/Meet/WhatsApp):');
+  if(!link) return;
+  try{await API.updateMentorSession(id,{contact_link:link,status:'confirmed'});showToast('Link added','success');loadSessions();}
+  catch(e){showToast(e.message,'error');}
+}
+
+// AVAILABILITY
+function addSlot(){
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const idx=slots.length;
+  slots.push({day_of_week:1,start_time:'09:00',end_time:'17:00'});
+  renderSlots();
+}
+function removeSlot(i){slots.splice(i,1);renderSlots();}
+function renderSlots(){
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('availSlots').innerHTML=slots.map((s,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;background:#fff;border:1px solid var(--nude-med);border-radius:9px;padding:10px 12px;">
+      <select onchange="slots[${i}].day_of_week=parseInt(this.value)" style="padding:6px;border:1px solid var(--nude-dark);border-radius:6px;font-size:.8rem;outline:none;">
+        ${days.map((d,j)=>`<option value="${j}" ${s.day_of_week===j?'selected':''}>${d}</option>`).join('')}
+      </select>
+      <input type="time" value="${s.start_time}" onchange="slots[${i}].start_time=this.value" style="padding:6px;border:1px solid var(--nude-dark);border-radius:6px;font-size:.8rem;outline:none;">
+      <span style="color:var(--muted);font-size:.8rem;">to</span>
+      <input type="time" value="${s.end_time}" onchange="slots[${i}].end_time=this.value" style="padding:6px;border:1px solid var(--nude-dark);border-radius:6px;font-size:.8rem;outline:none;">
+      <button onclick="removeSlot(${i})" style="background:none;border:none;color:var(--danger);cursor:pointer;padding:2px 4px;"><i class="fas fa-times"></i></button>
+    </div>`).join('');
+}
+async function saveAvailability(){
+  try{await API.setAvailability(slots);showToast('Availability saved!','success');}
+  catch(e){showToast(e.message,'error');}
+}
+
+// COURSE CONTENT
+async function loadCourseContent(){
+  try{
+    myCourses=(await API.getMentorCourses()).courses||[];
+    const btns=document.getElementById('courseButtons');
+    if(!myCourses.length){btns.innerHTML='<div style="color:var(--muted);font-size:.84rem;">No courses assigned. Contact admin.</div>';return;}
+    btns.innerHTML=myCourses.map(c=>`<button class="btn btn-outline btn-sm" onclick="selectCourse(${c.id},'${c.title.replace(/'/g,"\\'")}')"><i class="fas fa-book"></i> ${c.title}</button>`).join('');
+    if(myCourses.length===1) selectCourse(myCourses[0].id,myCourses[0].title);
+  }catch(e){document.getElementById('contentArea').innerHTML=`<div style="color:var(--danger);padding:20px;">${e.message}</div>`;}
+}
+
+async function selectCourse(courseId,title){
+  activeCourseId=courseId;
+  document.getElementById('courseButtons').querySelectorAll('.btn').forEach(b=>{b.className=b.textContent.includes(title)?'btn btn-gold btn-sm':'btn btn-outline btn-sm';});
+  document.getElementById('contentArea').innerHTML='<div class="lw"><div class="spinner"></div> Loading modules...</div>';
+  try{
+    const d=await API.getMentorCourseModules(courseId);
+    const modules=d.modules||[];
+    renderModules(modules,courseId);
+  }catch(e){document.getElementById('contentArea').innerHTML=`<div style="color:var(--danger);padding:20px;">${e.message}</div>`;}
+}
+
+function renderModules(modules,courseId){
+  document.getElementById('contentArea').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="font-weight:700;font-size:.9rem;">${modules.length} Module${modules.length!==1?'s':''}</div>
+      <button class="btn btn-gold btn-sm" onclick="openAddModule(${courseId})"><i class="fas fa-plus"></i> Add Module</button>
+    </div>
+    ${modules.length?modules.map(m=>`
+      <div class="module-row collapsed" id="mod-${m.id}">
+        <div class="mh" onclick="toggleMod(${m.id})">
+          <div class="mn">${m.module_number}</div>
+          <div class="mt">${m.title}</div>
+          ${m.video_id?'<span class="badge ba" style="font-size:.6rem;"><i class="fas fa-video"></i> Video</span>':''}
+          ${m.quiz_required?'<span class="badge bg" style="font-size:.6rem;">Quiz</span>':''}
+          <div style="display:flex;gap:4px;margin-left:8px;" onclick="event.stopPropagation()">
+            <button class="btn btn-outline btn-sm" style="font-size:.7rem;padding:3px 8px;" onclick="openEditModule(${JSON.stringify(m).replace(/"/g,'&quot;')})"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-outline btn-sm" style="font-size:.7rem;padding:3px 8px;color:var(--danger);border-color:var(--danger);" onclick="deleteModule(${m.id})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+        <div class="mc">
+          ${m.description?`<p style="font-size:.82rem;color:var(--muted);margin-bottom:10px;">${m.description}</p>`:''}
+          ${m.video_id?`<div style="font-size:.8rem;margin-bottom:8px;"><i class="fas fa-video" style="color:var(--gold);"></i> ${m.video_provider}: <code>${m.video_id}</code></div>`:''}
+          ${m.materials_json&&JSON.parse(m.materials_json).length?`<div style="font-size:.8rem;"><i class="fas fa-paperclip" style="color:var(--gold);"></i> ${JSON.parse(m.materials_json).length} material(s)</div>`:''}
+          ${m.quiz_json&&JSON.parse(m.quiz_json).length?`<div style="font-size:.8rem;margin-top:4px;"><i class="fas fa-question-circle" style="color:var(--gold);"></i> ${JSON.parse(m.quiz_json).length} quiz question(s)</div>`:''}
+        </div>
+      </div>`).join('')
+    :'<div style="text-align:center;padding:40px;color:var(--muted);">No modules yet. Add the first one!</div>'}`;
+}
+
+function toggleMod(id){document.getElementById(`mod-${id}`)?.classList.toggle('collapsed');}
+
+function openAddModule(courseId){
+  editingModuleId=null;quizData=[];materialsData=[];
+  document.getElementById('modModalTitle').textContent='Add Module';
+  document.getElementById('mm_courseId').value=courseId;
+  document.getElementById('mm_id').value='';
+  ['mm_num','mm_title','mm_desc','mm_vid','mm_dur'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mm_vprov').value='vimeo';
+  document.getElementById('mm_quiz').value='false';
+  renderQuizBuilder();renderMaterialsBuilder();
+  document.getElementById('quizBuilder').style.display='none';
+  document.getElementById('mm_quiz').onchange=()=>document.getElementById('quizBuilder').style.display=document.getElementById('mm_quiz').value==='true'?'block':'none';
+  document.getElementById('modModal').classList.add('show');
+}
+
+function openEditModule(m){
+  if(typeof m==='string') m=JSON.parse(m.replace(/&quot;/g,'"'));
+  editingModuleId=m.id;
+  quizData=JSON.parse(m.quiz_json||'[]');
+  materialsData=JSON.parse(m.materials_json||'[]');
+  document.getElementById('modModalTitle').textContent='Edit Module';
+  document.getElementById('mm_courseId').value=m.course_id;
+  document.getElementById('mm_id').value=m.id;
+  document.getElementById('mm_num').value=m.module_number;
+  document.getElementById('mm_title').value=m.title;
+  document.getElementById('mm_desc').value=m.description||'';
+  document.getElementById('mm_vprov').value=m.video_provider||'vimeo';
+  document.getElementById('mm_vid').value=m.video_id||'';
+  document.getElementById('mm_dur').value=m.duration_label||'';
+  document.getElementById('mm_quiz').value=m.quiz_required?'true':'false';
+  document.getElementById('quizBuilder').style.display=m.quiz_required?'block':'none';
+  document.getElementById('mm_quiz').onchange=()=>document.getElementById('quizBuilder').style.display=document.getElementById('mm_quiz').value==='true'?'block':'none';
+  renderQuizBuilder();renderMaterialsBuilder();
+  document.getElementById('modModal').classList.add('show');
+}
+
+function addQuizQ(){quizData.push({question:'',options:['','','',''],correct:0,explanation:''});renderQuizBuilder();}
+function removeQuizQ(i){quizData.splice(i,1);renderQuizBuilder();}
+function renderQuizBuilder(){
+  document.getElementById('quizQuestions').innerHTML=quizData.map((q,i)=>`
+    <div class="quiz-q-item">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:.76rem;font-weight:700;color:var(--muted);">Q${i+1}</span>
+        <input type="text" value="${q.question||''}" onchange="quizData[${i}].question=this.value" placeholder="Question text" style="flex:1;padding:7px 10px;border:1px solid var(--nude-dark);border-radius:7px;font-size:.8rem;outline:none;">
+        <button onclick="removeQuizQ(${i})" style="background:none;border:none;color:var(--danger);cursor:pointer;"><i class="fas fa-times"></i></button>
+      </div>
+      ${q.options.map((opt,j)=>`
+        <div class="opt-row">
+          <input type="radio" name="correct-${i}" ${q.correct===j?'checked':''} onchange="quizData[${i}].correct=${j}">
+          <input type="text" value="${opt||''}" onchange="quizData[${i}].options[${j}]=this.value" placeholder="Option ${j+1}">
+        </div>`).join('')}
+      <input type="text" value="${q.explanation||''}" onchange="quizData[${i}].explanation=this.value" placeholder="Explanation (optional)" style="width:100%;padding:6px 10px;border:1px solid var(--nude-dark);border-radius:7px;font-size:.76rem;margin-top:4px;outline:none;color:var(--muted);">
+    </div>`).join('');
+}
+
+function addMaterial(){materialsData.push({url:'',name:'',type:'pdf'});renderMaterialsBuilder();}
+function removeMaterial(i){materialsData.splice(i,1);renderMaterialsBuilder();}
+function renderMaterialsBuilder(){
+  document.getElementById('materialsBuilder').innerHTML=materialsData.map((m,i)=>`
+    <div style="display:flex;gap:6px;margin-bottom:6px;align-items:center;">
+      <input type="text" value="${m.name||''}" onchange="materialsData[${i}].name=this.value" placeholder="Name" style="flex:1;padding:7px 10px;border:1px solid var(--nude-dark);border-radius:7px;font-size:.78rem;outline:none;">
+      <input type="url" value="${m.url||''}" onchange="materialsData[${i}].url=this.value" placeholder="URL" style="flex:2;padding:7px 10px;border:1px solid var(--nude-dark);border-radius:7px;font-size:.78rem;outline:none;">
+      <select onchange="materialsData[${i}].type=this.value" style="padding:7px;border:1px solid var(--nude-dark);border-radius:7px;font-size:.78rem;outline:none;"><option value="pdf" ${m.type==='pdf'?'selected':''}>PDF</option><option value="image" ${m.type==='image'?'selected':''}>Image</option><option value="link" ${m.type==='link'?'selected':''}>Link</option></select>
+      <button onclick="removeMaterial(${i})" style="background:none;border:none;color:var(--danger);cursor:pointer;"><i class="fas fa-times"></i></button>
+    </div>`).join('');
+}
+
+async function saveModule(){
+  const courseId=document.getElementById('mm_courseId').value;
+  const data={module_number:parseInt(document.getElementById('mm_num').value)||1,title:document.getElementById('mm_title').value.trim(),description:document.getElementById('mm_desc').value.trim(),video_provider:document.getElementById('mm_vprov').value,video_id:document.getElementById('mm_vid').value.trim(),duration_label:document.getElementById('mm_dur').value.trim(),quiz_required:document.getElementById('mm_quiz').value==='true',quiz_pass_threshold:70};
+  if(!data.title){showToast('Module title required','info');return;}
+  try{
+    let modId=editingModuleId;
+    if(editingModuleId){
+      await API.updateModule(editingModuleId,data);
+    } else {
+      const r=await API.addModule(courseId,data);
+      modId=r.module.id;
+    }
+    // Save quiz if enabled
+    if(data.quiz_required&&quizData.length) await API.saveQuiz(modId,{questions:quizData});
+    // Save materials
+    await API.saveMaterials(modId,{materials:materialsData});
+    document.getElementById('modModal').classList.remove('show');
+    showToast(editingModuleId?'Module updated!':'Module added!','success');
+    selectCourse(courseId,'');
+  }catch(e){showToast(e.message||'Failed to save module','error');}
+}
+
+async function deleteModule(id){
+  if(!confirm('Delete this module? This cannot be undone.')) return;
+  try{await API.deleteModule(id);showToast('Module deleted','info');selectCourse(activeCourseId,'');}
+  catch(e){showToast(e.message,'error');}
+}
+
+// PROFILE
+function loadProfile(){
+  document.getElementById('p_disp').value=MENTOR.display_name||'';
+  document.getElementById('p_name').value=MENTOR.full_name||'';
+  document.getElementById('p_email').value=MENTOR.email||'';
+  document.getElementById('p_phone').value=MENTOR.phone||'';
+  document.getElementById('p_bio').value=MENTOR.bio||'';
+}
+async function saveProfile(){
+  const data={display_name:document.getElementById('p_disp').value.trim(),full_name:document.getElementById('p_name').value.trim(),phone:document.getElementById('p_phone').value.trim(),bio:document.getElementById('p_bio').value.trim()};
+  try{
+    await API.updateMentorProfile(data);
+    Object.assign(MENTOR,data);
+    document.getElementById('mentorName').textContent=data.display_name||data.full_name;
+    showToast('Profile saved!','success');
+  }catch(e){showToast(e.message,'error');}
+}
+async function changePassword(){
+  const cp=document.getElementById('p_cpw').value;
+  const np=document.getElementById('p_npw').value;
+  if(!cp||!np){showToast('Both passwords required','info');return;}
+  if(np.length<6){showToast('New password min 6 chars','info');return;}
+  try{await API.mentorChangePassword({current_password:cp,new_password:np});showToast('Password updated!','success');document.getElementById('p_cpw').value='';document.getElementById('p_npw').value='';}
+  catch(e){showToast(e.message,'error');}
+}
+function triggerAvatarUpload(){document.getElementById('avatarInput').click();}
+async function uploadAvatar(input){
+  const file=input.files[0];
+  if(!file) return;
+  try{
+    showToast('Uploading...','info');
+    const d=await API.uploadAvatar(file);
+    await API.updateMentorProfile({avatar_url:d.url});
+    MENTOR.avatar_url=d.url;
+    document.getElementById('mentorAv').innerHTML=`<img src="${d.url}" alt="Avatar">`;
+    showToast('Avatar updated!','success');
+  }catch(e){showToast(e.message,'error');}
+}
+</script>
+</body>
+</html>

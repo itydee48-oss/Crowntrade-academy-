@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>My Dashboard — Crown Trade Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+:root{--nav-w:220px;}
+body{background:#F5F3F0;display:flex;min-height:100vh;}
+.sidebar{width:var(--nav-w);background:#fff;border-right:1px solid rgba(212,200,188,.3);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:200;overflow-y:auto;transition:transform .3s;}
+.sb-brand{padding:20px 16px 14px;border-bottom:1px solid rgba(212,200,188,.2);}
+.sb-logo{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--charcoal);}
+.sb-logo span{color:var(--gold);}
+.sb-member{font-size:.68rem;color:var(--muted);margin-top:2px;}
+.sb-links{flex:1;padding:8px;}
+.sb-group{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#C5BDB5;padding:12px 10px 4px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:500;color:var(--muted);border:none;background:none;width:100%;text-align:left;transition:all .15s;position:relative;}
+.sb-item:hover{background:var(--nude-light);color:var(--charcoal);}
+.sb-item.active{background:var(--gold-glow);color:var(--gold-dark);font-weight:600;}
+.sb-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:55%;background:var(--gold);border-radius:0 2px 2px 0;}
+.sb-item i{width:16px;text-align:center;font-size:.82rem;}
+.sb-bottom{padding:10px 8px;border-top:1px solid rgba(212,200,188,.2);}
+.sb-logout{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:8px;background:rgba(239,68,68,.06);color:var(--danger);border:1px solid rgba(239,68,68,.12);cursor:pointer;font-size:.8rem;font-weight:600;width:100%;transition:all .15s;}
+.sb-logout:hover{background:var(--danger);color:#fff;}
+.main{margin-left:var(--nav-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:#fff;border-bottom:1px solid rgba(212,200,188,.3);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.tb-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--charcoal);font-weight:700;}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.user-chip{display:flex;align-items:center;gap:8px;background:var(--nude-light);border-radius:20px;padding:5px 12px 5px 5px;border:1px solid rgba(212,200,188,.3);}
+.user-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8B6340);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.78rem;flex-shrink:0;}
+.user-name{font-size:.78rem;font-weight:600;color:var(--charcoal);}
+.mob-toggle{display:none;background:none;border:none;font-size:1.2rem;color:var(--charcoal);cursor:pointer;padding:4px;}
+.content{flex:1;padding:20px 24px 40px;}
+.tab-panel{display:none;animation:fadeIn .2s ease;}
+.tab-panel.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.stat-c{background:#fff;border-radius:12px;padding:18px;border:1px solid rgba(212,200,188,.3);box-shadow:0 2px 12px rgba(0,0,0,.04);}
+.stat-ic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.9rem;margin-bottom:10px;}
+.stat-ic.gold{background:var(--gold-glow);color:var(--gold);}
+.stat-ic.green{background:rgba(16,185,129,.1);color:var(--success);}
+.stat-ic.blue{background:rgba(59,130,246,.1);color:var(--info);}
+.stat-ic.red{background:rgba(239,68,68,.08);color:var(--danger);}
+.stat-v{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;line-height:1;}
+.stat-l{font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:600;margin-top:3px;}
+/* Courses */
+.course-card{background:#fff;border-radius:14px;border:1px solid rgba(212,200,188,.3);padding:20px;margin-bottom:14px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 12px rgba(0,0,0,.04);cursor:pointer;transition:all .2s;}
+.course-card:hover{border-color:rgba(200,169,126,.4);box-shadow:0 4px 20px rgba(0,0,0,.08);}
+.course-icon{width:50px;height:50px;border-radius:12px;background:var(--gold-glow);border:1px solid rgba(200,169,126,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--gold);flex-shrink:0;}
+.course-info{flex:1;}
+.course-title{font-weight:700;font-size:.95rem;margin-bottom:4px;}
+.course-meta{font-size:.76rem;color:var(--muted);display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.progress-wrap{margin-top:8px;}
+/* Video player */
+.video-wrap{background:#000;border-radius:12px;overflow:hidden;aspect-ratio:16/9;margin-bottom:16px;position:relative;}
+.video-wrap iframe{width:100%;height:100%;border:none;}
+.video-placeholder{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;height:100%;color:#fff;font-size:.9rem;}
+/* Modules sidebar */
+.course-layout{display:grid;grid-template-columns:1fr 320px;gap:16px;}
+.modules-list{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);overflow:hidden;}
+.module-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(212,200,188,.2);cursor:pointer;transition:background .15s;}
+.module-item:last-child{border-bottom:none;}
+.module-item:hover{background:var(--nude-light);}
+.module-item.active{background:var(--gold-glow);}
+.module-item.locked{opacity:.5;cursor:not-allowed;}
+.mod-num{width:28px;height:28px;border-radius:50%;background:var(--nude-med);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;}
+.module-item.active .mod-num{background:var(--gold);color:#fff;}
+.module-item.done .mod-num{background:var(--success);color:#fff;}
+.mod-title{font-size:.82rem;font-weight:600;flex:1;}
+.mod-status{font-size:.72rem;color:var(--muted);}
+/* Quiz */
+.quiz-wrap{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);padding:20px;}
+.quiz-q{font-weight:600;font-size:.92rem;margin-bottom:14px;}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{padding:10px 14px;border:1.5px solid var(--nude-dark);border-radius:9px;cursor:pointer;font-size:.84rem;transition:all .15s;}
+.quiz-opt:hover{border-color:var(--gold);background:var(--gold-glow);}
+.quiz-opt.selected{border-color:var(--gold);background:var(--gold-glow);}
+.quiz-opt.correct{border-color:var(--success);background:rgba(16,185,129,.08);color:var(--success);}
+.quiz-opt.wrong{border-color:var(--danger);background:rgba(239,68,68,.06);color:var(--danger);}
+/* Journal */
+.journal-form{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);padding:20px;margin-bottom:16px;}
+.journal-table{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);overflow:hidden;}
+table{width:100%;border-collapse:collapse;font-size:.8rem;}
+th{padding:10px 12px;text-align:left;font-size:.65rem;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);border-bottom:1px solid rgba(212,200,188,.3);background:var(--nude-light);}
+td{padding:10px 12px;border-bottom:1px solid rgba(212,200,188,.2);}
+tr:last-child td{border-bottom:none;}
+.pill{display:inline-block;font-size:.65rem;padding:2px 8px;border-radius:20px;font-weight:700;}
+.pill.buy{background:rgba(16,185,129,.1);color:var(--success);}
+.pill.sell{background:rgba(239,68,68,.08);color:var(--danger);}
+.pill.win{background:rgba(16,185,129,.1);color:var(--success);}
+.pill.loss{background:rgba(239,68,68,.08);color:var(--danger);}
+.pill.open{background:rgba(59,130,246,.1);color:var(--info);}
+/* Partner */
+.wallet-card{background:linear-gradient(135deg,var(--charcoal),var(--charcoal-2));border-radius:16px;padding:24px;color:#fff;margin-bottom:16px;}
+.wallet-bal{font-family:'Cormorant Garamond',serif;font-size:2.8rem;color:var(--gold);font-weight:700;margin:8px 0;}
+.ref-box{background:var(--nude-light);border:1px solid var(--nude-med);border-radius:10px;padding:14px;display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.ref-link{font-size:.78rem;color:var(--gold-dark);font-weight:600;word-break:break-all;flex:1;}
+/* Sessions */
+.sess-card{background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
+.sess-date{background:var(--gold-glow);border-radius:10px;padding:8px 12px;text-align:center;flex-shrink:0;}
+.sess-day{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--gold);line-height:1;}
+.sess-month{font-size:.65rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);}
+/* Mobile nav */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid rgba(212,200,188,.3);z-index:300;padding:8px 0 calc(8px + env(safe-area-inset-bottom));}
+.mob-nav-inner{display:flex;justify-content:space-around;}
+.mob-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 12px;cursor:pointer;border:none;background:none;color:var(--muted);font-size:.6rem;font-weight:600;}
+.mob-nav-item i{font-size:1.1rem;}
+.mob-nav-item.active{color:var(--gold);}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;}
+.overlay.show{display:block;}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.mob-open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .course-layout{grid-template-columns:1fr;}
+  .mob-toggle{display:block;}
+  .mob-nav{display:block;}
+  .content{padding:16px 14px 80px;}
+}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">Crown<span>Trade</span></div>
+    <div class="sb-member" id="memberNum">Loading...</div>
+  </div>
+  <div class="sb-links">
+    <div class="sb-group">My Learning</div>
+    <button class="sb-item active" data-tab="home"><i class="fas fa-home"></i> Home</button>
+    <button class="sb-item" data-tab="courses"><i class="fas fa-play-circle"></i> My Courses</button>
+    <button class="sb-item" data-tab="discover"><i class="fas fa-compass"></i> Discover</button>
+    <div class="sb-group">Mentorship</div>
+    <button class="sb-item" data-tab="mentor"><i class="fas fa-user-tie"></i> My Mentor</button>
+    <button class="sb-item" data-tab="sessions"><i class="fas fa-calendar-check"></i> Sessions</button>
+    <div class="sb-group">Tools</div>
+    <button class="sb-item" data-tab="tools"><i class="fas fa-chart-line"></i> Trading Tools</button>
+    <button class="sb-item" data-tab="journal"><i class="fas fa-book"></i> Trade Journal</button>
+    <div class="sb-group">Finance</div>
+    <button class="sb-item" data-tab="partner"><i class="fas fa-crown"></i> Crown Partner</button>
+    <button class="sb-item" data-tab="payments"><i class="fas fa-receipt"></i> Payments</button>
+    <div class="sb-group">Account</div>
+    <button class="sb-item" data-tab="profile"><i class="fas fa-user-circle"></i> Profile</button>
+  </div>
+  <div class="sb-bottom">
+    <button class="sb-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="mob-toggle" onclick="openSidebar()"><i class="fas fa-bars"></i></button>
+      <div class="tb-title" id="pageTitle">Home</div>
+    </div>
+    <div class="tb-right">
+      <div class="user-chip">
+        <div class="user-av" id="userAv">?</div>
+        <div class="user-name" id="userName">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- HOME -->
+    <div class="tab-panel active" id="tab-home">
+      <div id="homeGreeting" style="margin-bottom:20px;"></div>
+      <div class="stats-row" id="homeStats"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" id="homeCards"></div>
+    </div>
+
+    <!-- MY COURSES -->
+    <div class="tab-panel" id="tab-courses">
+      <div id="coursesContent"><div style="display:flex;align-items:center;gap:10px;padding:40px;color:var(--muted);"><div class="spinner"></div> Loading courses...</div></div>
+      <div id="playerView" style="display:none;">
+        <button onclick="backToCourses()" class="btn btn-outline btn-sm" style="margin-bottom:16px;"><i class="fas fa-arrow-left"></i> Back to Courses</button>
+        <div class="course-layout">
+          <div>
+            <div class="video-wrap" id="videoWrap"></div>
+            <div id="moduleInfo" style="background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);padding:18px;margin-bottom:14px;"></div>
+            <div id="materialsWrap"></div>
+            <div id="quizWrap"></div>
+          </div>
+          <div>
+            <div style="font-weight:700;margin-bottom:10px;font-size:.88rem;">Course Modules</div>
+            <div class="modules-list" id="modulesList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISCOVER -->
+    <div class="tab-panel" id="tab-discover">
+      <div id="discoverContent"><div style="display:flex;align-items:center;gap:10px;padding:40px;color:var(--muted);"><div class="spinner"></div> Loading...</div></div>
+    </div>
+
+    <!-- MENTOR -->
+    <div class="tab-panel" id="tab-mentor">
+      <div id="mentorContent"><div style="display:flex;align-items:center;gap:10px;padding:40px;color:var(--muted);"><div class="spinner"></div> Loading...</div></div>
+    </div>
+
+    <!-- SESSIONS -->
+    <div class="tab-panel" id="tab-sessions">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;">My Sessions</div>
+        <button class="btn btn-gold btn-sm" onclick="openBookModal()"><i class="fas fa-plus"></i> Book Session</button>
+      </div>
+      <div id="sessionsContent"><div style="display:flex;align-items:center;gap:10px;padding:40px;color:var(--muted);"><div class="spinner"></div> Loading...</div></div>
+    </div>
+
+    <!-- TOOLS -->
+    <div class="tab-panel" id="tab-tools">
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;" id="toolTabs">
+        <button class="btn btn-gold btn-sm" onclick="showTool('chart')"><i class="fas fa-chart-candlestick"></i> Live Chart</button>
+        <button class="btn btn-outline btn-sm" onclick="showTool('calendar')"><i class="fas fa-calendar"></i> Economic Calendar</button>
+        <button class="btn btn-outline btn-sm" onclick="showTool('possize')"><i class="fas fa-calculator"></i> Position Size</button>
+        <button class="btn btn-outline btn-sm" onclick="showTool('rr')"><i class="fas fa-balance-scale"></i> Risk/Reward</button>
+      </div>
+      <div id="tool-chart">
+        <div style="background:#fff;border-radius:12px;overflow:hidden;border:1px solid rgba(212,200,188,.3);margin-bottom:12px;padding:10px;display:flex;gap:8px;flex-wrap:wrap;">
+          <select id="tvSymbol" onchange="reloadChart()" style="padding:6px 10px;border:1px solid var(--nude-dark);border-radius:7px;font-size:.8rem;outline:none;">
+            <option value="XAUUSD">XAU/USD — Gold</option><option value="EURUSD">EUR/USD</option><option value="GBPUSD">GBP/USD</option>
+            <option value="USDJPY">USD/JPY</option><option value="USDKEX">USD/KES</option><option value="BTCUSD">BTC/USD</option>
+            <option value="US30">US30 — Dow Jones</option><option value="NAS100">NASDAQ 100</option>
+          </select>
+          <select id="tvInterval" onchange="reloadChart()" style="padding:6px 10px;border:1px solid var(--nude-dark);border-radius:7px;font-size:.8rem;outline:none;">
+            <option value="1">1m</option><option value="5">5m</option><option value="15">15m</option><option value="60" selected>1H</option>
+            <option value="240">4H</option><option value="D">1D</option><option value="W">1W</option>
+          </select>
+        </div>
+        <div style="background:#fff;border-radius:12px;overflow:hidden;height:500px;border:1px solid rgba(212,200,188,.3);">
+          <iframe id="tvFrame" src="" style="width:100%;height:100%;border:none;"></iframe>
+        </div>
+      </div>
+      <div id="tool-calendar" style="display:none;">
+        <div style="background:#fff;border-radius:12px;overflow:hidden;height:600px;border:1px solid rgba(212,200,188,.3);">
+          <iframe src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&features=datepicker,timezone&countries=37,72,29,72&calType=week&timeZone=18&lang=1" style="width:100%;height:100%;border:none;"></iframe>
+        </div>
+      </div>
+      <div id="tool-possize" style="display:none;">
+        <div style="background:#fff;border-radius:14px;border:1px solid rgba(212,200,188,.3);padding:24px;max-width:500px;">
+          <h3 style="font-size:1.3rem;margin-bottom:16px;">Position Size Calculator</h3>
+          <div class="form-group"><label>Account Balance (USD)</label><input type="number" id="ps_bal" placeholder="1000" oninput="calcPos()"></div>
+          <div class="form-group"><label>Risk % Per Trade</label><input type="number" id="ps_risk" placeholder="1" oninput="calcPos()"></div>
+          <div class="form-group"><label>Stop Loss (pips)</label><input type="number" id="ps_sl" placeholder="20" oninput="calcPos()"></div>
+          <div class="form-group"><label>Pair Type</label><select id="ps_pair" onchange="calcPos()"><option value="1">Forex (non-JPY)</option><option value="2">JPY Pairs</option><option value="3">Gold (XAU/USD)</option></select></div>
+          <div style="background:var(--gold-glow);border:1px solid rgba(200,169,126,.2);border-radius:10px;padding:16px;margin-top:6px;">
+            <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;">Recommended Lot Size</div>
+            <div id="ps_result" style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--gold);">—</div>
+          </div>
+        </div>
+      </div>
+      <div id="tool-rr" style="display:none;">
+        <div style="background:#fff;border-radius:14px;border:1px solid rgba(212,200,188,.3);padding:24px;max-width:500px;">
+          <h3 style="font-size:1.3rem;margin-bottom:16px;">Risk/Reward Calculator</h3>
+          <div class="form-group"><label>Entry Price</label><input type="number" id="rr_entry" placeholder="1.2050" step="0.0001" oninput="calcRR()"></div>
+          <div class="form-group"><label>Stop Loss</label><input type="number" id="rr_sl" placeholder="1.2000" step="0.0001" oninput="calcRR()"></div>
+          <div class="form-group"><label>Take Profit</label><input type="number" id="rr_tp" placeholder="1.2200" step="0.0001" oninput="calcRR()"></div>
+          <div style="background:var(--gold-glow);border:1px solid rgba(200,169,126,.2);border-radius:10px;padding:16px;margin-top:6px;">
+            <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;">Risk/Reward Ratio</div>
+            <div id="rr_result" style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:700;color:var(--gold);">1:—</div>
+            <div id="rr_sub" style="font-size:.78rem;color:var(--muted);margin-top:4px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JOURNAL -->
+    <div class="tab-panel" id="tab-journal">
+      <div class="journal-form">
+        <h3 style="font-size:1.2rem;margin-bottom:14px;">Log a Trade</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Pair *</label><input type="text" id="j_pair" placeholder="XAUUSD" style="text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="form-group"><label>Direction *</label><select id="j_dir"><option value="buy">BUY</option><option value="sell">SELL</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Entry Price *</label><input type="number" id="j_entry" placeholder="1.2050" step="0.00001"></div>
+          <div class="form-group"><label>Stop Loss *</label><input type="number" id="j_sl" placeholder="1.2000" step="0.00001"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Take Profit *</label><input type="number" id="j_tp" placeholder="1.2200" step="0.00001"></div>
+          <div class="form-group"><label>Setup Type</label><input type="text" id="j_setup" placeholder="e.g. BOS + FVG"></div>
+        </div>
+        <div class="form-group"><label>Notes</label><textarea id="j_notes" rows="2" placeholder="Trade rationale, market context..."></textarea></div>
+        <button class="btn btn-gold btn-sm" onclick="logTrade()"><i class="fas fa-plus"></i> Log Trade</button>
+      </div>
+      <div id="journalStats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;"></div>
+      <div class="journal-table" id="journalTable"><div style="padding:30px;text-align:center;color:var(--muted);">No trades logged yet</div></div>
+    </div>
+
+    <!-- PARTNER -->
+    <div class="tab-panel" id="tab-partner">
+      <div id="partnerContent"><div style="display:flex;align-items:center;gap:10px;padding:40px;color:var(--muted);"><div class="spinner"></div> Loading...</div></div>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div class="tab-panel" id="tab-payments">
+      <div id="paymentsContent"><div style="display:flex;align-items:center;gap:10px;padding:40px;color:var(--muted);"><div class="spinner"></div> Loading...</div></div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="tab-panel" id="tab-profile">
+      <div style="max-width:560px;">
+        <div style="background:#fff;border-radius:14px;border:1px solid rgba(212,200,188,.3);padding:24px;margin-bottom:16px;">
+          <h3 style="font-size:1.2rem;margin-bottom:16px;">Personal Details</h3>
+          <div class="form-group"><label>Full Name</label><input type="text" id="p_name" placeholder="Your name"></div>
+          <div class="form-group"><label>Email</label><input type="text" id="p_email" readonly style="background:var(--nude-light);color:var(--muted);cursor:not-allowed;"></div>
+          <div class="form-group"><label>Phone</label><input type="tel" id="p_phone" placeholder="0712345678"></div>
+          <div class="form-group"><label>Member Number</label><input type="text" id="p_member" readonly style="background:var(--nude-light);color:var(--muted);cursor:not-allowed;"></div>
+          <button class="btn btn-gold btn-sm" onclick="saveProfile()"><i class="fas fa-save"></i> Save Changes</button>
+        </div>
+        <div style="background:#fff;border-radius:14px;border:1px solid rgba(212,200,188,.3);padding:24px;">
+          <h3 style="font-size:1.2rem;margin-bottom:16px;">Change Password</h3>
+          <div class="form-group"><label>Current Password</label><input type="password" id="p_cpw" placeholder="Current password"></div>
+          <div class="form-group"><label>New Password</label><input type="password" id="p_npw" placeholder="New password (min 6 chars)"></div>
+          <div class="form-group"><label>Confirm New Password</label><input type="password" id="p_cnpw" placeholder="Confirm new password"></div>
+          <button class="btn btn-gold btn-sm" onclick="changePassword()"><i class="fas fa-lock"></i> Update Password</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MOBILE NAV -->
+<nav class="mob-nav">
+  <div class="mob-nav-inner">
+    <button class="mob-nav-item active" data-tab="home"><i class="fas fa-home"></i><span>Home</span></button>
+    <button class="mob-nav-item" data-tab="courses"><i class="fas fa-play-circle"></i><span>Courses</span></button>
+    <button class="mob-nav-item" data-tab="tools"><i class="fas fa-chart-line"></i><span>Tools</span></button>
+    <button class="mob-nav-item" data-tab="partner"><i class="fas fa-crown"></i><span>Partner</span></button>
+    <button class="mob-nav-item" data-tab="profile"><i class="fas fa-user"></i><span>Profile</span></button>
+  </div>
+</nav>
+
+<!-- BOOK SESSION MODAL -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal-box">
+    <h3>Book a Session</h3>
+    <div class="form-group"><label>Date & Time *</label><input type="datetime-local" id="sess_time"></div>
+    <div class="form-group"><label>Duration</label><select id="sess_dur"><option value="30">30 minutes</option><option value="60" selected>1 hour</option><option value="90">90 minutes</option></select></div>
+    <div class="form-group"><label>Contact Method</label><select id="sess_method"><option value="whatsapp">WhatsApp</option><option value="zoom">Zoom</option><option value="google_meet">Google Meet</option></select></div>
+    <div class="form-group"><label>Notes for your mentor (optional)</label><textarea id="sess_notes" rows="2" placeholder="What do you want to cover?"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="document.getElementById('bookModal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-gold" id="bookBtn" onclick="bookSession()"><i class="fas fa-calendar-check"></i> Book Session</button>
+    </div>
+  </div>
+</div>
+
+<!-- UPDATE TRADE MODAL -->
+<div class="modal-overlay" id="updateTradeModal">
+  <div class="modal-box">
+    <h3>Update Trade</h3>
+    <input type="hidden" id="ut_id">
+    <div class="form-group"><label>Exit Price</label><input type="number" id="ut_exit" placeholder="1.2150" step="0.00001"></div>
+    <div class="form-group"><label>Outcome</label><select id="ut_outcome"><option value="open">Still Open</option><option value="win">Win</option><option value="loss">Loss</option><option value="breakeven">Breakeven</option></select></div>
+    <div class="form-group"><label>Notes</label><textarea id="ut_notes" rows="2"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="document.getElementById('updateTradeModal').classList.remove('show')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveTrade()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="api.js"></script>
+<script>
+let USER={}, myCourses=[], allCourses=[], myPartner=null, myJournal=[], mySessions=[];
+let activeEnrollment=null, activeModule=null, quizAnswers={}, quizSubmitted=false;
+
+// ── BOOT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async ()=>{
+  if(!Auth.requireAuth()) return;
+  try{
+    const d = await API.getMe();
+    USER = d.user;
+    document.getElementById('userName').textContent = USER.full_name?.split(' ')[0]||'Student';
+    document.getElementById('userAv').textContent = (USER.full_name||'?')[0].toUpperCase();
+    document.getElementById('memberNum').textContent = USER.member_number||'Crown Member';
+    loadHome();
+  }catch(e){ Auth.logout(); window.location.href='login.html'; }
+});
+
+// ── NAV ───────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.sb-item[data-tab],.mob-nav-item[data-tab]').forEach(btn=>{
+  btn.addEventListener('click',()=>switchTab(btn.dataset.tab));
+});
+
+function switchTab(tab){
+  document.querySelectorAll('.sb-item[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.querySelectorAll('.mob-nav-item[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(`tab-${tab}`)?.classList.add('active');
+  const titles={home:'Home',courses:'My Courses',discover:'Discover Courses',mentor:'My Mentor',sessions:'Sessions',tools:'Trading Tools',journal:'Trade Journal',partner:'Crown Partner',payments:'Payments',profile:'Profile'};
+  document.getElementById('pageTitle').textContent=titles[tab]||tab;
+  if(tab==='courses')loadCourses();
+  if(tab==='discover')loadDiscover();
+  if(tab==='mentor')loadMentor();
+  if(tab==='sessions')loadSessions();
+  if(tab==='partner')loadPartner();
+  if(tab==='payments')loadPayments();
+  if(tab==='profile')loadProfile();
+  if(tab==='journal')loadJournal();
+  if(tab==='tools'){showTool('chart');reloadChart();}
+  closeSidebar();
+}
+
+function openSidebar(){document.getElementById('sidebar').classList.add('mob-open');document.getElementById('overlay').classList.add('show');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('mob-open');document.getElementById('overlay').classList.remove('show');}
+function doLogout(){Auth.logout();window.location.href='login.html';}
+
+// ── HOME ──────────────────────────────────────────────────────────────────────
+async function loadHome(){
+  const hour=new Date().getHours();
+  const greet=hour<12?'Good morning':'hour<17?Good afternoon':'Good evening';
+  document.getElementById('homeGreeting').innerHTML=`
+    <h2 style="font-size:1.6rem;color:var(--charcoal);">Good ${hour<12?'morning':hour<17?'afternoon':'evening'}, <span style="color:var(--gold);">${USER.full_name?.split(' ')[0]||'Trader'}</span> 👋</h2>
+    <p style="color:var(--muted);font-size:.88rem;margin-top:4px;">Ready to level up your trading today?</p>`;
+  try{ myCourses=(await API.getMyCourses()).enrollments||[]; }catch{}
+  const approved=myCourses.filter(e=>e.status==='approved');
+  document.getElementById('homeStats').innerHTML=`
+    <div class="stat-c"><div class="stat-ic gold"><i class="fas fa-graduation-cap"></i></div><div class="stat-v">${approved.length}</div><div class="stat-l">Active Courses</div></div>
+    <div class="stat-c"><div class="stat-ic green"><i class="fas fa-fire"></i></div><div class="stat-v">${USER.login_streak||0}</div><div class="stat-l">Login Streak</div></div>
+    <div class="stat-c"><div class="stat-ic blue"><i class="fas fa-book"></i></div><div class="stat-v">${USER.module_streak||0}</div><div class="stat-l">Study Streak</div></div>
+    <div class="stat-c"><div class="stat-ic red"><i class="fas fa-calendar"></i></div><div class="stat-v">${USER.mentor_id?'Assigned':'Pending'}</div><div class="stat-l">Mentor Status</div></div>`;
+  const courseHtml = approved.length ? approved.slice(0,2).map(e=>`
+    <div class="course-card" onclick="switchTab('courses')">
+      <div class="course-icon"><i class="fas ${e.course_icon||'fa-graduation-cap'}"></i></div>
+      <div class="course-info">
+        <div class="course-title">${e.course_title}</div>
+        <div class="course-meta">
+          <span><i class="fas fa-check-circle" style="color:var(--success);"></i> ${(e.completed_modules||[]).length}/${e.total_modules||0} modules</span>
+          <span class="badge ${e.status==='approved'?'badge-approved':'badge-pending'}">${e.status}</span>
+        </div>
+        <div class="progress-wrap" style="margin-top:8px;">
+          <div class="progress-bar"><div class="progress-fill" style="width:${e.total_modules?Math.round((e.completed_modules||[]).length/e.total_modules*100):0}%"></div></div>
+        </div>
+      </div>
+      <i class="fas fa-chevron-right" style="color:var(--nude-dark);"></i>
+    </div>`).join('') : `<div style="background:#fff;border-radius:12px;padding:24px;border:1px solid rgba(212,200,188,.3);text-align:center;color:var(--muted);">
+      <i class="fas fa-graduation-cap" style="font-size:2rem;color:var(--nude-dark);display:block;margin-bottom:10px;"></i>
+      <div style="font-weight:700;margin-bottom:6px;">No active courses yet</div>
+      <button class="btn btn-gold btn-sm" style="margin-top:10px;" onclick="switchTab('discover')">Browse Courses</button></div>`;
+  document.getElementById('homeCards').innerHTML=`<div>${courseHtml}</div>
+    <div>
+      <div style="background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);padding:18px;">
+        <div style="font-weight:700;margin-bottom:12px;font-size:.9rem;">Quick Actions</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-outline btn-sm" style="justify-content:flex-start;" onclick="switchTab('sessions')"><i class="fas fa-calendar-plus"></i> Book a Session</button>
+          <button class="btn btn-outline btn-sm" style="justify-content:flex-start;" onclick="switchTab('journal')"><i class="fas fa-pen"></i> Log a Trade</button>
+          <button class="btn btn-outline btn-sm" style="justify-content:flex-start;" onclick="switchTab('tools')"><i class="fas fa-chart-line"></i> Open Chart</button>
+          <button class="btn btn-outline btn-sm" style="justify-content:flex-start;" onclick="switchTab('partner')"><i class="fas fa-crown"></i> Partner Dashboard</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── COURSES ───────────────────────────────────────────────────────────────────
+async function loadCourses(){
+  if(document.getElementById('playerView').style.display==='block') return;
+  document.getElementById('coursesContent').innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:40px;color:var(--muted);"><div class="spinner"></div> Loading...</div>';
+  try{
+    myCourses=(await API.getMyCourses()).enrollments||[];
+    if(!myCourses.length){
+      document.getElementById('coursesContent').innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--muted);">
+        <i class="fas fa-graduation-cap" style="font-size:2.5rem;color:var(--nude-dark);display:block;margin-bottom:14px;"></i>
+        <div style="font-weight:700;margin-bottom:8px;">No courses enrolled yet</div>
+        <button class="btn btn-gold" onclick="switchTab('discover')">Browse Courses</button></div>`;
+      return;
+    }
+    document.getElementById('coursesContent').innerHTML=myCourses.map(e=>`
+      <div class="course-card" onclick="${e.status==='approved'?`openCourse(${e.id})`:`showToast('Your enrollment is pending payment or approval','info')`}">
+        <div class="course-icon"><i class="fas ${e.course_icon||'fa-graduation-cap'}"></i></div>
+        <div class="course-info">
+          <div class="course-title">${e.course_title}</div>
+          <div class="course-meta">
+            <span>${(e.completed_modules||[]).length}/${e.total_modules||0} modules</span>
+            <span class="badge ${e.payment_status==='verified'?'badge-approved':e.payment_status==='pending'?'badge-pending':'badge-gold'}">${e.payment_status||'unpaid'}</span>
+            <span class="badge ${e.status==='approved'?'badge-approved':e.status==='rejected'?'badge-rejected':'badge-pending'}">${e.status}</span>
+          </div>
+          <div class="progress-wrap" style="margin-top:8px;"><div class="progress-bar"><div class="progress-fill" style="width:${e.total_modules?Math.round((e.completed_modules||[]).length/e.total_modules*100):0}%"></div></div></div>
+        </div>
+        ${e.status==='pending'&&e.payment_status!=='verified'?`
+          <button class="btn btn-gold btn-sm" onclick="event.stopPropagation();payEnrollment(${e.id})"><i class="fas fa-credit-card"></i> Pay</button>`
+        :`<i class="fas fa-chevron-right" style="color:var(--nude-dark);"></i>`}
+      </div>`).join('');
+  }catch(e){document.getElementById('coursesContent').innerHTML=`<div style="padding:40px;text-align:center;color:var(--danger);">${e.message}</div>`;}
+}
+
+async function payEnrollment(enrollId){
+  try{
+    showToast('Initiating payment...','info');
+    const d=await API.initiatePayment({enrollment_id:enrollId});
+    if(d.redirect_url)window.location.href=d.redirect_url;
+    else showToast('Could not start payment','error');
+  }catch(e){showToast(e.message||'Payment failed','error');}
+}
+
+async function openCourse(enrollId){
+  document.getElementById('coursesContent').style.display='none';
+  document.getElementById('playerView').style.display='block';
+  activeEnrollment=myCourses.find(e=>e.id===enrollId);
+  try{
+    const d=await API.getEnrollmentDetail(enrollId);
+    const modules=d.modules||[];
+    const completed=activeEnrollment.completed_modules||[];
+    document.getElementById('modulesList').innerHTML=modules.map((m,i)=>{
+      const isDone=completed.includes(m.id);
+      const prevDone=i===0||completed.includes(modules[i-1]?.id);
+      const isLocked=!isDone&&!prevDone&&m.quiz_required;
+      return `<div class="module-item ${isLocked?'locked':''} ${isDone?'done':''}" onclick="${isLocked?'showToast(\'Complete the previous module first\',\'info\')':''}openModule(${JSON.stringify(m).replace(/"/g,'&quot;')},${enrollId})">
+        <div class="mod-num">${isDone?'<i class="fas fa-check" style="font-size:.65rem;"></i>':i+1}</div>
+        <div class="mod-title">${m.title}</div>
+        ${isLocked?'<i class="fas fa-lock" style="color:var(--nude-dark);font-size:.75rem;"></i>':isDone?'<i class="fas fa-check-circle" style="color:var(--success);font-size:.75rem;"></i>':''}
+      </div>`;
+    }).join('');
+    if(modules.length) openModule(modules[0],enrollId);
+  }catch(e){showToast('Failed to load course','error');}
+}
+
+function openModule(mod,enrollId){
+  if(typeof mod==='string') mod=JSON.parse(mod.replace(/&quot;/g,'"'));
+  activeModule=mod;
+  quizAnswers={}; quizSubmitted=false;
+  // Update active state
+  document.querySelectorAll('.module-item').forEach((el,i)=>{
+    el.classList.toggle('active',el.querySelector('.mod-title')?.textContent===mod.title);
+  });
+  // Video
+  const vw=document.getElementById('videoWrap');
+  if(mod.video_id){
+    const src=mod.video_provider==='youtube'
+      ?`https://www.youtube.com/embed/${mod.video_id}?rel=0`
+      :`https://player.vimeo.com/video/${mod.video_id}?title=0&byline=0`;
+    vw.innerHTML=`<iframe src="${src}" allowfullscreen allow="autoplay; fullscreen"></iframe>`;
+  } else {
+    vw.innerHTML=`<div class="video-placeholder"><i class="fas fa-video" style="font-size:2rem;color:rgba(255,255,255,.3);"></i><span style="color:rgba(255,255,255,.5);">No video for this module</span></div>`;
+  }
+  // Info
+  document.getElementById('moduleInfo').innerHTML=`
+    <h3 style="font-size:1.15rem;margin-bottom:6px;">${mod.title}</h3>
+    ${mod.description?`<p style="color:var(--muted);font-size:.85rem;line-height:1.6;">${mod.description}</p>`:''}
+    ${mod.duration_label?`<div style="margin-top:8px;font-size:.76rem;color:var(--muted);"><i class="fas fa-clock"></i> ${mod.duration_label}</div>`:''}
+    <button class="btn btn-gold btn-sm" style="margin-top:12px;" onclick="markComplete(${enrollId},${mod.id})"><i class="fas fa-check"></i> Mark Complete</button>`;
+  // Materials
+  const mats=JSON.parse(mod.materials_json||'[]');
+  document.getElementById('materialsWrap').innerHTML=mats.length?`
+    <div style="background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);padding:16px;margin-bottom:14px;">
+      <div style="font-weight:700;margin-bottom:10px;font-size:.88rem;"><i class="fas fa-paperclip" style="color:var(--gold);"></i> Study Materials</div>
+      ${mats.map(m=>`<a href="${m.url}" target="_blank" class="btn btn-outline btn-sm" style="margin:3px;"><i class="fas fa-${m.type==='pdf'?'file-pdf':'file-image'}"></i> ${m.name||'Download'}</a>`).join('')}
+    </div>`:'';
+  // Quiz
+  const quiz=JSON.parse(mod.quiz_json||'[]');
+  if(quiz.length && mod.quiz_required){
+    renderQuiz(quiz,enrollId,mod.id);
+  } else {
+    document.getElementById('quizWrap').innerHTML='';
+  }
+}
+
+function renderQuiz(quiz,enrollId,moduleId,qIndex=0){
+  const q=quiz[qIndex];
+  document.getElementById('quizWrap').innerHTML=`
+    <div class="quiz-wrap">
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:10px;">Question ${qIndex+1} of ${quiz.length}</div>
+      <div class="quiz-q">${q.question}</div>
+      <div class="quiz-opts">
+        ${q.options.map((opt,i)=>`<div class="quiz-opt" onclick="selectAnswer(${qIndex},${i},${quiz.length},${enrollId},${moduleId})">${opt}</div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function selectAnswer(qIndex,optIndex,total,enrollId,moduleId){
+  quizAnswers[qIndex]=optIndex;
+  document.querySelectorAll('.quiz-opt').forEach((el,i)=>el.classList.toggle('selected',i===optIndex));
+  setTimeout(()=>{
+    if(qIndex+1<total) renderQuiz(JSON.parse(activeModule.quiz_json||'[]'),enrollId,moduleId,qIndex+1);
+    else submitQuiz(enrollId,moduleId);
+  },600);
+}
+
+async function submitQuiz(enrollId,moduleId){
+  if(quizSubmitted) return;
+  quizSubmitted=true;
+  const answers=Object.values(quizAnswers);
+  try{
+    const d=await API.submitQuiz(moduleId,enrollId,answers);
+    document.getElementById('quizWrap').innerHTML=`
+      <div class="quiz-wrap">
+        <div style="text-align:center;padding:10px 0;">
+          <div style="font-size:2rem;margin-bottom:8px;">${d.passed?'🎉':'📚'}</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:${d.passed?'var(--success)':'var(--danger)'};">${d.score}%</div>
+          <div style="font-weight:700;margin:6px 0;">${d.message}</div>
+          ${!d.passed?`<button class="btn btn-gold btn-sm" style="margin-top:10px;" onclick="renderQuiz(JSON.parse(activeModule.quiz_json||'[]'),${enrollId},${moduleId})"><i class="fas fa-redo"></i> Try Again</button>`:''}
+        </div>
+        ${d.results?`<div style="margin-top:14px;display:flex;flex-direction:column;gap:8px;">${d.results.map(r=>`
+          <div style="padding:10px 12px;border-radius:8px;background:${r.is_correct?'rgba(16,185,129,.06)':'rgba(239,68,68,.06)'};border:1px solid ${r.is_correct?'rgba(16,185,129,.2)':'rgba(239,68,68,.15)'};">
+            <div style="font-size:.82rem;font-weight:600;margin-bottom:4px;">${r.question}</div>
+            ${r.explanation?`<div style="font-size:.76rem;color:var(--muted);">${r.explanation}</div>`:''}
+          </div>`).join('')}</div>`:''}
+      </div>`;
+    if(d.passed) await markComplete(enrollId,moduleId);
+  }catch(e){showToast(e.message||'Quiz submission failed','error');quizSubmitted=false;}
+}
+
+async function markComplete(enrollId,moduleId){
+  try{ await API.completeModule(enrollId,moduleId); showToast('Module completed!','success'); }catch{}
+}
+
+function backToCourses(){
+  document.getElementById('playerView').style.display='none';
+  document.getElementById('coursesContent').style.display='block';
+  loadCourses();
+}
+
+// ── DISCOVER ───────────────────────────────────────────────────────────────────
+async function loadDiscover(){
+  document.getElementById('discoverContent').innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:40px;color:var(--muted);"><div class="spinner"></div> Loading...</div>';
+  try{
+    allCourses=(await API.getCourses()).courses||[];
+    if(!myCourses.length) try{myCourses=(await API.getMyCourses()).enrollments||[];}catch{}
+    const enrolledIds=myCourses.map(e=>e.course_id);
+    document.getElementById('discoverContent').innerHTML=`
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
+        ${allCourses.map(c=>{
+          const enrolled=enrolledIds.includes(c.id);
+          return `<div style="background:#fff;border-radius:14px;border:1px solid rgba(212,200,188,.3);padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.04);">
+            <div style="width:44px;height:44px;border-radius:10px;background:var(--gold-glow);border:1px solid rgba(200,169,126,.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--gold);margin-bottom:14px;">
+              <i class="fas ${c.icon||'fa-graduation-cap'}"></i>
+            </div>
+            <div style="font-weight:700;margin-bottom:4px;">${c.title}</div>
+            <div style="font-size:.8rem;color:var(--muted);margin-bottom:12px;line-height:1.5;">${c.tagline||c.description||''}</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--gold);">KES ${(c.price||0).toLocaleString()}</div>
+              ${enrolled?`<span class="badge badge-approved"><i class="fas fa-check"></i> Enrolled</span>`
+                :`<button class="btn btn-gold btn-sm" onclick="quickEnroll(${c.id},'${c.title}',${c.price})"><i class="fas fa-plus"></i> Enroll</button>`}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+  }catch(e){document.getElementById('discoverContent').innerHTML=`<div style="padding:40px;text-align:center;color:var(--danger);">${e.message}</div>`;}
+}
+
+async function quickEnroll(courseId,title,price){
+  if(!confirm(`Enroll in ${title} for KES ${price.toLocaleString()}?`)) return;
+  try{
+    const d=await API.enroll({course_id:courseId,full_name:USER.full_name,email:USER.email,phone:USER.phone,referred_by_code:USER.referred_by_code||''});
+    showToast('Enrolled! Proceeding to payment...','success');
+    setTimeout(async()=>{
+      try{
+        const pd=await API.initiatePayment({enrollment_id:d.enrollment.id});
+        if(pd.redirect_url) window.location.href=pd.redirect_url;
+      }catch(e){showToast(e.message||'Payment init failed','error');}
+    },800);
+  }catch(e){showToast(e.message||'Enrollment failed','error');}
+}
+
+// ── MENTOR ────────────────────────────────────────────────────────────────────
+async function loadMentor(){
+  const c=document.getElementById('mentorContent');
+  if(!USER.mentor_id){
+    c.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--muted);">
+      <i class="fas fa-user-tie" style="font-size:2.5rem;color:var(--nude-dark);display:block;margin-bottom:14px;"></i>
+      <div style="font-weight:700;margin-bottom:6px;">No mentor assigned yet</div>
+      <p style="font-size:.85rem;">Your mentor will be assigned within 24 hours of your application being approved.</p></div>`;
+    return;
+  }
+  c.innerHTML=`<div style="background:#fff;border-radius:14px;border:1px solid rgba(212,200,168,.3);padding:24px;max-width:500px;">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+      <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8B6340);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.4rem;font-weight:700;">${(USER.mentor_display_name||'M')[0]}</div>
+      <div>
+        <div style="font-weight:700;font-size:1.05rem;">${USER.mentor_display_name||'Your Mentor'}</div>
+        ${USER.mentor_bio?`<div style="font-size:.82rem;color:var(--muted);margin-top:2px;">${USER.mentor_bio}</div>`:''}
+      </div>
+    </div>
+    ${USER.mentor_phone?`<div style="background:var(--nude-light);border-radius:10px;padding:12px 14px;margin-bottom:12px;font-size:.84rem;"><i class="fas fa-phone" style="color:var(--gold);margin-right:8px;"></i>${USER.mentor_phone}</div>`:''}
+    <button class="btn btn-gold" onclick="switchTab('sessions')"><i class="fas fa-calendar-plus"></i> Book a Session</button>
+  </div>`;
+}
+
+// ── SESSIONS ──────────────────────────────────────────────────────────────────
+async function loadSessions(){
+  try{
+    mySessions=(await API.getMySessions()).sessions||[];
+    const c=document.getElementById('sessionsContent');
+    if(!mySessions.length){c.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted);">No sessions yet. Book your first session!</div>`;return;}
+    c.innerHTML=mySessions.map(s=>{
+      const d=new Date(s.scheduled_at);
+      return `<div class="sess-card">
+        <div class="sess-date"><div class="sess-day">${d.getDate()}</div><div class="sess-month">${d.toLocaleString('en',{month:'short'})}</div></div>
+        <div style="flex:1;">
+          <div style="font-weight:700;">${s.mentor_name||s.mentor_full_name||'Your Mentor'}</div>
+          <div style="font-size:.78rem;color:var(--muted);">${d.toLocaleTimeString('en-KE',{timeStyle:'short'})} · ${s.duration_minutes}min · ${s.contact_method}</div>
+          <span class="badge ${s.status==='confirmed'?'badge-approved':s.status==='cancelled'?'badge-rejected':'badge-pending'}" style="margin-top:4px;">${s.status}</span>
+        </div>
+        ${s.status==='confirmed'&&s.contact_link?`<a href="${s.contact_link}" target="_blank" class="btn btn-gold btn-sm"><i class="fas fa-video"></i> Join</a>`:''}
+        ${s.status==='pending'?`<button class="btn btn-outline btn-sm" onclick="cancelSess(${s.id})"><i class="fas fa-times"></i></button>`:''}
+      </div>`;
+    }).join('');
+  }catch(e){document.getElementById('sessionsContent').innerHTML=`<div style="padding:40px;text-align:center;color:var(--danger);">${e.message}</div>`;}
+}
+
+function openBookModal(){
+  if(!USER.mentor_id){showToast('You need a mentor assigned first','info');return;}
+  document.getElementById('bookModal').classList.add('show');
+}
+async function bookSession(){
+  const btn=document.getElementById('bookBtn');setLoading(btn,true);
+  try{
+    await API.bookSession({scheduled_at:document.getElementById('sess_time').value,duration_minutes:parseInt(document.getElementById('sess_dur').value),contact_method:document.getElementById('sess_method').value,client_notes:document.getElementById('sess_notes').value});
+    document.getElementById('bookModal').classList.remove('show');
+    showToast('Session booked!','success');
+    loadSessions();
+  }catch(e){showToast(e.message||'Failed to book','error');}
+  setLoading(btn,false);
+}
+async function cancelSess(id){
+  if(!confirm('Cancel this session?')) return;
+  try{await API.cancelSession(id);showToast('Session cancelled','info');loadSessions();}
+  catch(e){showToast(e.message,'error');}
+}
+
+// ── TOOLS ─────────────────────────────────────────────────────────────────────
+function showTool(name){
+  ['chart','calendar','possize','rr'].forEach(t=>document.getElementById(`tool-${t}`).style.display=t===name?'block':'none');
+  document.querySelectorAll('#toolTabs .btn').forEach((b,i)=>{const tools=['chart','calendar','possize','rr'];b.className=tools[i]===name?'btn btn-gold btn-sm':'btn btn-outline btn-sm';});
+  if(name==='chart') reloadChart();
+}
+function reloadChart(){
+  const sym=document.getElementById('tvSymbol')?.value||'XAUUSD';
+  const iv=document.getElementById('tvInterval')?.value||'60';
+  document.getElementById('tvFrame').src=`https://www.tradingview.com/widgetembed/?frameElementId=tvFrame&symbol=FX:${sym}&interval=${iv}&hidesidetoolbar=0&hidetoptoolbar=0&symboledit=1&saveimage=1&toolbarbg=F1F3F6&studies=[]&theme=light&timezone=Africa%2FNairobi`;
+}
+function calcPos(){
+  const bal=parseFloat(document.getElementById('ps_bal').value)||0;
+  const risk=parseFloat(document.getElementById('ps_risk').value)||0;
+  const sl=parseFloat(document.getElementById('ps_sl').value)||0;
+  const pair=parseInt(document.getElementById('ps_pair').value)||1;
+  const riskAmt=bal*risk/100;
+  let mult=pair===1?10:pair===2?1000:0.1;
+  const lots=sl>0?parseFloat((riskAmt/(sl*mult)).toFixed(2)):0;
+  document.getElementById('ps_result').textContent=lots>0?`${lots} lots`:'—';
+}
+function calcRR(){
+  const e=parseFloat(document.getElementById('rr_entry').value)||0;
+  const sl=parseFloat(document.getElementById('rr_sl').value)||0;
+  const tp=parseFloat(document.getElementById('rr_tp').value)||0;
+  if(!e||!sl||!tp){document.getElementById('rr_result').textContent='1:—';document.getElementById('rr_sub').textContent='';return;}
+  const risk=Math.abs(e-sl);
+  const reward=Math.abs(tp-e);
+  const rr=risk>0?parseFloat((reward/risk).toFixed(2)):0;
+  document.getElementById('rr_result').textContent=`1:${rr}`;
+  document.getElementById('rr_sub').textContent=rr>=2?'✅ Good R:R (2:1 or better)':rr>=1?'⚠️ Acceptable but aim for 2:1+':'❌ Risk exceeds reward — avoid';
+}
+
+// ── JOURNAL ───────────────────────────────────────────────────────────────────
+async function loadJournal(){
+  try{
+    const d=await API.getJournal();
+    myJournal=d.trades||[];
+    const s=d.stats||{};
+    document.getElementById('journalStats').innerHTML=`
+      <div class="stat-c"><div class="stat-ic green"><i class="fas fa-trophy"></i></div><div class="stat-v">${s.win_rate||0}%</div><div class="stat-l">Win Rate</div></div>
+      <div class="stat-c"><div class="stat-ic blue"><i class="fas fa-exchange-alt"></i></div><div class="stat-v">${s.total_trades||0}</div><div class="stat-l">Total Trades</div></div>
+      <div class="stat-c"><div class="stat-ic gold"><i class="fas fa-chart-line"></i></div><div class="stat-v">${s.total_pips||0}</div><div class="stat-l">Total Pips</div></div>
+      <div class="stat-c"><div class="stat-ic ${(s.avg_rr||0)>=2?'green':'red'}"><i class="fas fa-balance-scale"></i></div><div class="stat-v">1:${s.avg_rr||0}</div><div class="stat-l">Avg R:R</div></div>`;
+    if(!myJournal.length){document.getElementById('journalTable').innerHTML='<div style="padding:30px;text-align:center;color:var(--muted);">No trades logged yet. Log your first trade above.</div>';return;}
+    document.getElementById('journalTable').innerHTML=`<table><thead><tr><th>Pair</th><th>Dir</th><th>Entry</th><th>SL</th><th>TP</th><th>R:R</th><th>Outcome</th><th>Pips</th><th></th></tr></thead>
+      <tbody>${myJournal.map(t=>`<tr>
+        <td style="font-weight:700;">${t.pair}</td>
+        <td><span class="pill ${t.direction}">${t.direction.toUpperCase()}</span></td>
+        <td>${t.entry_price}</td><td>${t.sl_price}</td><td>${t.tp_price}</td>
+        <td>${t.rr_result?`1:${t.rr_result}`:'—'}</td>
+        <td><span class="pill ${t.outcome||'open'}">${t.outcome||'open'}</span></td>
+        <td style="color:${(t.pips_result||0)>0?'var(--success)':'var(--danger)'};">${t.pips_result||'—'}</td>
+        <td><button class="btn btn-outline btn-sm" onclick="openUpdateTrade(${t.id},'${t.outcome||'open'}','${t.notes||''}')"><i class="fas fa-edit"></i></button></td>
+      </tr>`).join('')}</tbody></table>`;
+  }catch(e){showToast(e.message,'error');}
+}
+async function logTrade(){
+  const pair=document.getElementById('j_pair').value.trim();
+  const dir=document.getElementById('j_dir').value;
+  const entry=document.getElementById('j_entry').value;
+  const sl=document.getElementById('j_sl').value;
+  const tp=document.getElementById('j_tp').value;
+  if(!pair||!entry||!sl||!tp){showToast('Pair, entry, SL and TP are required','info');return;}
+  try{
+    await API.logTrade({pair,direction:dir,entry_price:entry,sl_price:sl,tp_price:tp,setup_type:document.getElementById('j_setup').value,notes:document.getElementById('j_notes').value});
+    showToast('Trade logged!','success');
+    ['j_pair','j_entry','j_sl','j_tp','j_setup','j_notes'].forEach(id=>document.getElementById(id).value='');
+    loadJournal();
+  }catch(e){showToast(e.message||'Failed to log trade','error');}
+}
+function openUpdateTrade(id,outcome,notes){
+  document.getElementById('ut_id').value=id;
+  document.getElementById('ut_outcome').value=outcome;
+  document.getElementById('ut_notes').value=notes;
+  document.getElementById('updateTradeModal').classList.add('show');
+}
+async function saveTrade(){
+  const id=document.getElementById('ut_id').value;
+  try{
+    await API.updateTrade(id,{exit_price:document.getElementById('ut_exit').value||undefined,outcome:document.getElementById('ut_outcome').value,notes:document.getElementById('ut_notes').value});
+    document.getElementById('updateTradeModal').classList.remove('show');
+    showToast('Trade updated!','success'); loadJournal();
+  }catch(e){showToast(e.message,'error');}
+}
+
+// ── PARTNER ───────────────────────────────────────────────────────────────────
+async function loadPartner(){
+  const c=document.getElementById('partnerContent');
+  if(!USER.has_partner_status){
+    c.innerHTML=`<div style="text-align:center;padding:60px 20px;">
+      <i class="fas fa-crown" style="font-size:2.5rem;color:var(--gold);display:block;margin-bottom:14px;"></i>
+      <h3 style="font-size:1.4rem;margin-bottom:8px;">Become a Crown Partner</h3>
+      <p style="color:var(--muted);font-size:.88rem;margin-bottom:20px;">Earn KES 200–300 per referral. One-time KES 500 registration.</p>
+      <a href="referral-register.html" class="btn btn-gold"><i class="fas fa-crown"></i> Join as Partner</a></div>`;
+    return;
+  }
+  try{
+    const d=await API.getPartnerDashboard();
+    const a=d.agent;
+    c.innerHTML=`
+      <div class="wallet-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <div style="font-size:.8rem;color:rgba(255,255,255,.6);">Available Balance</div>
+          <span style="background:var(--gold-glow);color:var(--gold);border:1px solid rgba(200,169,126,.2);font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:20px;">${a.tier_label||'Bronze Partner'}</span>
+        </div>
+        <div class="wallet-bal">KES ${(a.wallet?.available||0).toLocaleString()}</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
+          <div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Pending</div><div style="font-weight:700;">KES ${(a.wallet?.pending||0).toLocaleString()}</div></div>
+          <div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Lifetime</div><div style="font-weight:700;">KES ${(a.wallet?.lifetime_earned||0).toLocaleString()}</div></div>
+          <div><div style="font-size:.7rem;color:rgba(255,255,255,.5);">Referrals</div><div style="font-weight:700;">${a.total_referrals||0}</div></div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="openWithdraw()"><i class="fas fa-money-bill-wave"></i> Withdraw</button>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="font-weight:700;margin-bottom:8px;font-size:.88rem;">Your Referral Link</div>
+        <div class="ref-box">
+          <div class="ref-link" id="refLink">${a.referral_link||''}</div>
+          <button class="btn btn-gold btn-sm" onclick="copyRef()"><i class="fas fa-copy"></i></button>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);overflow:hidden;">
+        <div style="padding:14px 16px;border-bottom:1px solid rgba(212,200,188,.2);font-weight:700;font-size:.88rem;">Earnings History</div>
+        ${d.earnings?.length?`<table><thead><tr><th>Referred</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>${d.earnings.map(e=>`<tr><td>${e.referred_name||'—'}</td><td>KES ${e.amount}</td><td><span class="badge ${e.status==='paid'?'badge-approved':e.status==='available'?'badge-gold':'badge-pending'}">${e.status}</span></td><td style="font-size:.76rem;">${formatDate(e.created_at)}</td></tr>`).join('')}</tbody></table>`
+          :`<div style="padding:24px;text-align:center;color:var(--muted);">No earnings yet. Start referring!</div>`}
+      </div>`;
+  }catch(e){c.innerHTML=`<div style="padding:40px;text-align:center;color:var(--danger);">${e.message}</div>`;}
+}
+
+function copyRef(){
+  const link=document.getElementById('refLink')?.textContent;
+  if(link){navigator.clipboard.writeText(link).then(()=>showToast('Link copied!','success'));}
+}
+
+function openWithdraw(){
+  const amt=prompt('Amount to withdraw (minimum KES 500):');
+  if(!amt||parseInt(amt)<500){showToast('Minimum withdrawal is KES 500','info');return;}
+  const mpesa=prompt('Your M-Pesa number:');
+  if(!mpesa){return;}
+  const name=prompt('M-Pesa account name:');
+  API.requestWithdrawal({amount:parseInt(amt),mpesa_number:mpesa,mpesa_name:name||''})
+    .then(()=>{showToast('Withdrawal request submitted!','success');loadPartner();})
+    .catch(e=>showToast(e.message||'Failed','error'));
+}
+
+// ── PAYMENTS ──────────────────────────────────────────────────────────────────
+async function loadPayments(){
+  const c=document.getElementById('paymentsContent');
+  try{
+    if(!myCourses.length) myCourses=(await API.getMyCourses()).enrollments||[];
+    let pesapalPays=[];
+    try{pesapalPays=(await API.getMyPayments()).payments||[];}catch{}
+    if(!myCourses.length){c.innerHTML='<div style="padding:40px;text-align:center;color:var(--muted);">No payment records yet.</div>';return;}
+    c.innerHTML=myCourses.map(e=>{
+      const pp=pesapalPays.find(p=>p.callback_ref===`enrollment:${e.id}`);
+      const paid=e.payment_status==='verified'||pp?.status==='completed';
+      const pending=e.payment_status==='pending'||pp?.status==='pending';
+      return `<div style="background:#fff;border-radius:12px;border:1px solid rgba(212,200,188,.3);padding:18px;margin-bottom:10px;display:flex;align-items:center;gap:14px;">
+        <div style="width:44px;height:44px;border-radius:10px;background:var(--gold-glow);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1.1rem;"><i class="fas fa-graduation-cap"></i></div>
+        <div style="flex:1;">
+          <div style="font-weight:700;margin-bottom:4px;">${e.course_title}</div>
+          <div style="font-size:.78rem;color:var(--muted);">Amount: KES ${(e.amount||0).toLocaleString()} · <span class="badge ${paid?'badge-approved':pending?'badge-pending':'badge-gold'}">${paid?'Verified':pending?'Processing':'Unpaid'}</span></div>
+          ${paid?`<div style="font-size:.74rem;color:var(--success);margin-top:4px;"><i class="fas fa-check-circle"></i> Payment confirmed ${pp?.payment_method?'via '+pp.payment_method:''}</div>`
+            :pending?`<div style="font-size:.74rem;color:var(--warning);margin-top:4px;"><i class="fas fa-clock"></i> Processing — access unlocks automatically</div>`
+            :`<div style="margin-top:8px;"><button class="btn btn-gold btn-sm" onclick="payEnrollment(${e.id})"><i class="fas fa-credit-card"></i> Pay KES ${(e.amount||0).toLocaleString()}</button></div>`}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){c.innerHTML=`<div style="padding:40px;text-align:center;color:var(--danger);">${e.message}</div>`;}
+}
+
+// ── PROFILE ───────────────────────────────────────────────────────────────────
+function loadProfile(){
+  document.getElementById('p_name').value=USER.full_name||'';
+  document.getElementById('p_email').value=USER.email||'';
+  document.getElementById('p_phone').value=USER.phone||'';
+  document.getElementById('p_member').value=USER.member_number||'';
+}
+async function saveProfile(){
+  const name=document.getElementById('p_name').value.trim();
+  const phone=document.getElementById('p_phone').value.trim();
+  if(!name){showToast('Name is required','info');return;}
+  try{
+    await API.updateProfile({full_name:name,phone});
+    USER.full_name=name; USER.phone=phone;
+    document.getElementById('userName').textContent=name.split(' ')[0];
+    document.getElementById('userAv').textContent=name[0].toUpperCase();
+    showToast('Profile saved!','success');
+  }catch(e){showToast(e.message||'Failed to save','error');}
+}
+async function changePassword(){
+  const cp=document.getElementById('p_cpw').value;
+  const np=document.getElementById('p_npw').value;
+  const cnp=document.getElementById('p_cnpw').value;
+  if(!cp||!np||!cnp){showToast('Fill in all password fields','info');return;}
+  if(np!==cnp){showToast('New passwords do not match','info');return;}
+  if(np.length<6){showToast('New password must be at least 6 characters','info');return;}
+  try{
+    await API.changePassword({current_password:cp,new_password:np});
+    showToast('Password updated!','success');
+    ['p_cpw','p_npw','p_cnpw'].forEach(id=>document.getElementById(id).value='');
+  }catch(e){showToast(e.message||'Failed to change password','error');}
+}
+</script>
+</body>
+</html>
