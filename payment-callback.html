@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Payment — Crown Trade Academy</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -11,68 +10,58 @@
 body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--nude-light);padding:20px;}
 .box{background:#fff;border-radius:20px;padding:44px 36px;max-width:460px;width:100%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.08);border:1px solid rgba(212,200,188,.3);}
 .icon{font-size:3.5rem;margin-bottom:16px;display:block;}
-.icon.success{color:var(--success);}
-.icon.pending{color:var(--warning);}
-.icon.failed{color:var(--danger);}
+.icon.success{color:var(--success);} .icon.pending{color:var(--warning);} .icon.failed{color:var(--danger);}
 h1{font-size:1.9rem;margin-bottom:8px;}
-p.msg{color:var(--muted);font-size:.88rem;line-height:1.7;margin-bottom:20px;}
-.detail-box{background:var(--nude-light);border:1px solid var(--nude-med);border-radius:10px;padding:16px 18px;margin-bottom:22px;text-align:left;}
-.detail-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--nude-med);font-size:.84rem;}
-.detail-row:last-child{border-bottom:none;font-weight:700;}
-.detail-row .v.success{color:var(--success);}
-.detail-row .v.pending{color:var(--warning);}
-.detail-row .v.failed{color:var(--danger);}
-.loading-state{padding:20px 0;}
+.msg{color:var(--muted);font-size:.88rem;line-height:1.7;margin-bottom:20px;}
+.detail{background:var(--nude-light);border:1px solid var(--nude-med);border-radius:10px;padding:16px 18px;margin-bottom:22px;text-align:left;}
+.drow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--nude-med);font-size:.84rem;}
+.drow:last-child{border-bottom:none;font-weight:700;}
+.drow .v.success{color:var(--success);} .drow .v.pending{color:var(--warning);} .drow .v.failed{color:var(--danger);}
 </style>
 </head>
 <body>
 <div class="box" id="box">
-  <div class="loading-state">
-    <div class="spinner" style="width:36px;height:36px;border-width:3px;margin:0 auto 16px;"></div>
-    <p style="color:var(--muted);">Verifying your payment...</p>
-  </div>
+  <div class="spinner" style="width:36px;height:36px;border-width:3px;margin:0 auto 16px;"></div>
+  <p style="color:var(--muted);">Verifying your payment...</p>
 </div>
 <script src="api.js"></script>
 <script>
-const BASE = 'https://crowntrade-academy-phai.onrender.com/api';
-async function check() {
-  const p = new URLSearchParams(window.location.search);
-  const trackingId = p.get('OrderTrackingId');
-  const merchantRef = p.get('OrderMerchantReference');
-  if (!trackingId) { show('failed','No payment reference found.',null); return; }
-  try {
-    const res = await fetch(`${BASE}/payments/callback?OrderTrackingId=${trackingId}&OrderMerchantReference=${merchantRef||''}`,{
-      headers: Auth.getToken()?{Authorization:'Bearer '+Auth.getToken()}:{}
-    });
-    const d = await res.json();
-    if (d.paid) show('success',d);
-    else if (d.status==='Pending') show('pending',d);
+async function check(){
+  const p=new URLSearchParams(window.location.search);
+  const trackingId=p.get('OrderTrackingId');
+  const merchantRef=p.get('OrderMerchantReference');
+  if(!trackingId){show('failed',{status:'No payment reference found'});return;}
+  try{
+    const res=await fetch(`https://crowntrade-academy-phai.onrender.com/api/payments/callback?OrderTrackingId=${trackingId}&OrderMerchantReference=${merchantRef||''}`,
+      {headers:Auth.getToken()?{Authorization:'Bearer '+Auth.getToken()}:{}});
+    const d=await res.json();
+    if(d.paid)show('success',d);
+    else if(d.status==='Pending')show('pending',d);
     else show('failed',d);
-  } catch(e) { show('failed',{status:'Verification error'}); }
+  }catch(e){show('failed',{status:'Verification error'});}
 }
-
-function show(type, d) {
+function show(type,d){
   const icons={success:'fa-check-circle',pending:'fa-clock',failed:'fa-times-circle'};
   const titles={success:'Payment Confirmed!',pending:'Payment Processing',failed:'Payment Failed'};
   const msgs={
-    success:'Your payment has been received and verified. Your access has been unlocked — you can now log in to your dashboard.',
-    pending:'Your payment is being processed. This usually takes a few minutes. Your access will unlock automatically — no action needed.',
-    failed:'Your payment could not be completed. No charges have been made. Please try again from your dashboard.'
+    success:'Your payment has been received. Your access has been unlocked — log in to your dashboard to start learning.',
+    pending:'Your payment is being processed. This usually takes a few minutes. Your access will unlock automatically.',
+    failed:'Your payment could not be completed. No charges have been made. Please try again.'
   };
-  const amount = d.amount ? `KES ${parseFloat(d.amount).toLocaleString()}` : '—';
-  document.getElementById('box').innerHTML = `
+  const amount=d.amount?`KES ${parseFloat(d.amount).toLocaleString()}`:'—';
+  document.getElementById('box').innerHTML=`
     <i class="fas ${icons[type]} icon ${type}"></i>
     <h1>${titles[type]}</h1>
     <p class="msg">${msgs[type]}</p>
-    <div class="detail-box">
-      <div class="detail-row"><span>Amount</span><span class="v">${amount}</span></div>
-      <div class="detail-row"><span>Method</span><span class="v">${d.payment_method||'—'}</span></div>
-      <div class="detail-row"><span>Status</span><span class="v ${type}">${d.status||'—'}</span></div>
+    <div class="detail">
+      <div class="drow"><span>Amount</span><span class="v">${amount}</span></div>
+      <div class="drow"><span>Method</span><span class="v">${d.payment_method||'—'}</span></div>
+      <div class="drow"><span>Status</span><span class="v ${type}">${d.status||'—'}</span></div>
     </div>
-    ${type!=='failed'
-      ?`<a href="client-dashboard.html" class="btn btn-gold" style="width:100%;justify-content:center;"><i class="fas fa-home"></i> Go to My Dashboard</a>`
-      :`<a href="client-dashboard.html" class="btn btn-gold" style="width:100%;justify-content:center;"><i class="fas fa-redo"></i> Try Again</a>`}
-    <a href="index.html" style="display:block;margin-top:12px;font-size:.82rem;color:var(--muted);"><i class="fas fa-arrow-left"></i> Back to Academy</a>`;
+    <a href="client-dashboard.html" class="btn btn-gold" style="width:100%;justify-content:center;margin-bottom:10px;">
+      <i class="fas fa-${type!=='failed'?'home':'redo'}"></i> ${type!=='failed'?'Go to My Dashboard':'Try Again'}
+    </a>
+    <a href="index.html" style="display:block;margin-top:10px;font-size:.82rem;color:var(--muted);"><i class="fas fa-arrow-left"></i> Back to Academy</a>`;
 }
 check();
 </script>

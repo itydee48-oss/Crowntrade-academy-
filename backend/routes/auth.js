@@ -1,119 +1,134 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 const { query } = require('../database/db');
 const { generateToken, authenticateToken } = require('../middleware/auth');
-const { findOrCreateUser } = require('../database/identity');
 
-async function updateLoginStreak(userId) {
-  const result = await query('SELECT login_streak,login_last_date FROM users WHERE id=$1', [userId]);
-  const user = result.rows[0];
-  const today = new Date().toISOString().slice(0,10);
-  const last = user.login_last_date ? new Date(user.login_last_date).toISOString().slice(0,10) : null;
-  if (last === today) return;
-  const yesterday = new Date(Date.now()-86400000).toISOString().slice(0,10);
-  const streak = last === yesterday ? (user.login_streak||0) + 1 : 1;
-  await query('UPDATE users SET login_streak=$1,login_last_date=$2,updated_at=CURRENT_TIMESTAMP WHERE id=$3', [streak, today, userId]);
-}
+function genMemberNumber() { return 'CTA-' + String(Math.floor(Math.random()*9000)+1000); }
+function genReferralCode(name) { return (name.replace(/\s+/g,'').toUpperCase().substring(0,5) + Math.floor(Math.random()*9000+1000)); }
 
+// REGISTER
 router.post('/register', async (req, res) => {
   try {
-    const { full_name, email, phone, password, referred_by } = req.body;
-    if (!full_name||!email||!phone||!password) return res.status(400).json({ error:'All fields are required' });
-    if (password.length < 6) return res.status(400).json({ error:'Password must be at least 6 characters' });
-    const existing = await query('SELECT id FROM users WHERE email=$1', [email]);
-    if (existing.rows.length > 0) return res.status(409).json({ error:'Email already registered. Try logging in.' });
-    const { user } = await findOrCreateUser({ full_name, email, phone, password });
-    if (referred_by) await query('UPDATE users SET referred_by_code=$1 WHERE id=$2', [referred_by, user.id]);
-    const token = generateToken({ id:user.id, email:user.email, type:'user' });
-    res.status(201).json({ message:'Registration successful', token, user:safe(user) });
-  } catch (err) { console.error('Register error:', err); res.status(500).json({ error:'Registration failed' }); }
+    const { full_name, email, phone, password } = req.body;
+    if (!full_name||!email||!password) return res.status(400).json({ error: 'Name, email and password required' });
+    if (password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    const exists = await query('SELECT id FROM users WHERE email=$1', [email]);
+    if (exists.rows.length) return res.status(409).json({ error: 'Account with this email already exists' });
+    const hash = await bcrypt.hash(password, 10);
+    const memberNum = genMemberNumber();
+    const refCode = genReferralCode(full_name);
+    const result = await query(`INSERT INTO users (full_name,email,phone,password_hash,member_number,referral_code,status)
+      VALUES ($1,$2,$3,$4,$5,$6,'active') RETURNING *`,
+      [full_name, email.toLowerCase(), phone||'', hash, memberNum, refCode]);
+    const user = result.rows[0];
+    const token = generateToken({ id: user.id, email: user.email, type: 'client' });
+    const { password_hash, ...safe } = user;
+    res.json({ message: 'Account created', token, user: safe });
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Registration failed' }); }
 });
 
+// LOGIN
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email||!password) return res.status(400).json({ error:'Email and password are required' });
-    const result = await query('SELECT * FROM users WHERE email=$1', [email]);
+    if (!email||!password) return res.status(400).json({ error: 'Email and password required' });
+    const result = await query('SELECT * FROM users WHERE email=$1', [email.toLowerCase()]);
     const user = result.rows[0];
-    if (!user||!(await bcrypt.compare(password, user.password_hash))) return res.status(401).json({ error:'Invalid email or password' });
-    if (user.status==='suspended') return res.status(403).json({ error:'Account suspended. Contact support.' });
-    await updateLoginStreak(user.id);
-    const token = generateToken({ id:user.id, email:user.email, type:'user' }, '30d');
-    res.json({ message:'Login successful', token, user:safe(user) });
-  } catch (err) { console.error('Login error:', err); res.status(500).json({ error:'Login failed' }); }
+    if (!user) return res.status(401).json({ error: 'Invalid email or password' });
+    if (!user.password_hash) return res.status(401).json({ error: 'Please set a password via the registration form' });
+    const valid = await bcrypt.compare(password, user.password_hash);
+    if (!valid) return res.status(401).json({ error: 'Invalid email or password' });
+    if (user.status === 'suspended') return res.status(403).json({ error: 'Account suspended. Contact support.' });
+
+    // Update login streak
+    const today = new Date().toISOString().split('T')[0];
+    const lastDate = user.login_last_date ? new Date(user.login_last_date).toISOString().split('T')[0] : null;
+    let newStreak = user.login_streak || 0;
+    if (lastDate === today) { /* same day, no change */ }
+    else if (lastDate && new Date(today) - new Date(lastDate) <= 86400000) { newStreak += 1; }
+    else { newStreak = 1; }
+    await query('UPDATE users SET login_streak=$1, login_last_date=$2 WHERE id=$3', [newStreak, today, user.id]);
+
+    const token = generateToken({ id: user.id, email: user.email, type: 'client' });
+
+    // Get mentor info if assigned
+    let mentorInfo = {};
+    if (user.mentor_id) {
+      const mResult = await query('SELECT id,full_name,display_name,bio,avatar_url,phone FROM mentors WHERE id=$1', [user.mentor_id]);
+      const m = mResult.rows[0];
+      if (m) mentorInfo = { mentor_display_name: m.display_name||m.full_name, mentor_bio: m.bio, mentor_avatar: m.avatar_url, mentor_phone: m.phone };
+    }
+
+    const { password_hash, ...safe } = user;
+    res.json({ message: 'Login successful', token, user: { ...safe, ...mentorInfo, login_streak: newStreak } });
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Login failed' }); }
 });
 
+// ADMIN LOGIN
 router.post('/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    if (!username||!password) return res.status(400).json({ error:'Username and password are required' });
+    if (!username||!password) return res.status(400).json({ error: 'Username and password required' });
     const result = await query('SELECT * FROM admin_users WHERE username=$1', [username]);
     const admin = result.rows[0];
-    if (!admin||!(await bcrypt.compare(password, admin.password_hash))) return res.status(401).json({ error:'Invalid credentials' });
-    const token = generateToken({ id:admin.id, username:admin.username, type:'admin' }, '30d');
-    res.json({ message:'Admin login successful', token, user:{ id:admin.id, username:admin.username, type:'admin' } });
-  } catch (err) { console.error('Admin login error:', err); res.status(500).json({ error:'Login failed' }); }
+    if (!admin) return res.status(401).json({ error: 'Invalid credentials' });
+    const valid = await bcrypt.compare(password, admin.password_hash);
+    if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
+    const token = generateToken({ id: admin.id, username: admin.username, type: 'admin' });
+    res.json({ message: 'Admin login successful', token, user: { id: admin.id, username: admin.username, email: admin.email, type: 'admin' } });
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Login failed' }); }
 });
 
-router.post('/referral/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email||!password) return res.status(400).json({ error:'Email and password are required' });
-    const result = await query('SELECT * FROM users WHERE email=$1', [email]);
-    const user = result.rows[0];
-    if (!user||!(await bcrypt.compare(password, user.password_hash))) return res.status(401).json({ error:'Invalid email or password' });
-    if (!user.has_partner_status) return res.status(403).json({ error:'This account does not have an active Crown Partner application.' });
-    await updateLoginStreak(user.id);
-    const token = generateToken({ id:user.id, email:user.email, type:'user' }, '30d');
-    res.json({ message:'Login successful', token, user:safe(user) });
-  } catch (err) { console.error('Referral login error:', err); res.status(500).json({ error:'Login failed' }); }
-});
-
+// GET ME
 router.get('/me', authenticateToken, async (req, res) => {
   try {
-    if (req.user.type==='admin') {
-      const result = await query('SELECT id,username,email FROM admin_users WHERE id=$1', [req.user.id]);
-      if (!result.rows[0]) return res.status(404).json({ error:'User not found' });
-      return res.json({ user:{ ...result.rows[0], type:'admin' } });
+    if (req.user.type === 'admin') {
+      const r = await query('SELECT id,username,email FROM admin_users WHERE id=$1', [req.user.id]);
+      return res.json({ user: { ...r.rows[0], type: 'admin' } });
     }
-    if (req.user.type==='mentor') {
-      const result = await query('SELECT id,full_name,display_name,email,phone,bio,avatar_url,status FROM mentors WHERE id=$1', [req.user.id]);
-      if (!result.rows[0]) return res.status(404).json({ error:'Mentor not found' });
-      return res.json({ user:{ ...result.rows[0], type:'mentor' } });
+    if (req.user.type === 'mentor') {
+      const r = await query('SELECT id,full_name,display_name,email,phone,bio,avatar_url,status FROM mentors WHERE id=$1', [req.user.id]);
+      return res.json({ user: { ...r.rows[0], type: 'mentor' } });
     }
-    const result = await query('SELECT * FROM users WHERE id=$1', [req.user.id]);
-    if (!result.rows[0]) return res.status(404).json({ error:'User not found' });
-    res.json({ user:safe(result.rows[0]) });
-  } catch (err) { console.error('Me error:', err); res.status(500).json({ error:'Failed to get user' }); }
+    const r = await query('SELECT * FROM users WHERE id=$1', [req.user.id]);
+    if (!r.rows[0]) return res.status(404).json({ error: 'User not found' });
+    let mentorInfo = {};
+    if (r.rows[0].mentor_id) {
+      const m = await query('SELECT full_name,display_name,bio,avatar_url,phone FROM mentors WHERE id=$1', [r.rows[0].mentor_id]);
+      if (m.rows[0]) mentorInfo = { mentor_display_name: m.rows[0].display_name||m.rows[0].full_name, mentor_bio: m.rows[0].bio, mentor_avatar: m.rows[0].avatar_url, mentor_phone: m.rows[0].phone };
+    }
+    const { password_hash, ...safe } = r.rows[0];
+    res.json({ user: { ...safe, ...mentorInfo, type: 'client' } });
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to get user' }); }
 });
 
-// Profile update for clients
+// UPDATE PROFILE
 router.patch('/profile', authenticateToken, async (req, res) => {
   try {
-    if (req.user.type !== 'user') return res.status(403).json({ error:'Not a client account' });
     const { full_name, phone } = req.body;
-    await query('UPDATE users SET full_name=COALESCE($1,full_name),phone=COALESCE($2,phone),updated_at=CURRENT_TIMESTAMP WHERE id=$3',
+    await query('UPDATE users SET full_name=COALESCE($1,full_name), phone=COALESCE($2,phone), updated_at=CURRENT_TIMESTAMP WHERE id=$3',
       [full_name||null, phone||null, req.user.id]);
-    res.json({ message:'Profile updated' });
-  } catch (err) { res.status(500).json({ error:'Failed to update profile' }); }
+    res.json({ message: 'Profile updated' });
+  } catch(err) { res.status(500).json({ error: 'Failed to update profile' }); }
 });
 
-// Change password for clients
+// CHANGE PASSWORD
 router.post('/change-password', authenticateToken, async (req, res) => {
   try {
-    if (req.user.type !== 'user') return res.status(403).json({ error:'Not a client account' });
     const { current_password, new_password } = req.body;
-    if (!current_password||!new_password) return res.status(400).json({ error:'Both passwords required' });
-    if (new_password.length < 6) return res.status(400).json({ error:'New password must be at least 6 characters' });
-    const result = await query('SELECT password_hash FROM users WHERE id=$1', [req.user.id]);
-    if (!(await bcrypt.compare(current_password, result.rows[0].password_hash))) return res.status(401).json({ error:'Current password incorrect' });
+    if (!current_password||!new_password) return res.status(400).json({ error: 'Both passwords required' });
+    if (new_password.length < 6) return res.status(400).json({ error: 'New password must be at least 6 characters' });
+    const r = await query('SELECT password_hash FROM users WHERE id=$1', [req.user.id]);
+    const valid = await bcrypt.compare(current_password, r.rows[0].password_hash);
+    if (!valid) return res.status(400).json({ error: 'Current password incorrect' });
     const hash = await bcrypt.hash(new_password, 10);
-    await query('UPDATE users SET password_hash=$1,updated_at=CURRENT_TIMESTAMP WHERE id=$2', [hash, req.user.id]);
-    res.json({ message:'Password updated' });
-  } catch (err) { res.status(500).json({ error:'Failed to change password' }); }
+    await query('UPDATE users SET password_hash=$1 WHERE id=$2', [hash, req.user.id]);
+    res.json({ message: 'Password updated' });
+  } catch(err) { res.status(500).json({ error: 'Failed to change password' }); }
 });
 
-function safe(user) { const { password_hash, ...rest } = user; return rest; }
+// HEALTH
+router.get('/health', (req, res) => res.json({ status: 'ok', message: 'Crown Trade Academy API running', jwt_secret_set: !!process.env.JWT_SECRET, node_version: process.version }));
 
 module.exports = router;

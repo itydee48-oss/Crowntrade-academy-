@@ -1,222 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Sign In — Crown Trade Academy</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
 <style>
 body{background:var(--nude-light);min-height:100vh;display:flex;}
-.auth-split{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;}
-.auth-left{background:linear-gradient(135deg,var(--charcoal) 0%,var(--charcoal-2) 100%);padding:48px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
-.auth-left::before{content:'◆';position:absolute;font-size:22rem;color:rgba(200,169,126,.04);bottom:-60px;right:-60px;line-height:1;}
-.auth-logo{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:#fff;font-weight:700;}
-.auth-logo span{color:var(--gold);}
-.auth-tagline{position:relative;z-index:1;}
-.auth-tagline h2{font-size:2.4rem;color:#fff;margin-bottom:12px;line-height:1.2;}
-.auth-tagline h2 span{color:var(--gold);}
-.auth-tagline p{color:rgba(255,255,255,.55);font-size:.9rem;line-height:1.7;margin-bottom:28px;}
-.auth-perks{display:flex;flex-direction:column;gap:12px;}
-.auth-perk{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.7);font-size:.84rem;}
-.auth-perk i{color:var(--gold);font-size:.85rem;width:16px;}
-.auth-right{padding:48px;display:flex;align-items:center;justify-content:center;background:#fff;}
-.auth-box{width:100%;max-width:400px;}
-.auth-tabs{display:flex;background:var(--nude-light);border-radius:10px;padding:4px;margin-bottom:28px;}
-.auth-tab{flex:1;padding:9px;text-align:center;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--muted);transition:all .2s;border:none;background:none;}
-.auth-tab.active{background:#fff;color:var(--charcoal);box-shadow:0 2px 8px rgba(0,0,0,.08);}
-.auth-panel{display:none;}
-.auth-panel.active{display:block;}
-.auth-title{font-size:1.6rem;color:var(--charcoal);margin-bottom:4px;}
-.auth-sub{font-size:.84rem;color:var(--muted);margin-bottom:22px;}
-.input-wrap{position:relative;}
-.input-wrap i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:.84rem;}
-.input-wrap input{padding-left:38px !important;}
-.input-wrap .eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:.84rem;}
-.divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--muted);font-size:.78rem;}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--nude-med);}
-.error-box{background:#FEE2E2;border:1px solid #FECACA;color:#991B1B;padding:10px 14px;border-radius:8px;font-size:.8rem;margin-bottom:14px;display:none;}
-.success-box{background:#D1FAE5;border:1px solid #A7F3D0;color:#065F46;padding:10px 14px;border-radius:8px;font-size:.8rem;margin-bottom:14px;display:none;}
-.auth-footer{text-align:center;margin-top:18px;font-size:.82rem;color:var(--muted);}
-.auth-footer a{color:var(--gold-dark);font-weight:600;}
-@media(max-width:768px){
-  .auth-split{grid-template-columns:1fr;}
-  .auth-left{display:none;}
-  .auth-right{padding:32px 20px;}
-}
+.split{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;}
+.left{background:linear-gradient(135deg,var(--charcoal) 0%,var(--charcoal-2) 100%);padding:48px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+.left::before{content:'◆';position:absolute;font-size:22rem;color:rgba(200,169,126,.04);bottom:-60px;right:-60px;line-height:1;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:#fff;font-weight:700;}
+.logo span{color:var(--gold);}
+.tagline{position:relative;z-index:1;}
+.tagline h2{font-size:2.4rem;color:#fff;margin-bottom:12px;line-height:1.2;}
+.tagline h2 span{color:var(--gold);}
+.tagline p{color:rgba(255,255,255,.55);font-size:.9rem;line-height:1.7;margin-bottom:28px;}
+.perks{display:flex;flex-direction:column;gap:12px;}
+.perk{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.7);font-size:.84rem;}
+.perk i{color:var(--gold);font-size:.85rem;width:16px;}
+.right{padding:48px;display:flex;align-items:center;justify-content:center;background:#fff;}
+.box{width:100%;max-width:400px;}
+.tabs{display:flex;background:var(--nude-light);border-radius:10px;padding:4px;margin-bottom:28px;}
+.tab{flex:1;padding:9px;text-align:center;border-radius:7px;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--muted);transition:all .2s;border:none;background:none;}
+.tab.active{background:#fff;color:var(--charcoal);box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.panel{display:none;} .panel.active{display:block;}
+.title{font-size:1.6rem;color:var(--charcoal);margin-bottom:4px;}
+.sub{font-size:.84rem;color:var(--muted);margin-bottom:22px;}
+.iw{position:relative;} .iw i.fi{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:.84rem;}
+.iw input{padding-left:38px!important;}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:.84rem;}
+.err{background:#FEE2E2;border:1px solid #FECACA;color:#991B1B;padding:10px 14px;border-radius:8px;font-size:.8rem;margin-bottom:14px;display:none;}
+.foot{text-align:center;margin-top:14px;font-size:.82rem;color:var(--muted);}
+.foot a{color:var(--gold-dark);font-weight:600;}
+@media(max-width:768px){.split{grid-template-columns:1fr;}.left{display:none;}.right{padding:32px 20px;}}
 </style>
 </head>
 <body>
-<div class="auth-split">
-  <div class="auth-left">
-    <div class="auth-logo">Crown<span>Trade</span> Academy</div>
-    <div class="auth-tagline">
-      <h2>Welcome<br>Back to the <span>Crown.</span></h2>
+<div class="split">
+  <div class="left">
+    <div class="logo">Crown<span>Trade</span> Academy</div>
+    <div class="tagline">
+      <h2>Welcome Back<br>to the <span>Crown.</span></h2>
       <p>Your trading journey doesn't stop when the session ends. Log in to continue learning, review your trades, and connect with your mentor.</p>
-      <div class="auth-perks">
-        <div class="auth-perk"><i class="fas fa-play-circle"></i> Continue where you left off</div>
-        <div class="auth-perk"><i class="fas fa-user-tie"></i> Message your mentor directly</div>
-        <div class="auth-perk"><i class="fas fa-chart-line"></i> Review your trade journal</div>
-        <div class="auth-perk"><i class="fas fa-crown"></i> Check your partner earnings</div>
+      <div class="perks">
+        <div class="perk"><i class="fas fa-play-circle"></i> Continue where you left off</div>
+        <div class="perk"><i class="fas fa-user-tie"></i> Connect with your mentor</div>
+        <div class="perk"><i class="fas fa-chart-line"></i> Review your trade journal</div>
+        <div class="perk"><i class="fas fa-crown"></i> Check partner earnings</div>
       </div>
     </div>
     <div style="font-size:.76rem;color:rgba(255,255,255,.3);">© 2026 Crown Trade Academy</div>
   </div>
-  <div class="auth-right">
-    <div class="auth-box">
-      <div class="auth-tabs">
-        <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
-        <button class="auth-tab" onclick="switchTab('register')">Create Account</button>
+  <div class="right">
+    <div class="box">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('login')">Sign In</button>
+        <button class="tab" onclick="switchTab('register')">Create Account</button>
       </div>
-
       <!-- LOGIN -->
-      <div class="auth-panel active" id="panel-login">
-        <h2 class="auth-title">Sign In</h2>
-        <p class="auth-sub">Access your Crown Trade dashboard</p>
-        <div class="error-box" id="login-error"></div>
-        <div class="form-group">
-          <label>Email Address</label>
-          <div class="input-wrap">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <div class="input-wrap">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-            <button class="eye-btn" onclick="togglePw('login-password',this)"><i class="fas fa-eye"></i></button>
-          </div>
-        </div>
-        <button class="btn btn-gold" style="width:100%;justify-content:center;" id="loginBtn" onclick="doLogin()">
-          <i class="fas fa-sign-in-alt"></i> Sign In
-        </button>
-        <div class="divider">or</div>
-        <div class="auth-footer">
-          Don't have an account? <a href="#" onclick="switchTab('register')">Create one</a>
-        </div>
-        <div class="auth-footer" style="margin-top:8px;">
-          <a href="mentorship-form.html">Apply for Mentorship</a> · <a href="referral-register.html">Become a Partner</a>
-        </div>
+      <div class="panel active" id="panel-login">
+        <h2 class="title">Sign In</h2>
+        <p class="sub">Access your Crown Trade dashboard</p>
+        <div class="err" id="login-err"></div>
+        <div class="form-group"><label>Email Address</label><div class="iw"><i class="fas fa-envelope fi"></i><input type="email" id="l-email" placeholder="you@example.com" autocomplete="email"></div></div>
+        <div class="form-group"><label>Password</label><div class="iw"><i class="fas fa-lock fi"></i><input type="password" id="l-pw" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"><button class="eye" onclick="togglePw('l-pw',this)"><i class="fas fa-eye"></i></button></div></div>
+        <button class="btn btn-gold" style="width:100%;justify-content:center;" id="loginBtn" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+        <div class="foot" style="margin-top:14px;">Don't have an account? <a href="#" onclick="switchTab('register')">Create one</a></div>
+        <div class="foot" style="margin-top:8px;"><a href="mentorship-form.html">Apply for Mentorship</a> · <a href="referral-register.html">Become a Partner</a></div>
       </div>
-
       <!-- REGISTER -->
-      <div class="auth-panel" id="panel-register">
-        <h2 class="auth-title">Create Account</h2>
-        <p class="auth-sub">Already applied? Set up your login here</p>
-        <div class="error-box" id="reg-error"></div>
-        <div class="success-box" id="reg-success"></div>
-        <div class="form-group">
-          <label>Full Name</label>
-          <div class="input-wrap">
-            <i class="fas fa-user"></i>
-            <input type="text" id="reg-name" placeholder="James Mwangi" autocomplete="name">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Email Address</label>
-          <div class="input-wrap">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Phone Number</label>
-          <div class="input-wrap">
-            <i class="fas fa-phone"></i>
-            <input type="tel" id="reg-phone" placeholder="0712345678" autocomplete="tel">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <div class="input-wrap">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="reg-password" placeholder="Minimum 6 characters" onkeydown="if(event.key==='Enter')doRegister()">
-            <button class="eye-btn" onclick="togglePw('reg-password',this)"><i class="fas fa-eye"></i></button>
-          </div>
-        </div>
-        <button class="btn btn-gold" style="width:100%;justify-content:center;" id="regBtn" onclick="doRegister()">
-          <i class="fas fa-user-plus"></i> Create Account
-        </button>
-        <div class="auth-footer" style="margin-top:14px;">
-          Already have an account? <a href="#" onclick="switchTab('login')">Sign in</a>
-        </div>
+      <div class="panel" id="panel-register">
+        <h2 class="title">Create Account</h2>
+        <p class="sub">Already applied? Set up your login here</p>
+        <div class="err" id="reg-err"></div>
+        <div class="form-group"><label>Full Name</label><div class="iw"><i class="fas fa-user fi"></i><input type="text" id="r-name" placeholder="James Mwangi" autocomplete="name"></div></div>
+        <div class="form-group"><label>Email Address</label><div class="iw"><i class="fas fa-envelope fi"></i><input type="email" id="r-email" placeholder="you@example.com" autocomplete="email"></div></div>
+        <div class="form-group"><label>Phone Number</label><div class="iw"><i class="fas fa-phone fi"></i><input type="tel" id="r-phone" placeholder="0712345678" autocomplete="tel"></div></div>
+        <div class="form-group"><label>Password</label><div class="iw"><i class="fas fa-lock fi"></i><input type="password" id="r-pw" placeholder="Minimum 6 characters" onkeydown="if(event.key==='Enter')doRegister()"><button class="eye" onclick="togglePw('r-pw',this)"><i class="fas fa-eye"></i></button></div></div>
+        <button class="btn btn-gold" style="width:100%;justify-content:center;" id="regBtn" onclick="doRegister()"><i class="fas fa-user-plus"></i> Create Account</button>
+        <div class="foot" style="margin-top:14px;">Already have an account? <a href="#" onclick="switchTab('login')">Sign in</a></div>
       </div>
     </div>
   </div>
 </div>
-
 <script src="api.js"></script>
 <script>
-// Redirect if already logged in
-if (Auth.isLoggedIn()) {
-  const u = Auth.getUser();
-  if (u?.type === 'mentor') window.location.href = 'mentor-dashboard.html';
-  else window.location.href = 'client-dashboard.html';
+if(Auth.isLoggedIn()){const u=Auth.getUser();window.location.href=u?.type==='mentor'?'mentor-dashboard.html':'client-dashboard.html';}
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
+  document.getElementById('panel-login').classList.toggle('active',t==='login');
+  document.getElementById('panel-register').classList.toggle('active',t==='register');
 }
-
-function switchTab(tab) {
-  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
-  document.getElementById('panel-login').classList.toggle('active', tab==='login');
-  document.getElementById('panel-register').classList.toggle('active', tab==='register');
+function togglePw(id,btn){const i=document.getElementById(id);const isT=i.type==='text';i.type=isT?'password':'text';btn.querySelector('i').className=isT?'fas fa-eye':'fas fa-eye-slash';}
+function showErr(id,msg){const e=document.getElementById(id);e.textContent=msg;e.style.display='block';}
+function hideErr(id){document.getElementById(id).style.display='none';}
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  const pw=document.getElementById('l-pw').value;
+  hideErr('login-err');
+  if(!email||!pw){showErr('login-err','Please enter your email and password.');return;}
+  const btn=document.getElementById('loginBtn');setLoading(btn,true);
+  try{const d=await API.login(email,pw);Auth.setToken(d.token);Auth.setUser(d.user);window.location.href=d.user?.type==='mentor'?'mentor-dashboard.html':'client-dashboard.html';}
+  catch(e){showErr('login-err',e.message||'Invalid email or password.');setLoading(btn,false);}
 }
-
-function togglePw(id, btn) {
-  const input = document.getElementById(id);
-  const isText = input.type === 'text';
-  input.type = isText ? 'password' : 'text';
-  btn.querySelector('i').className = isText ? 'fas fa-eye' : 'fas fa-eye-slash';
-}
-
-function showError(id, msg) {
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-function hideError(id) { document.getElementById(id).style.display = 'none'; }
-
-async function doLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  hideError('login-error');
-  if (!email || !password) { showError('login-error', 'Please enter your email and password.'); return; }
-  const btn = document.getElementById('loginBtn');
-  setLoading(btn, true);
-  try {
-    const data = await API.login(email, password);
-    Auth.setToken(data.token);
-    Auth.setUser(data.user);
-    // Redirect based on type
-    if (data.user.type === 'mentor') window.location.href = 'mentor-dashboard.html';
-    else window.location.href = 'client-dashboard.html';
-  } catch(err) {
-    showError('login-error', err.message || 'Invalid email or password.');
-    setLoading(btn, false);
-  }
-}
-
-async function doRegister() {
-  const name = document.getElementById('reg-name').value.trim();
-  const email = document.getElementById('reg-email').value.trim();
-  const phone = document.getElementById('reg-phone').value.trim();
-  const password = document.getElementById('reg-password').value;
-  hideError('reg-error');
-  document.getElementById('reg-success').style.display = 'none';
-  if (!name || !email || !password) { showError('reg-error', 'Please fill in all required fields.'); return; }
-  if (password.length < 6) { showError('reg-error', 'Password must be at least 6 characters.'); return; }
-  const btn = document.getElementById('regBtn');
-  setLoading(btn, true);
-  try {
-    const data = await API.register({ full_name: name, email, phone, password });
-    Auth.setToken(data.token);
-    Auth.setUser(data.user);
-    window.location.href = 'client-dashboard.html';
-  } catch(err) {
-    showError('reg-error', err.message || 'Registration failed. Try again.');
-    setLoading(btn, false);
-  }
+async function doRegister(){
+  const name=document.getElementById('r-name').value.trim();
+  const email=document.getElementById('r-email').value.trim();
+  const phone=document.getElementById('r-phone').value.trim();
+  const pw=document.getElementById('r-pw').value;
+  hideErr('reg-err');
+  if(!name||!email||!pw){showErr('reg-err','Please fill in all required fields.');return;}
+  if(pw.length<6){showErr('reg-err','Password must be at least 6 characters.');return;}
+  const btn=document.getElementById('regBtn');setLoading(btn,true);
+  try{const d=await API.register({full_name:name,email,phone,password:pw});Auth.setToken(d.token);Auth.setUser(d.user);window.location.href='client-dashboard.html';}
+  catch(e){showErr('reg-err',e.message||'Registration failed. Try again.');setLoading(btn,false);}
 }
 </script>
 </body>

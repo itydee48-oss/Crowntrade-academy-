@@ -1,233 +1,162 @@
 const express = require('express');
 const router = express.Router();
 const { query } = require('../database/db');
-const { authenticateToken, requireAdmin } = require('../middleware/auth');
+const { authenticateToken, requireMentor, requireAdmin } = require('../middleware/auth');
 
-// ── GET MENTOR AVAILABILITY (for booking calendar) ─────────────────────────
-router.get('/availability/:mentorId', authenticateToken, async (req, res) => {
-  try {
-    const result = await query(
-      'SELECT * FROM mentor_availability WHERE mentor_id=$1 AND is_active=TRUE ORDER BY day_of_week,start_time',
-      [req.params.mentorId]
-    );
-    res.json({ availability: result.rows });
-  } catch (err) { res.status(500).json({ error: 'Failed to get availability' }); }
-});
-
-// ── BOOK A SESSION (client) ────────────────────────────────────────────────
+// ── CLIENT: BOOK SESSION ────────────────────────────────────────────────────
 router.post('/book', authenticateToken, async (req, res) => {
   try {
-    const { scheduled_at, duration_minutes, contact_method, client_notes } = req.body;
-    if (!scheduled_at || !contact_method) return res.status(400).json({ error: 'scheduled_at and contact_method required' });
-
-    // Get assigned mentor
-    const userResult = await query('SELECT mentor_id,has_mentorship FROM users WHERE id=$1', [req.user.id]);
-    const user = userResult.rows[0];
-    if (!user.has_mentorship) return res.status(403).json({ error: 'Mentorship not unlocked' });
-    if (!user.mentor_id) return res.status(400).json({ error: 'No mentor assigned yet. Contact admin.' });
-
-    // Check for conflicting booking
-    const conflict = await query(
-      `SELECT id FROM sessions WHERE mentor_id=$1 AND scheduled_at=$2 AND status NOT IN ('cancelled')`,
-      [user.mentor_id, scheduled_at]
-    );
-    if (conflict.rows.length > 0) return res.status(409).json({ error: 'This slot is already booked. Please choose another time.' });
-
-    const result = await query(`
-      INSERT INTO sessions (mentor_id,client_user_id,scheduled_at,duration_minutes,contact_method,client_notes)
-      VALUES ($1,$2,$3,$4,$5,$6) RETURNING id
-    `, [user.mentor_id, req.user.id, scheduled_at, duration_minutes || 60, contact_method, client_notes || null]);
-
-    res.status(201).json({ message: 'Session booked! Your mentor will confirm shortly.', session_id: result.rows[0].id });
-  } catch (err) {
-    console.error('Book session error:', err);
-    res.status(500).json({ error: 'Failed to book session' });
-  }
+    const { scheduled_at, contact_method, client_notes, duration_minutes } = req.body;
+    if (!scheduled_at) return res.status(400).json({ error: 'Scheduled time required' });
+    const userResult = await query('SELECT mentor_id FROM users WHERE id=$1', [req.user.id]);
+    const mentor_id = userResult.rows[0]?.mentor_id;
+    if (!mentor_id) return res.status(400).json({ error: 'No mentor assigned yet' });
+    const result = await query(`INSERT INTO sessions (mentor_id,client_user_id,scheduled_at,duration_minutes,contact_method,client_notes)
+      VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
+      [mentor_id, req.user.id, scheduled_at, duration_minutes||60, contact_method||'whatsapp', client_notes||'']);
+    res.json({ session: result.rows[0] });
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to book session' }); }
 });
 
-// ── GET CLIENT'S SESSIONS ──────────────────────────────────────────────────
+// ── CLIENT: MY SESSIONS ─────────────────────────────────────────────────────
 router.get('/my-sessions', authenticateToken, async (req, res) => {
   try {
-    const result = await query(`
-      SELECT s.*,m.display_name as mentor_display_name,m.avatar_url as mentor_avatar
-      FROM sessions s JOIN mentors m ON s.mentor_id=m.id
-      WHERE s.client_user_id=$1 ORDER BY s.scheduled_at DESC
-    `, [req.user.id]);
-
-    // Only reveal contact_link if session is confirmed
-    const sessions = result.rows.map(s => ({
-      ...s,
-      contact_link: s.status === 'confirmed' ? s.contact_link : null
-    }));
-    res.json({ sessions });
-  } catch (err) { res.status(500).json({ error: 'Failed to get sessions' }); }
+    const result = await query(`SELECT s.*, m.display_name as mentor_name, m.full_name as mentor_full_name,
+      m.phone as mentor_phone FROM sessions s
+      JOIN mentors m ON s.mentor_id = m.id
+      WHERE s.client_user_id=$1 ORDER BY s.scheduled_at DESC`, [req.user.id]);
+    res.json({ sessions: result.rows });
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to get sessions' }); }
 });
 
-// ── CANCEL SESSION (client) ────────────────────────────────────────────────
+// ── CLIENT: CANCEL SESSION ──────────────────────────────────────────────────
 router.patch('/:id/cancel', authenticateToken, async (req, res) => {
   try {
-    const result = await query('SELECT * FROM sessions WHERE id=$1', [req.params.id]);
-    const session = result.rows[0];
-    if (!session) return res.status(404).json({ error: 'Session not found' });
-    if (session.client_user_id !== req.user.id) return res.status(403).json({ error: 'Not your session' });
-    if (['completed','cancelled'].includes(session.status)) return res.status(400).json({ error: 'Cannot cancel this session' });
-
-    await query(`UPDATE sessions SET status='cancelled',updated_at=CURRENT_TIMESTAMP WHERE id=$1`, [req.params.id]);
+    await query('UPDATE sessions SET status=$1 WHERE id=$2 AND client_user_id=$3', ['cancelled', req.params.id, req.user.id]);
     res.json({ message: 'Session cancelled' });
-  } catch (err) { res.status(500).json({ error: 'Failed to cancel session' }); }
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to cancel' }); }
 });
 
-// ══════════════════════════════════════════════════════════════════════════════
-// MENTOR ROUTES
-// ══════════════════════════════════════════════════════════════════════════════
-
-// Mentor auth middleware — checks mentor JWT (we'll use type:'mentor' in token)
-function requireMentor(req, res, next) {
-  if (!req.user || req.user.type !== 'mentor') return res.status(403).json({ error: 'Mentor access required' });
-  next();
-}
-
-// ── GET MENTOR'S SESSIONS ──────────────────────────────────────────────────
-router.get('/mentor/sessions', authenticateToken, requireMentor, async (req, res) => {
+// ── CLIENT: GET MENTOR AVAILABILITY ─────────────────────────────────────────
+router.get('/availability/:mentorId', async (req, res) => {
   try {
-    const result = await query(`
-      SELECT s.*,u.full_name as client_name,u.email as client_email,u.member_number,u.phone as client_phone
-      FROM sessions s JOIN users u ON s.client_user_id=u.id
-      WHERE s.mentor_id=$1 ORDER BY s.scheduled_at DESC
-    `, [req.user.id]);
-    res.json({ sessions: result.rows });
-  } catch (err) { res.status(500).json({ error: 'Failed to get sessions' }); }
+    const result = await query('SELECT * FROM mentor_availability WHERE mentor_id=$1 AND is_active=TRUE ORDER BY day_of_week', [req.params.mentorId]);
+    res.json({ availability: result.rows });
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to get availability' }); }
 });
 
-// ── CONFIRM / UPDATE SESSION (mentor) ─────────────────────────────────────
-router.patch('/mentor/:id', authenticateToken, requireMentor, async (req, res) => {
+// ── MENTOR: GET CLIENTS ─────────────────────────────────────────────────────
+router.get('/mentor/clients', requireMentor, async (req, res) => {
   try {
-    const { status, contact_link, mentor_notes } = req.body;
-    const result = await query('SELECT * FROM sessions WHERE id=$1 AND mentor_id=$2', [req.params.id, req.user.id]);
-    if (!result.rows[0]) return res.status(404).json({ error: 'Session not found' });
-
-    await query(`UPDATE sessions SET status=COALESCE($1,status),contact_link=COALESCE($2,contact_link),mentor_notes=COALESCE($3,mentor_notes),updated_at=CURRENT_TIMESTAMP WHERE id=$4`,
-      [status||null, contact_link||null, mentor_notes||null, req.params.id]);
-    res.json({ message: 'Session updated' });
-  } catch (err) { res.status(500).json({ error: 'Failed to update session' }); }
-});
-
-// ── SET AVAILABILITY (mentor) ──────────────────────────────────────────────
-router.post('/mentor/availability', authenticateToken, requireMentor, async (req, res) => {
-  try {
-    const { slots } = req.body; // array of {day_of_week, start_time, end_time, is_active}
-    if (!Array.isArray(slots)) return res.status(400).json({ error: 'slots must be an array' });
-
-    // Replace all availability for this mentor
-    await query('DELETE FROM mentor_availability WHERE mentor_id=$1', [req.user.id]);
-    for (const slot of slots) {
-      await query(`INSERT INTO mentor_availability (mentor_id,day_of_week,start_time,end_time,is_active) VALUES ($1,$2,$3,$4,$5)`,
-        [req.user.id, slot.day_of_week, slot.start_time, slot.end_time, slot.is_active !== false]);
-    }
-    res.json({ message: 'Availability updated', count: slots.length });
-  } catch (err) { res.status(500).json({ error: 'Failed to update availability' }); }
-});
-
-// ── GET MENTOR'S CLIENTS ───────────────────────────────────────────────────
-router.get('/mentor/clients', authenticateToken, requireMentor, async (req, res) => {
-  try {
-    const result = await query(`
-      SELECT u.id,u.full_name,u.email,u.member_number,u.phone,u.login_streak,u.module_streak,u.login_last_date,u.module_last_date,u.status,
-        e.status as enrollment_status,e.completed_modules,c.title as course_title,c.id as course_id,
-        (SELECT COUNT(*)::int FROM sessions s WHERE s.client_user_id=u.id AND s.mentor_id=$1) as session_count,
-        (SELECT MAX(s.scheduled_at) FROM sessions s WHERE s.client_user_id=u.id AND s.mentor_id=$1 AND s.status='completed') as last_session
+    const result = await query(`SELECT u.id, u.full_name, u.email, u.phone, u.member_number,
+      u.login_streak, u.login_last_date, u.module_streak, u.module_last_date, u.created_at,
+      e.course_id, c.title as course_title, e.completed_modules, e.status as enrollment_status,
+      (SELECT COUNT(*) FROM sessions s WHERE s.client_user_id=u.id AND s.mentor_id=$1)::int as session_count
       FROM users u
       LEFT JOIN enrollments e ON e.user_id=u.id AND e.status='approved'
       LEFT JOIN courses c ON c.id=e.course_id
-      WHERE u.mentor_id=$1
-      ORDER BY u.full_name ASC
-    `, [req.user.id]);
-
-    const clients = result.rows.map(c => ({
-      ...c,
-      completed_modules: JSON.parse(c.completed_modules || '[]')
-    }));
-    res.json({ clients });
-  } catch (err) { res.status(500).json({ error: 'Failed to get clients' }); }
+      WHERE u.mentor_id=$1 ORDER BY u.created_at DESC`, [req.user.id]);
+    res.json({ clients: result.rows });
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to get clients' }); }
 });
 
-// ── REQUEST REASSIGNMENT (mentor) ──────────────────────────────────────────
-router.post('/mentor/reassign', authenticateToken, requireMentor, async (req, res) => {
+// ── MENTOR: GET SESSIONS ────────────────────────────────────────────────────
+router.get('/mentor/sessions', requireMentor, async (req, res) => {
+  try {
+    const result = await query(`SELECT s.*, u.full_name as client_name, u.email as client_email,
+      u.phone as client_phone, u.member_number FROM sessions s
+      JOIN users u ON s.client_user_id=u.id
+      WHERE s.mentor_id=$1 ORDER BY s.scheduled_at DESC`, [req.user.id]);
+    res.json({ sessions: result.rows });
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to get sessions' }); }
+});
+
+// ── MENTOR: UPDATE SESSION ──────────────────────────────────────────────────
+router.patch('/mentor/:id', requireMentor, async (req, res) => {
+  try {
+    const { status, contact_link, mentor_notes } = req.body;
+    await query(`UPDATE sessions SET status=COALESCE($1,status), contact_link=COALESCE($2,contact_link),
+      mentor_notes=COALESCE($3,mentor_notes), updated_at=CURRENT_TIMESTAMP WHERE id=$4 AND mentor_id=$5`,
+      [status||null, contact_link||null, mentor_notes||null, req.params.id, req.user.id]);
+    res.json({ message: 'Session updated' });
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to update session' }); }
+});
+
+// ── MENTOR: SET AVAILABILITY ────────────────────────────────────────────────
+router.post('/mentor/availability', requireMentor, async (req, res) => {
+  try {
+    const { slots } = req.body;
+    await query('DELETE FROM mentor_availability WHERE mentor_id=$1', [req.user.id]);
+    if (slots && slots.length) {
+      for (const slot of slots) {
+        await query(`INSERT INTO mentor_availability (mentor_id,day_of_week,start_time,end_time,is_active)
+          VALUES ($1,$2,$3,$4,$5)`, [req.user.id, slot.day_of_week, slot.start_time, slot.end_time, true]);
+      }
+    }
+    res.json({ message: `Availability saved — ${slots?.length||0} slots` });
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to save availability' }); }
+});
+
+// ── MENTOR: REQUEST REASSIGNMENT ────────────────────────────────────────────
+router.post('/mentor/reassign', requireMentor, async (req, res) => {
   try {
     const { client_user_id, reason } = req.body;
-    if (!client_user_id || !reason) return res.status(400).json({ error: 'client_user_id and reason required' });
-
-    const clientCheck = await query('SELECT id FROM users WHERE id=$1 AND mentor_id=$2', [client_user_id, req.user.id]);
-    if (!clientCheck.rows[0]) return res.status(403).json({ error: 'This client is not assigned to you' });
-
-    const result = await query(`INSERT INTO mentor_reassignment_requests (mentor_id,client_user_id,reason) VALUES ($1,$2,$3) RETURNING id`,
-      [req.user.id, client_user_id, reason]);
-    res.status(201).json({ message: 'Reassignment request submitted to admin.', id: result.rows[0].id });
-  } catch (err) { res.status(500).json({ error: 'Failed to submit request' }); }
+    if (!reason) return res.status(400).json({ error: 'Reason required' });
+    const result = await query(`INSERT INTO mentor_reassignment_requests (mentor_id,client_user_id,reason)
+      VALUES ($1,$2,$3) RETURNING *`, [req.user.id, client_user_id, reason]);
+    res.json({ request: result.rows[0] });
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to submit request' }); }
 });
 
-// ── GET MENTOR'S REASSIGNMENT REQUESTS ────────────────────────────────────
-router.get('/mentor/reassign-requests', authenticateToken, requireMentor, async (req, res) => {
-  try {
-    const result = await query(`
-      SELECT r.*,u.full_name as client_name,u.member_number
-      FROM mentor_reassignment_requests r JOIN users u ON r.client_user_id=u.id
-      WHERE r.mentor_id=$1 ORDER BY r.requested_at DESC
-    `, [req.user.id]);
-    res.json({ requests: result.rows });
-  } catch (err) { res.status(500).json({ error: 'Failed to get requests' }); }
-});
-
-// ══════════════════════════════════════════════════════════════════════════════
-// ADMIN SESSION ROUTES
-// ══════════════════════════════════════════════════════════════════════════════
+// ── ADMIN: ALL SESSIONS ─────────────────────────────────────────────────────
 router.get('/admin/all', requireAdmin, async (req, res) => {
   try {
-    const { status, mentor_id } = req.query;
-    let sql = `SELECT s.*,u.full_name as client_name,u.member_number,m.display_name as mentor_name FROM sessions s JOIN users u ON s.client_user_id=u.id JOIN mentors m ON s.mentor_id=m.id WHERE 1=1`;
+    const { status } = req.query;
+    let sql = `SELECT s.*, u.full_name as client_name, u.member_number,
+      m.display_name as mentor_name FROM sessions s
+      JOIN users u ON s.client_user_id=u.id JOIN mentors m ON s.mentor_id=m.id`;
     const params = [];
-    if (status) { params.push(status); sql += ` AND s.status=$${params.length}`; }
-    if (mentor_id) { params.push(mentor_id); sql += ` AND s.mentor_id=$${params.length}`; }
-    sql += ' ORDER BY s.scheduled_at DESC';
+    if (status) { sql += ' WHERE s.status=$1'; params.push(status); }
+    sql += ' ORDER BY s.scheduled_at DESC LIMIT 100';
     const result = await query(sql, params);
     res.json({ sessions: result.rows });
-  } catch (err) { res.status(500).json({ error: 'Failed to get sessions' }); }
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to get sessions' }); }
 });
 
+// ── ADMIN: UPDATE SESSION ────────────────────────────────────────────────────
 router.patch('/admin/:id', requireAdmin, async (req, res) => {
   try {
-    const { status, admin_notes } = req.body;
-    await query(`UPDATE sessions SET status=COALESCE($1,status),updated_at=CURRENT_TIMESTAMP WHERE id=$2`, [status||null, req.params.id]);
+    const { status } = req.body;
+    await query('UPDATE sessions SET status=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2', [status, req.params.id]);
     res.json({ message: 'Session updated' });
-  } catch (err) { res.status(500).json({ error: 'Failed to update session' }); }
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to update session' }); }
 });
 
+// ── ADMIN: REASSIGNMENT REQUESTS ─────────────────────────────────────────────
 router.get('/admin/reassign-requests', requireAdmin, async (req, res) => {
   try {
-    const result = await query(`
-      SELECT r.*,u.full_name as client_name,u.member_number,m.full_name as mentor_name
-      FROM mentor_reassignment_requests r JOIN users u ON r.client_user_id=u.id JOIN mentors m ON r.mentor_id=m.id
-      WHERE r.status='pending' ORDER BY r.requested_at ASC
-    `);
+    const result = await query(`SELECT r.*, u.full_name as client_name, u.member_number,
+      m.display_name as mentor_name FROM mentor_reassignment_requests r
+      JOIN users u ON r.client_user_id=u.id JOIN mentors m ON r.mentor_id=m.id
+      WHERE r.status='pending' ORDER BY r.requested_at DESC`);
     res.json({ requests: result.rows });
-  } catch (err) { res.status(500).json({ error: 'Failed to get requests' }); }
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to get requests' }); }
 });
 
+// ── ADMIN: REVIEW REASSIGNMENT ───────────────────────────────────────────────
 router.patch('/admin/reassign/:id', requireAdmin, async (req, res) => {
   try {
     const { status, admin_notes, new_mentor_id } = req.body;
-    const rResult = await query('SELECT * FROM mentor_reassignment_requests WHERE id=$1', [req.params.id]);
-    const r = rResult.rows[0];
+    const reqResult = await query('SELECT * FROM mentor_reassignment_requests WHERE id=$1', [req.params.id]);
+    const r = reqResult.rows[0];
     if (!r) return res.status(404).json({ error: 'Request not found' });
-
     await query(`UPDATE mentor_reassignment_requests SET status=$1,admin_notes=$2,reviewed_at=CURRENT_TIMESTAMP WHERE id=$3`,
-      [status, admin_notes||null, req.params.id]);
-
+      [status, admin_notes||'', req.params.id]);
     if (status === 'approved' && new_mentor_id) {
-      await query('UPDATE users SET mentor_id=$1,updated_at=CURRENT_TIMESTAMP WHERE id=$2', [new_mentor_id, r.client_user_id]);
+      await query('UPDATE users SET mentor_id=$1 WHERE id=$2', [new_mentor_id, r.client_user_id]);
     }
     res.json({ message: 'Request reviewed' });
-  } catch (err) { res.status(500).json({ error: 'Failed to review request' }); }
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to review' }); }
 });
 
 module.exports = router;

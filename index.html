@@ -1,188 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Crown Trade Academy — Elite Trading Mentorship</title>
-<meta name="description" content="Transform your trading with 1-on-1 expert mentorship, proven strategies, and a community of serious traders. Join Crown Trade Academy.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Crown Trade Academy — Elite Trading Mentorship Kenya</title>
+<meta name="description" content="Transform your trading with 1-on-1 expert mentorship, proven strategies, and a community of serious traders. Join Crown Trade Academy Kenya.">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="shared.css">
 <style>
-/* ── NAV ─────────────────────────────────────────────────────────── */
-.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(249,246,242,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(212,200,188,.3);transition:all .3s;}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(249,246,242,.96);backdrop-filter:blur(12px);border-bottom:1px solid rgba(212,200,188,.3);transition:box-shadow .3s;}
 .nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;}
-.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--charcoal);position:relative;}
-.nav-logo span{color:var(--gold);}
+.logo{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--charcoal);}
+.logo span{color:var(--gold);}
 .nav-links{display:flex;align-items:center;gap:32px;list-style:none;}
-.nav-links a{font-size:.86rem;font-weight:500;color:var(--charcoal);letter-spacing:.3px;transition:color .2s;}
+.nav-links a{font-size:.86rem;font-weight:500;color:var(--charcoal);transition:color .2s;}
 .nav-links a:hover{color:var(--gold);}
-.nav-actions{display:flex;align-items:center;gap:10px;}
-.hamburger{display:none;background:none;border:none;flex-direction:column;gap:5px;padding:4px;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.hamburger{display:none;background:none;border:none;flex-direction:column;gap:5px;padding:4px;cursor:pointer;}
 .hamburger span{display:block;width:22px;height:2px;background:var(--charcoal);border-radius:2px;transition:all .3s;}
 .hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px);}
 .hamburger.open span:nth-child(2){opacity:0;}
 .hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px);}
-.mobile-menu{display:none;position:fixed;inset:0;top:68px;background:rgba(249,246,242,.98);backdrop-filter:blur(12px);z-index:999;padding:24px;flex-direction:column;gap:4px;}
-.mobile-menu.show{display:flex;}
-.mobile-menu a{display:block;padding:14px 16px;font-size:1rem;font-weight:500;color:var(--charcoal);border-bottom:1px solid var(--nude-med);}
-.mobile-menu a:hover{color:var(--gold);}
-.mobile-menu .btn{margin-top:16px;width:100%;justify-content:center;}
-
-/* ── HERO ─────────────────────────────────────────────────────────── */
+.mob-menu{display:none;position:fixed;inset:0;top:68px;background:rgba(249,246,242,.98);backdrop-filter:blur(12px);z-index:999;padding:24px;flex-direction:column;gap:4px;}
+.mob-menu.show{display:flex;}
+.mob-menu a{display:block;padding:14px 16px;font-size:1rem;font-weight:500;border-bottom:1px solid var(--nude-med);}
+.mob-menu .btn{margin-top:16px;width:100%;justify-content:center;}
 .hero{min-height:100vh;background:linear-gradient(135deg,var(--nude-light) 0%,var(--nude-med) 100%);display:flex;align-items:center;padding:100px 24px 60px;position:relative;overflow:hidden;}
 .hero::before{content:'';position:absolute;top:-100px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(200,169,126,.12) 0%,transparent 70%);}
-.hero::after{content:'';position:absolute;bottom:-50px;left:-50px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(200,169,126,.08) 0%,transparent 70%);}
-.hero-inner{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:1;}
-.hero-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(200,169,126,.12);border:1px solid rgba(200,169,126,.3);color:var(--gold-dark);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:6px 14px;border-radius:20px;margin-bottom:20px;}
+.hero-in{max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:1;}
+.badge{display:inline-flex;align-items:center;gap:7px;background:rgba(200,169,126,.12);border:1px solid rgba(200,169,126,.3);color:var(--gold-dark);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:6px 14px;border-radius:20px;margin-bottom:20px;}
 .hero h1{font-size:3.4rem;line-height:1.15;color:var(--charcoal);margin-bottom:20px;}
 .hero h1 span{color:var(--gold);}
 .hero p{font-size:1.05rem;color:var(--muted);line-height:1.8;margin-bottom:30px;max-width:480px;}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;}
 .hero-stats{display:flex;gap:28px;margin-top:40px;flex-wrap:wrap;}
-.hero-stat .val{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--charcoal);}
-.hero-stat .lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;margin-top:2px;}
-.hero-visual{position:relative;}
-.hero-card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.1);border:1px solid rgba(212,200,188,.3);}
-.hero-card-header{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--nude-med);}
-.hero-card-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8B6340);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;}
+.hstat .v{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--charcoal);}
+.hstat .l{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;margin-top:2px;}
+.hero-card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.1);border:1px solid rgba(212,200,188,.3);position:relative;}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--nude-med);}
+.cav{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8B6340);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;}
 .chart-bars{display:flex;align-items:flex-end;gap:6px;height:80px;margin:14px 0;}
 .bar{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--gold),rgba(200,169,126,.3));}
-.hero-ticker{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
-.ticker-item{background:var(--nude-light);border-radius:7px;padding:6px 10px;font-size:.72rem;font-weight:700;}
-.ticker-item.up{color:var(--success);}
-.ticker-item.down{color:var(--danger);}
-.floating-badge{position:absolute;background:#fff;border-radius:12px;padding:10px 14px;box-shadow:0 8px 24px rgba(0,0,0,.1);border:1px solid rgba(212,200,188,.3);font-size:.78rem;font-weight:700;}
-.floating-badge.top-left{top:-20px;left:-20px;display:flex;align-items:center;gap:8px;color:var(--success);}
-.floating-badge.bottom-right{bottom:-20px;right:-20px;display:flex;align-items:center;gap:8px;color:var(--gold-dark);}
-
-/* ── FEATURES ─────────────────────────────────────────────────────── */
-.features{padding:80px 24px;background:#fff;}
-.features-inner{max-width:1200px;margin:0 auto;}
-.section-header{text-align:center;margin-bottom:50px;}
-.section-header h2{font-size:2.4rem;color:var(--charcoal);margin-bottom:10px;}
-.section-header p{color:var(--muted);font-size:.95rem;max-width:540px;margin:0 auto;}
-.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
-.feature-card{padding:28px;border-radius:14px;border:1px solid var(--nude-med);transition:all .25s;position:relative;overflow:hidden;}
-.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),transparent);opacity:0;transition:.25s;}
-.feature-card:hover{border-color:rgba(200,169,126,.4);box-shadow:0 8px 32px rgba(0,0,0,.06);transform:translateY(-4px);}
-.feature-card:hover::before{opacity:1;}
-.feature-icon{width:48px;height:48px;border-radius:12px;background:var(--gold-glow);border:1px solid rgba(200,169,126,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--gold);margin-bottom:16px;}
-.feature-card h3{font-size:1.15rem;margin-bottom:8px;color:var(--charcoal);}
-.feature-card p{font-size:.85rem;color:var(--muted);line-height:1.7;}
-
-/* ── HOW IT WORKS ─────────────────────────────────────────────────── */
-.how{padding:80px 24px;background:var(--nude-light);}
-.how-inner{max-width:1100px;margin:0 auto;}
+.ticker{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.tick{background:var(--nude-light);border-radius:7px;padding:5px 9px;font-size:.72rem;font-weight:700;}
+.tick.up{color:var(--success);} .tick.dn{color:var(--danger);}
+.fl{position:absolute;background:#fff;border-radius:12px;padding:10px 14px;box-shadow:0 8px 24px rgba(0,0,0,.1);border:1px solid rgba(212,200,188,.3);font-size:.78rem;font-weight:700;}
+.fl.tl{top:-20px;left:-20px;display:flex;align-items:center;gap:8px;color:var(--success);}
+.fl.br{bottom:-20px;right:-20px;display:flex;align-items:center;gap:8px;color:var(--gold-dark);}
+.sec{padding:80px 24px;}
+.sec-in{max-width:1200px;margin:0 auto;}
+.sec-head{text-align:center;margin-bottom:50px;}
+.sec-head h2{font-size:2.4rem;color:var(--charcoal);margin-bottom:10px;}
+.sec-head p{color:var(--muted);font-size:.95rem;max-width:540px;margin:0 auto;}
+.gd{display:block;width:50px;height:2px;background:var(--gold);margin:12px auto;}
+.features{background:#fff;}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.feat{padding:28px;border-radius:14px;border:1px solid var(--nude-med);transition:all .25s;position:relative;overflow:hidden;}
+.feat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),transparent);opacity:0;transition:.25s;}
+.feat:hover{border-color:rgba(200,169,126,.4);box-shadow:0 8px 32px rgba(0,0,0,.06);transform:translateY(-4px);}
+.feat:hover::before{opacity:1;}
+.fi{width:48px;height:48px;border-radius:12px;background:var(--gold-glow);border:1px solid rgba(200,169,126,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--gold);margin-bottom:16px;}
+.feat h3{font-size:1.15rem;margin-bottom:8px;}
+.feat p{font-size:.85rem;color:var(--muted);line-height:1.7;}
+.how{background:var(--nude-light);}
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:50px;position:relative;}
 .steps::before{content:'';position:absolute;top:32px;left:calc(12.5% + 12px);right:calc(12.5% + 12px);height:1px;background:linear-gradient(90deg,var(--gold),rgba(200,169,126,.3),var(--gold));z-index:0;}
 .step{text-align:center;position:relative;z-index:1;}
-.step-num{width:64px;height:64px;border-radius:50%;background:var(--gold);color:#fff;font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 4px 16px rgba(200,169,126,.4);}
-.step h4{font-size:1rem;margin-bottom:6px;color:var(--charcoal);}
+.sn{width:64px;height:64px;border-radius:50%;background:var(--gold);color:#fff;font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 4px 16px rgba(200,169,126,.4);}
+.step h4{font-size:1rem;margin-bottom:6px;}
 .step p{font-size:.8rem;color:var(--muted);line-height:1.6;}
-
-/* ── PRICING ──────────────────────────────────────────────────────── */
-.pricing{padding:80px 24px;background:#fff;}
-.pricing-inner{max-width:1000px;margin:0 auto;}
-.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:50px;}
-.pricing-card{border-radius:16px;padding:32px;border:1px solid var(--nude-med);position:relative;transition:all .25s;}
-.pricing-card.featured{background:var(--charcoal);border-color:var(--gold);color:#fff;}
-.pricing-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:#fff;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 14px;border-radius:20px;}
-.pricing-name{font-size:1rem;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;}
-.pricing-card.featured .pricing-name{color:var(--gold);}
-.pricing-price{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;margin:12px 0;line-height:1;}
-.pricing-card.featured .pricing-price{color:var(--gold);}
-.pricing-currency{font-size:1rem;font-weight:400;vertical-align:top;margin-top:10px;display:inline-block;}
-.pricing-period{font-size:.8rem;color:var(--muted);margin-bottom:20px;}
-.pricing-card.featured .pricing-period{color:rgba(255,255,255,.5);}
-.pricing-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
-.pricing-features li{display:flex;align-items:center;gap:8px;font-size:.85rem;}
-.pricing-features li i{color:var(--gold);font-size:.8rem;flex-shrink:0;}
-.pricing-card.featured .pricing-features li{color:rgba(255,255,255,.8);}
-
-/* ── TESTIMONIALS ─────────────────────────────────────────────────── */
-.testimonials{padding:80px 24px;background:var(--nude-light);}
-.testimonials-inner{max-width:1100px;margin:0 auto;}
-.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:50px;}
-.testi-card{background:#fff;border-radius:14px;padding:24px;border:1px solid rgba(212,200,188,.3);box-shadow:0 2px 12px rgba(0,0,0,.04);}
-.testi-stars{color:var(--gold);font-size:.8rem;margin-bottom:12px;}
-.testi-text{font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:16px;font-style:italic;}
-.testi-author{display:flex;align-items:center;gap:10px;}
-.testi-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8B6340);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;flex-shrink:0;}
-.testi-name{font-weight:700;font-size:.84rem;}
-.testi-role{font-size:.72rem;color:var(--muted);}
-
-/* ── CTA ──────────────────────────────────────────────────────────── */
-.cta-section{padding:80px 24px;background:linear-gradient(135deg,var(--charcoal) 0%,var(--charcoal-2) 100%);text-align:center;position:relative;overflow:hidden;}
-.cta-section::before{content:'◆';position:absolute;font-size:20rem;color:rgba(200,169,126,.03);top:50%;left:50%;transform:translate(-50%,-50%);}
-.cta-inner{max-width:620px;margin:0 auto;position:relative;z-index:1;}
-.cta-section h2{font-size:2.6rem;color:#fff;margin-bottom:12px;}
-.cta-section h2 span{color:var(--gold);}
-.cta-section p{color:rgba(255,255,255,.6);font-size:.95rem;line-height:1.8;margin-bottom:28px;}
-
-/* ── FOOTER ───────────────────────────────────────────────────────── */
-.footer{background:var(--charcoal);padding:48px 24px 24px;color:rgba(255,255,255,.6);}
-.footer-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,.08);}
-.footer-brand{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:#fff;margin-bottom:10px;}
-.footer-brand span{color:var(--gold);}
-.footer-desc{font-size:.82rem;line-height:1.7;margin-bottom:16px;}
-.footer-social{display:flex;gap:10px;}
-.footer-social a{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:.82rem;transition:all .2s;}
-.footer-social a:hover{background:var(--gold);color:#fff;}
-.footer-col h4{color:#fff;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
-.footer-col a{display:block;font-size:.82rem;color:rgba(255,255,255,.5);margin-bottom:8px;transition:color .2s;}
-.footer-col a:hover{color:var(--gold);}
-.footer-bottom{max-width:1200px;margin:20px auto 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:.76rem;}
-
-/* ── RESPONSIVE ───────────────────────────────────────────────────── */
-@media(max-width:900px){
-  .hero-inner{grid-template-columns:1fr;gap:40px;}
-  .hero-visual{display:none;}
-  .hero h1{font-size:2.4rem;}
-  .features-grid{grid-template-columns:1fr 1fr;}
-  .steps{grid-template-columns:1fr 1fr;}
-  .steps::before{display:none;}
-  .pricing-grid{grid-template-columns:1fr;}
-  .testi-grid{grid-template-columns:1fr 1fr;}
-  .footer-inner{grid-template-columns:1fr 1fr;}
-  .nav-links{display:none;}
-  .hamburger{display:flex;}
-}
-@media(max-width:540px){
-  .hero h1{font-size:2rem;}
-  .features-grid{grid-template-columns:1fr;}
-  .testi-grid{grid-template-columns:1fr;}
-  .footer-inner{grid-template-columns:1fr;}
-  .hero-actions{flex-direction:column;}
-  .hero-actions .btn{width:100%;justify-content:center;}
-}
+.pricing{background:#fff;}
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:50px;max-width:800px;margin-left:auto;margin-right:auto;}
+.pc{border-radius:16px;padding:32px;border:1px solid var(--nude-med);position:relative;transition:all .25s;}
+.pc.feat{background:var(--charcoal);border-color:var(--gold);color:#fff;}
+.pb{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--gold);color:#fff;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:4px 14px;border-radius:20px;}
+.pn{font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.pc.feat .pn{color:var(--gold);}
+.pp{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;margin:12px 0;line-height:1;}
+.pc.feat .pp{color:var(--gold);}
+.pd{font-size:.8rem;color:var(--muted);margin-bottom:20px;}
+.pc.feat .pd{color:rgba(255,255,255,.5);}
+.pl{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+.pl li{display:flex;align-items:center;gap:8px;font-size:.85rem;}
+.pl li i{color:var(--gold);font-size:.8rem;flex-shrink:0;}
+.pc.feat .pl li{color:rgba(255,255,255,.8);}
+.testi{background:var(--nude-light);}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:50px;}
+.tc{background:#fff;border-radius:14px;padding:24px;border:1px solid rgba(212,200,188,.3);box-shadow:0 2px 12px rgba(0,0,0,.04);}
+.ts{color:var(--gold);font-size:.8rem;margin-bottom:12px;}
+.tt{font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:16px;font-style:italic;}
+.ta{display:flex;align-items:center;gap:10px;}
+.tav{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8B6340);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.9rem;flex-shrink:0;}
+.tn2{font-weight:700;font-size:.84rem;}
+.tr{font-size:.72rem;color:var(--muted);}
+.cta-s{padding:80px 24px;background:linear-gradient(135deg,var(--charcoal) 0%,var(--charcoal-2) 100%);text-align:center;position:relative;overflow:hidden;}
+.cta-s::before{content:'◆';position:absolute;font-size:20rem;color:rgba(200,169,126,.03);top:50%;left:50%;transform:translate(-50%,-50%);}
+.cta-in{max-width:620px;margin:0 auto;position:relative;z-index:1;}
+.cta-s h2{font-size:2.6rem;color:#fff;margin-bottom:12px;}
+.cta-s h2 span{color:var(--gold);}
+.cta-s p{color:rgba(255,255,255,.6);font-size:.95rem;line-height:1.8;margin-bottom:28px;}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+footer{background:var(--charcoal);padding:48px 24px 24px;color:rgba(255,255,255,.6);}
+.ft-in{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,.08);}
+.fb{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:#fff;margin-bottom:10px;}
+.fb span{color:var(--gold);}
+.fd{font-size:.82rem;line-height:1.7;margin-bottom:16px;}
+.fs{display:flex;gap:10px;}
+.fs a{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:.82rem;transition:all .2s;}
+.fs a:hover{background:var(--gold);color:#fff;}
+.fc2 h4{color:#fff;font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
+.fc2 a{display:block;font-size:.82rem;color:rgba(255,255,255,.5);margin-bottom:8px;transition:color .2s;}
+.fc2 a:hover{color:var(--gold);}
+.ft-bot{max-width:1200px;margin:20px auto 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:.76rem;}
+@media(max-width:900px){.hero-in{grid-template-columns:1fr;}.hero-card{display:none;}.feat-grid{grid-template-columns:1fr 1fr;}.steps{grid-template-columns:1fr 1fr;}.steps::before{display:none;}.pg{grid-template-columns:1fr;}.tg{grid-template-columns:1fr 1fr;}.ft-in{grid-template-columns:1fr 1fr;}.nav-links{display:none;}.hamburger{display:flex;}}
+@media(max-width:540px){.hero h1{font-size:2.2rem;}.feat-grid{grid-template-columns:1fr;}.tg{grid-template-columns:1fr;}.ft-in{grid-template-columns:1fr;}.hero-btns{flex-direction:column;}.hero-btns .btn{width:100%;justify-content:center;}}
 </style>
 </head>
 <body>
-
-<!-- NAV -->
 <nav class="nav" id="nav">
   <div class="nav-inner">
-    <a href="index.html" class="nav-logo">Crown<span>Trade</span></a>
+    <a href="index.html" class="logo">Crown<span>Trade</span></a>
     <ul class="nav-links">
       <li><a href="#features">What We Offer</a></li>
       <li><a href="#how">How It Works</a></li>
       <li><a href="#pricing">Pricing</a></li>
       <li><a href="referral-register.html">Earn With Us</a></li>
     </ul>
-    <div class="nav-actions">
-      <a href="login.html" class="btn btn-outline btn-sm hide-mobile">Sign In</a>
+    <div class="nav-right">
+      <a href="login.html" class="btn btn-outline btn-sm hide-mobile" id="signinBtn">Sign In</a>
       <a href="mentorship-form.html" class="btn btn-gold btn-sm">Apply Now</a>
-      <button class="hamburger" id="hamburger" onclick="toggleMenu()">
-        <span></span><span></span><span></span>
-      </button>
+      <button class="hamburger" id="ham" onclick="toggleMenu()"><span></span><span></span><span></span></button>
     </div>
   </div>
 </nav>
-
-<!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobileMenu">
+<div class="mob-menu" id="mobMenu">
   <a href="#features" onclick="toggleMenu()">What We Offer</a>
   <a href="#how" onclick="toggleMenu()">How It Works</a>
   <a href="#pricing" onclick="toggleMenu()">Pricing</a>
@@ -193,166 +144,101 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-inner">
-    <div class="hero-content">
-      <div class="hero-badge"><i class="fas fa-crown"></i> Kenya's Premier Trading Academy</div>
+  <div class="hero-in">
+    <div>
+      <div class="badge"><i class="fas fa-crown"></i> Kenya's Premier Trading Academy</div>
       <h1>Trade With <span>Precision.</span><br>Profit With <span>Purpose.</span></h1>
-      <p>Stop guessing. Stop losing. Start trading with a dedicated mentor who's done it, a curriculum built on real markets, and a community of traders who hold each other accountable.</p>
-      <div class="hero-actions">
+      <p>Stop guessing. Stop losing. Start trading with a dedicated mentor who's done it, a curriculum built on real markets, and a community that holds you accountable.</p>
+      <div class="hero-btns">
         <a href="mentorship-form.html" class="btn btn-gold btn-lg"><i class="fas fa-graduation-cap"></i> Start Mentorship — KES 3,500</a>
         <a href="#how" class="btn btn-outline btn-lg">See How It Works</a>
       </div>
       <div class="hero-stats">
-        <div class="hero-stat"><div class="val">500+</div><div class="lbl">Traders Trained</div></div>
-        <div class="hero-stat"><div class="val">93%</div><div class="lbl">Completion Rate</div></div>
-        <div class="hero-stat"><div class="val">4.9★</div><div class="lbl">Average Rating</div></div>
+        <div class="hstat"><div class="v">500+</div><div class="l">Traders Trained</div></div>
+        <div class="hstat"><div class="v">93%</div><div class="l">Completion Rate</div></div>
+        <div class="hstat"><div class="v">4.9★</div><div class="l">Average Rating</div></div>
       </div>
     </div>
-    <div class="hero-visual">
-      <div style="position:relative;">
-        <div class="hero-card">
-          <div class="hero-card-header">
-            <div class="hero-card-avatar">D</div>
-            <div>
-              <div style="font-weight:700;font-size:.9rem;">Demo Account</div>
-              <div style="font-size:.72rem;color:var(--muted);">Live Practice Mode</div>
-            </div>
-            <div style="margin-left:auto;color:var(--success);font-weight:700;font-size:.9rem;">+18.4%</div>
-          </div>
-          <div style="font-size:.72rem;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px;">Weekly Performance</div>
-          <div class="chart-bars">
-            <div class="bar" style="height:40%;"></div>
-            <div class="bar" style="height:65%;"></div>
-            <div class="bar" style="height:45%;"></div>
-            <div class="bar" style="height:80%;"></div>
-            <div class="bar" style="height:55%;"></div>
-            <div class="bar" style="height:90%;background:linear-gradient(180deg,var(--gold),var(--gold-dark));"></div>
-            <div class="bar" style="height:72%;"></div>
-          </div>
-          <div class="hero-ticker">
-            <div class="ticker-item up"><i class="fas fa-arrow-up" style="font-size:.6rem;"></i> XAU/USD +1.2%</div>
-            <div class="ticker-item up"><i class="fas fa-arrow-up" style="font-size:.6rem;"></i> EUR/USD +0.4%</div>
-            <div class="ticker-item down"><i class="fas fa-arrow-down" style="font-size:.6rem;"></i> GBP/USD -0.3%</div>
-          </div>
+    <div style="position:relative;padding:20px;">
+      <div class="hero-card">
+        <div class="card-head">
+          <div class="cav">D</div>
+          <div><div style="font-weight:700;font-size:.9rem;">Live Account</div><div style="font-size:.72rem;color:var(--muted);">Crown Member</div></div>
+          <div style="margin-left:auto;color:var(--success);font-weight:700;">+18.4%</div>
         </div>
-        <div class="floating-badge top-left">
-          <i class="fas fa-check-circle" style="color:var(--success);"></i>
-          Trade Approved
+        <div style="font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;">Weekly Performance</div>
+        <div class="chart-bars">
+          <div class="bar" style="height:40%;"></div><div class="bar" style="height:65%;"></div>
+          <div class="bar" style="height:45%;"></div><div class="bar" style="height:80%;"></div>
+          <div class="bar" style="height:55%;"></div>
+          <div class="bar" style="height:90%;background:linear-gradient(180deg,var(--gold),var(--gold-dark));"></div>
+          <div class="bar" style="height:72%;"></div>
         </div>
-        <div class="floating-badge bottom-right">
-          <i class="fas fa-crown" style="color:var(--gold);"></i>
-          Crown Member
+        <div class="ticker">
+          <div class="tick up"><i class="fas fa-arrow-up" style="font-size:.6rem;"></i> XAU/USD +1.2%</div>
+          <div class="tick up"><i class="fas fa-arrow-up" style="font-size:.6rem;"></i> EUR/USD +0.4%</div>
+          <div class="tick dn"><i class="fas fa-arrow-down" style="font-size:.6rem;"></i> GBP/USD -0.3%</div>
         </div>
       </div>
+      <div class="fl tl"><i class="fas fa-check-circle"></i> Trade Approved</div>
+      <div class="fl br"><i class="fas fa-crown"></i> Crown Member</div>
     </div>
   </div>
 </section>
 
 <!-- FEATURES -->
-<section class="features" id="features">
-  <div class="features-inner">
-    <div class="section-header">
-      <h2>Everything You Need to Win</h2>
-      <div class="gold-divider"></div>
-      <p>Not just courses. A complete trading education ecosystem built for serious traders who want real results.</p>
-    </div>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fas fa-user-tie"></i></div>
-        <h3>1-on-1 Mentorship</h3>
-        <p>Your own dedicated mentor. Book sessions, review your trades, get honest feedback, and build a strategy that fits your lifestyle.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fas fa-play-circle"></i></div>
-        <h3>Structured Curriculum</h3>
-        <p>From basics to advanced supply & demand, BOS/ChoCh, and proprietary strategies. Every module builds on the last — no skipping, no gaps.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
-        <h3>Live Trading Tools</h3>
-        <p>TradingView charts, economic calendar, position size calculator, risk/reward tool, and a personal trade journal — all built in.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fas fa-brain"></i></div>
-        <h3>Quiz-Gated Learning</h3>
-        <p>Every module has a quiz. Pass it to unlock the next one. No skipping means no gaps in your knowledge when real money is on the line.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fas fa-shield-halved"></i></div>
-        <h3>Risk Management First</h3>
-        <p>We teach risk management before strategies. The traders who survive long-term are the ones who know how to protect capital, not just chase profits.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon"><i class="fas fa-crown"></i></div>
-        <h3>Crown Partner Program</h3>
-        <p>Refer traders and earn commissions. KES 200–300 per verified referral. Tier up from Bronze to Crown as your network grows.</p>
-      </div>
+<section class="sec features" id="features">
+  <div class="sec-in">
+    <div class="sec-head"><h2>Everything You Need to Win</h2><div class="gd"></div><p>Not just courses. A complete trading education ecosystem built for serious traders who want real results.</p></div>
+    <div class="feat-grid">
+      <div class="feat"><div class="fi"><i class="fas fa-user-tie"></i></div><h3>1-on-1 Mentorship</h3><p>Your own dedicated mentor. Book sessions, review trades, get honest feedback, and build a strategy that fits your lifestyle.</p></div>
+      <div class="feat"><div class="fi"><i class="fas fa-play-circle"></i></div><h3>Structured Curriculum</h3><p>From basics to advanced supply & demand, BOS/ChoCh, and proprietary strategies. Every module builds on the last.</p></div>
+      <div class="feat"><div class="fi"><i class="fas fa-chart-line"></i></div><h3>Live Trading Tools</h3><p>TradingView charts, economic calendar, position size calculator, risk/reward tool, and a personal trade journal — all built in.</p></div>
+      <div class="feat"><div class="fi"><i class="fas fa-brain"></i></div><h3>Quiz-Gated Learning</h3><p>Every module has a quiz. Pass it to unlock the next one. No skipping means no gaps in your knowledge when real money is on the line.</p></div>
+      <div class="feat"><div class="fi"><i class="fas fa-shield-halved"></i></div><h3>Risk Management First</h3><p>We teach risk management before strategies. The traders who survive long-term protect their capital first, profits second.</p></div>
+      <div class="feat"><div class="fi"><i class="fas fa-crown"></i></div><h3>Crown Partner Program</h3><p>Refer traders and earn KES 200–300 per verified referral. Tier up from Bronze to Crown as your network grows.</p></div>
     </div>
   </div>
 </section>
 
 <!-- HOW IT WORKS -->
-<section class="how" id="how">
-  <div class="how-inner">
-    <div class="section-header">
-      <h2>From Application to Profit</h2>
-      <div class="gold-divider"></div>
-      <p>Four steps. That's all it takes to go from where you are to where you want to be.</p>
-    </div>
+<section class="sec how" id="how">
+  <div class="sec-in">
+    <div class="sec-head"><h2>From Application to Profit</h2><div class="gd"></div><p>Four steps to go from where you are to where you want to be.</p></div>
     <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <h4>Apply</h4>
-        <p>Fill in your application. Tell us where you are in your trading journey and what you want to achieve.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <h4>Pay & Get Access</h4>
-        <p>Pay via M-Pesa or card through our secure Pesapal checkout. Your dashboard unlocks immediately.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <h4>Meet Your Mentor</h4>
-        <p>Your dedicated mentor is assigned within 24 hours. Book your first session and set your goals.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <h4>Trade & Grow</h4>
-        <p>Work through the curriculum, get 1-on-1 feedback, journal your trades, and build real consistency.</p>
-      </div>
+      <div class="step"><div class="sn">1</div><h4>Apply</h4><p>Fill in your application and tell us about your trading journey and goals.</p></div>
+      <div class="step"><div class="sn">2</div><h4>Pay & Get Access</h4><p>Pay via M-Pesa or card through Pesapal. Dashboard unlocks immediately.</p></div>
+      <div class="step"><div class="sn">3</div><h4>Meet Your Mentor</h4><p>Your dedicated mentor is assigned within 24 hours. Book your first session.</p></div>
+      <div class="step"><div class="sn">4</div><h4>Trade & Grow</h4><p>Work through the curriculum, get feedback, journal trades, build consistency.</p></div>
     </div>
   </div>
 </section>
 
 <!-- PRICING -->
-<section class="pricing" id="pricing">
-  <div class="pricing-inner">
-    <div class="section-header">
-      <h2>Simple, Transparent Pricing</h2>
-      <div class="gold-divider"></div>
-      <p>No hidden fees. No monthly subscriptions. Pay once, learn for life.</p>
-    </div>
-    <div class="pricing-grid">
-      <div class="pricing-card">
-        <div class="pricing-name">Crown Partner</div>
-        <div class="pricing-price"><span class="pricing-currency">KES </span>500</div>
-        <div class="pricing-period">One-time registration</div>
-        <ul class="pricing-features">
+<section class="sec pricing" id="pricing">
+  <div class="sec-in">
+    <div class="sec-head"><h2>Simple, Transparent Pricing</h2><div class="gd"></div><p>No hidden fees. No monthly subscriptions. Pay once, learn for life.</p></div>
+    <div class="pg">
+      <div class="pc">
+        <div class="pn">Crown Partner</div>
+        <div class="pp"><span style="font-size:1rem;vertical-align:top;margin-top:10px;display:inline-block;">KES </span>500</div>
+        <div class="pd">One-time registration</div>
+        <ul class="pl">
           <li><i class="fas fa-check"></i> Personal referral link</li>
-          <li><i class="fas fa-check"></i> KES 200–300 per verified referral</li>
-          <li><i class="fas fa-check"></i> Tier system: Bronze → Silver → Crown</li>
+          <li><i class="fas fa-check"></i> KES 200–300 per referral</li>
+          <li><i class="fas fa-check"></i> Tier system: Bronze → Crown</li>
           <li><i class="fas fa-check"></i> Real-time earnings dashboard</li>
-          <li><i class="fas fa-check"></i> M-Pesa withdrawals anytime</li>
+          <li><i class="fas fa-check"></i> M-Pesa withdrawals</li>
           <li><i class="fas fa-check"></i> Upgrade to mentorship anytime</li>
         </ul>
         <a href="referral-register.html" class="btn btn-outline" style="width:100%;justify-content:center;">Join as Partner</a>
       </div>
-      <div class="pricing-card featured">
-        <div class="pricing-badge">Most Popular</div>
-        <div class="pricing-name">Elite Mentorship</div>
-        <div class="pricing-price" style="color:var(--gold);"><span class="pricing-currency" style="color:var(--gold);">KES </span>3,500</div>
-        <div class="pricing-period">One-time · Lifetime access</div>
-        <ul class="pricing-features">
+      <div class="pc feat">
+        <div class="pb">Most Popular</div>
+        <div class="pn">Elite Mentorship</div>
+        <div class="pp"><span style="font-size:1rem;vertical-align:top;margin-top:10px;display:inline-block;color:var(--gold);">KES </span>3,500</div>
+        <div class="pd">One-time · Lifetime access</div>
+        <ul class="pl">
           <li><i class="fas fa-check"></i> Full course curriculum</li>
           <li><i class="fas fa-check"></i> Dedicated personal mentor</li>
           <li><i class="fas fa-check"></i> Unlimited 1-on-1 sessions</li>
@@ -369,134 +255,51 @@
 </section>
 
 <!-- TESTIMONIALS -->
-<section class="testimonials">
-  <div class="testimonials-inner">
-    <div class="section-header">
-      <h2>What Our Traders Say</h2>
-      <div class="gold-divider"></div>
-    </div>
-    <div class="testi-grid">
-      <div class="testi-card">
-        <div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-        <p class="testi-text">"I lost money for two years trying to learn trading on YouTube. Three months at Crown Trade and I'm consistently profitable. The mentor sessions changed everything."</p>
-        <div class="testi-author">
-          <div class="testi-avatar">A</div>
-          <div><div class="testi-name">Amina W.</div><div class="testi-role">Forex Trader · Nairobi</div></div>
-        </div>
-      </div>
-      <div class="testi-card">
-        <div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-        <p class="testi-text">"The quiz-gated system made me actually understand each concept before moving on. I tried other courses where I could skip ahead — this approach is better. Much better."</p>
-        <div class="testi-author">
-          <div class="testi-avatar">B</div>
-          <div><div class="testi-name">Brian O.</div><div class="testi-role">Part-time Trader · Mombasa</div></div>
-        </div>
-      </div>
-      <div class="testi-card">
-        <div class="testi-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-        <p class="testi-text">"I joined as a Crown Partner first, then upgraded to mentorship. Best decision. Now I earn commissions AND I'm learning to trade. Two income streams from one platform."</p>
-        <div class="testi-author">
-          <div class="testi-avatar">G</div>
-          <div><div class="testi-name">Grace N.</div><div class="testi-role">Crown Partner + Student · Kisumu</div></div>
-        </div>
-      </div>
+<section class="sec testi">
+  <div class="sec-in">
+    <div class="sec-head"><h2>What Our Traders Say</h2><div class="gd"></div></div>
+    <div class="tg">
+      <div class="tc"><div class="ts"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="tt">"I lost money for two years trying to learn on YouTube. Three months at Crown Trade and I'm consistently profitable. The mentor sessions changed everything."</p><div class="ta"><div class="tav">A</div><div><div class="tn2">Amina W.</div><div class="tr">Forex Trader · Nairobi</div></div></div></div>
+      <div class="tc"><div class="ts"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="tt">"The quiz-gated system made me actually understand each concept before moving on. This approach is better than any course I've tried."</p><div class="ta"><div class="tav">B</div><div><div class="tn2">Brian O.</div><div class="tr">Part-time Trader · Mombasa</div></div></div></div>
+      <div class="tc"><div class="ts"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p class="tt">"I joined as a Crown Partner first, then upgraded to mentorship. Best decision. Two income streams from one platform."</p><div class="ta"><div class="tav">G</div><div><div class="tn2">Grace N.</div><div class="tr">Crown Partner + Student · Kisumu</div></div></div></div>
     </div>
   </div>
 </section>
 
 <!-- CTA -->
-<section class="cta-section">
-  <div class="cta-inner">
+<section class="cta-s">
+  <div class="cta-in">
     <h2>Ready to Trade Like a <span>Professional?</span></h2>
     <p>Join hundreds of Kenyan traders who stopped gambling and started trading with strategy, discipline, and a mentor in their corner.</p>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <div class="cta-btns">
       <a href="mentorship-form.html" class="btn btn-gold btn-lg"><i class="fas fa-graduation-cap"></i> Apply for Mentorship</a>
-      <a href="referral-register.html" class="btn" style="background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.2);padding:14px 32px;font-size:1rem;"><i class="fas fa-crown"></i> Become a Partner</a>
+      <a href="referral-register.html" class="btn btn-lg" style="background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.2);"><i class="fas fa-crown"></i> Become a Partner</a>
     </div>
   </div>
 </section>
 
 <!-- FOOTER -->
-<footer class="footer">
-  <div class="footer-inner">
+<footer>
+  <div class="ft-in">
     <div>
-      <div class="footer-brand">Crown<span>Trade</span> Academy</div>
-      <p class="footer-desc">Kenya's premier forex and commodities trading education platform. We turn beginners into consistent, profitable traders.</p>
-      <div class="footer-social">
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-whatsapp"></i></a>
-        <a href="#"><i class="fab fa-youtube"></i></a>
-      </div>
+      <div class="fb">Crown<span>Trade</span> Academy</div>
+      <p class="fd">Kenya's premier forex and commodities trading education platform. We turn beginners into consistent, profitable traders.</p>
+      <div class="fs"><a href="#"><i class="fab fa-twitter"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-whatsapp"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div>
     </div>
-    <div class="footer-col">
-      <h4>Platform</h4>
-      <a href="login.html">Student Login</a>
-      <a href="mentorship-form.html">Apply for Mentorship</a>
-      <a href="referral-register.html">Become a Partner</a>
-      <a href="referral-login.html">Partner Login</a>
-    </div>
-    <div class="footer-col">
-      <h4>Learn</h4>
-      <a href="#features">What We Offer</a>
-      <a href="#how">How It Works</a>
-      <a href="#pricing">Pricing</a>
-    </div>
-    <div class="footer-col">
-      <h4>Contact</h4>
-      <a href="mailto:crowntradeacademy@gmail.com">crowntradeacademy@gmail.com</a>
-      <a href="#">Nairobi, Kenya</a>
-    </div>
+    <div class="fc2"><h4>Platform</h4><a href="login.html">Student Login</a><a href="mentorship-form.html">Apply for Mentorship</a><a href="referral-register.html">Become a Partner</a><a href="referral-login.html">Partner Login</a></div>
+    <div class="fc2"><h4>Learn</h4><a href="#features">What We Offer</a><a href="#how">How It Works</a><a href="#pricing">Pricing</a></div>
+    <div class="fc2"><h4>Contact</h4><a href="mailto:crowntradeacademy@gmail.com">crowntradeacademy@gmail.com</a><a href="#">Nairobi, Kenya</a></div>
   </div>
-  <div class="footer-bottom">
-    <span>© 2026 Crown Trade Academy. All rights reserved.</span>
-    <span>Licensed trading education platform</span>
-  </div>
+  <div class="ft-bot"><span>© 2026 Crown Trade Academy. All rights reserved.</span><span>Licensed trading education platform</span></div>
 </footer>
 
+<script src="api.js"></script>
 <script>
-function toggleMenu() {
-  const hamburger = document.getElementById('hamburger');
-  const menu = document.getElementById('mobileMenu');
-  hamburger.classList.toggle('open');
-  menu.classList.toggle('show');
-  document.body.style.overflow = menu.classList.contains('show') ? 'hidden' : '';
-}
-
-// Close mobile menu on outside click
-document.addEventListener('click', e => {
-  const menu = document.getElementById('mobileMenu');
-  const hamburger = document.getElementById('hamburger');
-  if (menu.classList.contains('show') && !menu.contains(e.target) && !hamburger.contains(e.target)) {
-    toggleMenu();
-  }
-});
-
-// Smooth scroll for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    const target = document.querySelector(a.getAttribute('href'));
-    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-  });
-});
-
-// Nav scroll effect
-window.addEventListener('scroll', () => {
-  const nav = document.getElementById('nav');
-  nav.style.boxShadow = window.scrollY > 40 ? '0 4px 24px rgba(0,0,0,.08)' : 'none';
-});
-
-// If already logged in, redirect to dashboard
-if (localStorage.getItem('ct_token')) {
-  const user = JSON.parse(localStorage.getItem('ct_user') || '{}');
-  if (user.type === 'admin') {
-    // Don't redirect admin from landing page
-  } else {
-    // Subtle indicator — don't force redirect, let them browse
-    const signIn = document.querySelector('a[href="login.html"]');
-    if (signIn) { signIn.href = 'client-dashboard.html'; signIn.textContent = 'My Dashboard'; }
-  }
-}
+function toggleMenu(){const h=document.getElementById('ham');const m=document.getElementById('mobMenu');h.classList.toggle('open');m.classList.toggle('show');document.body.style.overflow=m.classList.contains('show')?'hidden':'';}
+document.addEventListener('click',e=>{const m=document.getElementById('mobMenu');const h=document.getElementById('ham');if(m.classList.contains('show')&&!m.contains(e.target)&&!h.contains(e.target))toggleMenu();});
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'});}});});
+window.addEventListener('scroll',()=>{document.getElementById('nav').style.boxShadow=window.scrollY>40?'0 4px 24px rgba(0,0,0,.08)':'none';});
+if(Auth.isLoggedIn()){const btn=document.getElementById('signinBtn');if(btn){btn.href='client-dashboard.html';btn.textContent='My Dashboard';}}
 </script>
 </body>
 </html>

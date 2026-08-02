@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Application Received — Crown Trade Academy</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -17,45 +16,21 @@ p{color:var(--muted);font-size:.88rem;line-height:1.7;margin-bottom:20px;}
 .steps{text-align:left;background:var(--nude-light);border-radius:12px;padding:18px;margin-bottom:22px;}
 .step{display:flex;align-items:flex-start;gap:12px;padding:8px 0;}
 .step:not(:last-child){border-bottom:1px solid var(--nude-med);}
-.step-num{width:24px;height:24px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;margin-top:1px;}
-.step-text{font-size:.84rem;color:var(--charcoal);}
-.step-sub{font-size:.74rem;color:var(--muted);margin-top:1px;}
+.snum{width:24px;height:24px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.stxt{font-size:.84rem;color:var(--charcoal);}
+.ssub{font-size:.74rem;color:var(--muted);margin-top:1px;}
 </style>
 </head>
 <body>
 <div class="box">
   <i class="fas fa-crown icon"></i>
   <h1>Application Received!</h1>
-  <p>Thank you for applying to Crown Trade Academy. Your application is under review. Here's what happens next:</p>
+  <p>Your application is under review. Here's what happens next:</p>
   <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-text">
-        <div>Payment Verification</div>
-        <div class="step-sub">We verify your payment within 2 hours of submission.</div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-text">
-        <div>Application Review</div>
-        <div class="step-sub">Our team reviews your application and approves access.</div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-text">
-        <div>Mentor Assignment</div>
-        <div class="step-sub">Your personal mentor is assigned within 24 hours.</div>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-text">
-        <div>You're In!</div>
-        <div class="step-sub">Log in to your dashboard and start learning.</div>
-      </div>
-    </div>
+    <div class="step"><div class="snum">1</div><div class="stxt"><div>Payment Verification</div><div class="ssub">We verify your payment within 2 hours.</div></div></div>
+    <div class="step"><div class="snum">2</div><div class="stxt"><div>Application Review</div><div class="ssub">Our team reviews and approves your access.</div></div></div>
+    <div class="step"><div class="snum">3</div><div class="stxt"><div>Mentor Assignment</div><div class="ssub">Your personal mentor is assigned within 24 hours.</div></div></div>
+    <div class="step"><div class="snum">4</div><div class="stxt"><div>You're In!</div><div class="ssub">Log in and start your trading journey.</div></div></div>
   </div>
   <a href="login.html" class="btn btn-gold" style="width:100%;justify-content:center;margin-bottom:10px;"><i class="fas fa-sign-in-alt"></i> Log In to Check Status</a>
   <a href="index.html" style="display:block;font-size:.82rem;color:var(--muted);"><i class="fas fa-arrow-left"></i> Back to Academy</a>

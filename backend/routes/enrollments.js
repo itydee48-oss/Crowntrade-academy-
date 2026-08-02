@@ -1,160 +1,124 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 const { query } = require('../database/db');
 const { authenticateToken, generateToken } = require('../middleware/auth');
-const { findOrCreateUser } = require('../database/identity');
-const { getTier, FIRST_REFERRAL_BONUS } = require('./referral');
 
+function genMemberNumber() { return 'CTA-' + String(Math.floor(Math.random()*9000)+1000); }
+
+// ENROLL IN COURSE
 router.post('/enroll', async (req, res) => {
   try {
     const { course_id, full_name, email, phone, password, referred_by_code } = req.body;
-    if (!course_id||!full_name||!email||!phone) return res.status(400).json({ error: 'Course, name, email and phone are required' });
+    if (!course_id||!full_name||!email) return res.status(400).json({ error: 'Course, name and email required' });
 
+    // Get course
     const courseResult = await query('SELECT * FROM courses WHERE id=$1 AND is_published=TRUE', [course_id]);
     const course = courseResult.rows[0];
     if (!course) return res.status(404).json({ error: 'Course not found' });
 
-    const existingUser = await query('SELECT id FROM users WHERE email=$1', [email]);
-    const isNew = existingUser.rows.length === 0;
-
-    if (!isNew) {
-      const dup = await query(`SELECT id FROM enrollments WHERE user_id=$1 AND course_id=$2 AND status!='rejected'`, [existingUser.rows[0].id, course_id]);
-      if (dup.rows.length > 0) return res.status(409).json({ error: 'You are already enrolled in this course. Try logging in.' });
-    }
-
-    if (isNew && (!password||password.length < 6)) return res.status(400).json({ error: 'Password must be at least 6 characters' });
-
-    if (!isNew && password) {
-      const existing = await query('SELECT password_hash FROM users WHERE id=$1', [existingUser.rows[0].id]);
-      if (!(await bcrypt.compare(password, existing.rows[0].password_hash)))
-        return res.status(401).json({ error: 'Incorrect password for your existing account' });
-    }
-
-    const { user } = await findOrCreateUser({ full_name, email, phone, password });
-    if (referred_by_code && !user.referred_by_code)
-      await query('UPDATE users SET referred_by_code=$1 WHERE id=$2', [referred_by_code, user.id]);
-
-    const result = await query(`INSERT INTO enrollments (user_id,course_id,amount) VALUES ($1,$2,$3) RETURNING *`,
-      [user.id, course_id, course.price]);
-
-    // Stage referral commission as pending — admin approval starts the 48hr clock
-    if (referred_by_code) {
-      const referrerResult = await query('SELECT * FROM users WHERE referral_code=$1 AND has_partner_status=TRUE', [referred_by_code]);
-      const referrer = referrerResult.rows[0];
-      if (referrer) {
-        const priorCount = (await query('SELECT COUNT(*)::int as c FROM referral_earnings WHERE referrer_user_id=$1', [referrer.id])).rows[0].c;
-        const isFirst = priorCount === 0;
-        const commission = isFirst ? FIRST_REFERRAL_BONUS : getTier(priorCount).rate;
-        await query(`
-          INSERT INTO referral_earnings (referrer_user_id,referred_email,referred_name,amount,commission_type,status,source_type,source_id)
-          VALUES ($1,$2,$3,$4,$5,'pending','enrollment',$6)
-        `, [referrer.id, email, full_name, commission, isFirst?'first_referral':'standard', result.rows[0].id]);
-      }
-    }
-
-    const token = generateToken({ id: user.id, email: user.email, type: 'user' }, '30d');
-    res.status(201).json({ message: 'Enrollment submitted successfully.', enrollment_id: result.rows[0].id,
-      member_number: user.member_number, token,
-      user: { id:user.id, full_name:user.full_name, email:user.email, status:user.status, member_number:user.member_number } });
-  } catch (err) {
-    console.error('Enroll error:', err);
-    res.status(500).json({ error: 'Enrollment failed' });
-  }
-});
-
-router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email||!password) return res.status(400).json({ error: 'Email and password are required' });
-    const result = await query('SELECT * FROM users WHERE email=$1', [email]);
-    const user = result.rows[0];
-    if (!user||!(await bcrypt.compare(password, user.password_hash))) return res.status(401).json({ error: 'Invalid email or password' });
-    const token = generateToken({ id:user.id, email:user.email, type:'user' }, '30d');
-    res.json({ message:'Login successful', token, user:{ id:user.id, full_name:user.full_name, email:user.email, member_number:user.member_number } });
-  } catch (err) { res.status(500).json({ error: 'Login failed' }); }
-});
-
-router.post('/payment-proof', async (req, res) => {
-  try {
-    const { email, enrollment_id, proof_url } = req.body;
-    if (!email||!proof_url) return res.status(400).json({ error: 'Email and proof URL are required' });
-    let targetId;
-    if (enrollment_id) {
-      const r = await query('SELECT e.id FROM enrollments e JOIN users u ON u.id=e.user_id WHERE e.id=$1 AND u.email=$2', [enrollment_id, email]);
-      targetId = r.rows[0]?.id;
+    // Find or create user
+    let user;
+    const existing = await query('SELECT * FROM users WHERE email=$1', [email.toLowerCase()]);
+    if (existing.rows.length) {
+      user = existing.rows[0];
     } else {
-      const r = await query(`SELECT e.id FROM enrollments e JOIN users u ON u.id=e.user_id WHERE u.email=$1 AND e.status!='rejected' ORDER BY e.submitted_at DESC LIMIT 1`, [email]);
-      targetId = r.rows[0]?.id;
+      if (!password || password.length < 6) return res.status(400).json({ error: 'Password required (min 6 chars) for new accounts' });
+      const hash = await bcrypt.hash(password, 10);
+      const memberNum = genMemberNumber();
+      const r = await query(`INSERT INTO users (full_name,email,phone,password_hash,member_number,status)
+        VALUES ($1,$2,$3,$4,$5,'active') RETURNING *`,
+        [full_name, email.toLowerCase(), phone||'', hash, memberNum]);
+      user = r.rows[0];
     }
-    if (!targetId) return res.status(404).json({ error: 'Enrollment not found' });
-    await query(`UPDATE enrollments SET payment_proof=$1,payment_status='pending' WHERE id=$2`, [proof_url, targetId]);
-    res.json({ message: 'Payment proof submitted. We will verify shortly.' });
-  } catch (err) { res.status(500).json({ error: 'Failed to submit payment proof' }); }
+
+    // Check already enrolled
+    const enrollExists = await query('SELECT * FROM enrollments WHERE user_id=$1 AND course_id=$2', [user.id, course_id]);
+    if (enrollExists.rows.length) {
+      const token = generateToken({ id: user.id, email: user.email, type: 'client' });
+      const { password_hash, ...safe } = user;
+      return res.json({ message: 'Already enrolled in this course', enrollment: enrollExists.rows[0], token, user: safe });
+    }
+
+    // Validate referral code
+    let refCode = referred_by_code || user.referred_by_code || null;
+    if (refCode) {
+      const refCheck = await query('SELECT id FROM users WHERE referral_code=$1', [refCode.toUpperCase()]);
+      if (!refCheck.rows.length) refCode = null;
+    }
+
+    // Create enrollment
+    const enrResult = await query(`INSERT INTO enrollments (user_id,course_id,full_name,email,phone,amount,referred_by_code,status,payment_status)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,'pending','unpaid') RETURNING *`,
+      [user.id, course_id, full_name, email.toLowerCase(), phone||'', course.price, refCode||null]);
+
+    const token = generateToken({ id: user.id, email: user.email, type: 'client' });
+    const { password_hash, ...safe } = user;
+    res.json({ message: 'Enrollment created', enrollment: enrResult.rows[0], token, user: safe });
+  } catch(err) { console.error(err); res.status(500).json({ error: err.message||'Enrollment failed' }); }
 });
 
+// MY COURSES
 router.get('/my-courses', authenticateToken, async (req, res) => {
   try {
-    const result = await query(`
-      SELECT e.*,c.title as course_title,c.tagline as course_tagline,c.icon as course_icon,c.thumbnail_url as course_thumbnail,c.slug as course_slug
-      FROM enrollments e JOIN courses c ON e.course_id=c.id WHERE e.user_id=$1 ORDER BY e.submitted_at DESC
-    `, [req.user.id]);
-
-    const out = [];
-    for (const e of result.rows) {
-      const showWelcome = e.status==='approved' && e.welcomed===false;
-      if (showWelcome) await query('UPDATE enrollments SET welcomed=TRUE WHERE id=$1', [e.id]);
-      out.push({ ...e, show_welcome:showWelcome, completed_modules:JSON.parse(e.completed_modules||'[]') });
-    }
-    res.json({ enrollments: out });
-  } catch (err) {
-    console.error('My-courses error:', err);
-    res.status(500).json({ error: 'Failed to load your courses' });
-  }
+    const r = await query(`SELECT e.*,c.title as course_title,c.tagline as course_tagline,
+      c.icon as course_icon,c.is_flagship,
+      (SELECT COUNT(*) FROM course_modules cm WHERE cm.course_id=c.id)::int as total_modules
+      FROM enrollments e JOIN courses c ON e.course_id=c.id
+      WHERE e.user_id=$1 ORDER BY e.submitted_at DESC`, [req.user.id]);
+    res.json({ enrollments: r.rows });
+  } catch(err) { res.status(500).json({ error: 'Failed to get courses' }); }
 });
 
+// ENROLLMENT DETAIL + MODULES
 router.get('/:id/detail', authenticateToken, async (req, res) => {
   try {
-    const result = await query('SELECT * FROM enrollments WHERE id=$1', [req.params.id]);
-    const enrollment = result.rows[0];
-    if (!enrollment) return res.status(404).json({ error: 'Enrollment not found' });
-    if (enrollment.user_id !== req.user.id) return res.status(403).json({ error: 'Not your enrollment' });
-    if (enrollment.status !== 'approved') return res.status(403).json({ error: 'Course not yet unlocked' });
-
-    const courseResult = await query('SELECT * FROM courses WHERE id=$1', [enrollment.course_id]);
-    const modulesResult = await query('SELECT * FROM course_modules WHERE course_id=$1 ORDER BY sort_order ASC,module_number ASC', [enrollment.course_id]);
-    res.json({
-      enrollment: { ...enrollment, completed_modules:JSON.parse(enrollment.completed_modules||'[]') },
-      course: courseResult.rows[0],
-      modules: modulesResult.rows.map(m=>({ ...m, quiz:JSON.parse(m.quiz_json||'[]') }))
-    });
-  } catch (err) { res.status(500).json({ error: 'Failed to load course detail' }); }
+    const enrResult = await query(`SELECT e.*,c.title,c.tagline,c.description FROM enrollments e
+      JOIN courses c ON e.course_id=c.id WHERE e.id=$1 AND e.user_id=$2`, [req.params.id, req.user.id]);
+    const enr = enrResult.rows[0];
+    if (!enr) return res.status(404).json({ error: 'Enrollment not found' });
+    const modResult = await query('SELECT * FROM course_modules WHERE course_id=$1 ORDER BY module_number', [enr.course_id]);
+    res.json({ enrollment: enr, course: { id: enr.course_id, title: enr.title, tagline: enr.tagline }, modules: modResult.rows });
+  } catch(err) { res.status(500).json({ error: 'Failed to get detail' }); }
 });
 
+// COMPLETE MODULE
 router.post('/:id/complete-module', authenticateToken, async (req, res) => {
   try {
     const { module_id } = req.body;
-    const result = await query('SELECT * FROM enrollments WHERE id=$1', [req.params.id]);
-    const enrollment = result.rows[0];
-    if (!enrollment||enrollment.user_id!==req.user.id) return res.status(403).json({ error: 'Not your enrollment' });
-    const completed = JSON.parse(enrollment.completed_modules||'[]');
-    if (!completed.includes(module_id)) {
-      completed.push(module_id);
-      await query('UPDATE enrollments SET completed_modules=$1 WHERE id=$2', [JSON.stringify(completed), enrollment.id]);
+    if (!module_id) return res.status(400).json({ error: 'module_id required' });
+    const enrResult = await query('SELECT * FROM enrollments WHERE id=$1 AND user_id=$2 AND status=$3', [req.params.id, req.user.id, 'approved']);
+    const enr = enrResult.rows[0];
+    if (!enr) return res.status(404).json({ error: 'Enrollment not found or not approved' });
+    const completed = enr.completed_modules || [];
+    if (!completed.includes(parseInt(module_id))) {
+      const newCompleted = [...completed, parseInt(module_id)];
+      await query('UPDATE enrollments SET completed_modules=$1 WHERE id=$2', [newCompleted, enr.id]);
+      // Update module streak
+      const today = new Date().toISOString().split('T')[0];
+      const userResult = await query('SELECT module_streak,module_last_date FROM users WHERE id=$1', [req.user.id]);
+      const u = userResult.rows[0];
+      const lastDate = u.module_last_date ? new Date(u.module_last_date).toISOString().split('T')[0] : null;
+      let newStreak = u.module_streak || 0;
+      if (lastDate === today) { /* same day */ }
+      else if (lastDate && new Date(today)-new Date(lastDate) <= 86400000) { newStreak += 1; }
+      else { newStreak = 1; }
+      await query('UPDATE users SET module_streak=$1, module_last_date=$2 WHERE id=$3', [newStreak, today, req.user.id]);
+      return res.json({ message: 'Module completed', completed_modules: newCompleted, module_streak: newStreak });
     }
-    res.json({ message:'Module marked complete', completed_modules:completed });
-  } catch (err) { res.status(500).json({ error: 'Failed to update progress' }); }
+    res.json({ message: 'Already completed', completed_modules: completed });
+  } catch(err) { console.error(err); res.status(500).json({ error: 'Failed to complete module' }); }
 });
 
-router.get('/status/:email', async (req, res) => {
+// SUBMIT PAYMENT PROOF (manual fallback)
+router.post('/payment-proof', async (req, res) => {
   try {
-    const result = await query(`
-      SELECT e.id,e.status,e.payment_status,u.member_number,c.title as course_title
-      FROM enrollments e JOIN users u ON u.id=e.user_id JOIN courses c ON e.course_id=c.id
-      WHERE u.email=$1 ORDER BY e.submitted_at DESC
-    `, [req.params.email]);
-    res.json({ enrollments: result.rows });
-  } catch (err) { res.status(500).json({ error: 'Failed to get status' }); }
+    const { email, enrollment_id, proof_url } = req.body;
+    if (!email||!enrollment_id||!proof_url) return res.status(400).json({ error: 'email, enrollment_id and proof_url required' });
+    await query('UPDATE enrollments SET payment_proof=$1, payment_status=$2 WHERE id=$3 AND email=$4',
+      [proof_url, 'pending', enrollment_id, email.toLowerCase()]);
+    res.json({ message: 'Payment proof submitted' });
+  } catch(err) { res.status(500).json({ error: 'Failed to submit proof' }); }
 });
 
 module.exports = router;
