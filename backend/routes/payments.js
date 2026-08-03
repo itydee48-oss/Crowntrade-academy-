@@ -116,11 +116,16 @@ router.post('/initiate', authenticateToken, async (req, res) => {
 
     if (!orderRes.ok) { const t = await orderRes.text(); console.error('Order failed:', t); return res.status(500).json({ error: 'Payment initiation failed' }); }
     const orderData = await orderRes.json();
+    console.log('Pesapal order response:', JSON.stringify(orderData));
 
     await query(`INSERT INTO payments (user_id,order_id,order_tracking_id,amount,description,callback_ref,status)
       VALUES ($1,$2,$3,$4,$5,$6,'pending') ON CONFLICT (order_id) DO UPDATE SET order_tracking_id=$3,status='pending'`,
       [req.user.id, orderId, orderData.order_tracking_id, amount, description, callbackRef]);
 
+    if (!orderData.redirect_url) {
+      console.error('No redirect_url in Pesapal response:', JSON.stringify(orderData));
+      return res.status(500).json({ error: `Payment gateway error: ${orderData.error?.message || orderData.message || 'No redirect URL returned'}` });
+    }
     res.json({ redirect_url: orderData.redirect_url, order_tracking_id: orderData.order_tracking_id, order_id: orderId });
   } catch(err) { console.error('Payment initiate error:', err); res.status(500).json({ error: err.message || 'Payment failed' }); }
 });
