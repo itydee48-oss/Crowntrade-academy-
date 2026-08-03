@@ -32,8 +32,8 @@ function authenticateToken(req, res, next) {
 
 function requireAdmin(req, res, next) {
   authenticateToken(req, res, () => {
-    if (!req.user || req.user.role !== 'admin') {
-      console.error('Admin required but role is:', req.user?.role);
+    const isAdmin = req.user && (req.user.type === 'admin' || req.user.role === 'admin');
+    if (!isAdmin) {
       return res.status(403).json({ error: 'Admin access required' });
     }
     next();
