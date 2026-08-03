@@ -55,4 +55,11 @@ function generateToken(payload, expiresIn = '7d') {
   return jwt.sign(payload, getSecret(), { expiresIn });
 }
 
-module.exports = { authenticateToken, requireAdmin, requireRole, generateToken };
+function requireMentor(req, res, next) {
+  authenticateToken(req, res, () => {
+    if (!req.user || req.user.type !== 'mentor') return res.status(403).json({ error: 'Mentor access required' });
+    next();
+  });
+}
+
+module.exports = { authenticateToken, requireAdmin, requireMentor, requireRole, generateToken };
