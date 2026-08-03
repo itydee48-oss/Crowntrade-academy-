@@ -229,4 +229,30 @@ async function processPayment(orderId, trackingId, statusData) {
   } catch(err) { console.error('processPayment error:', err); }
 }
 
+// DEBUG ENDPOINT - test Pesapal connection
+router.get('/test-pesapal', async (req, res) => {
+  try {
+    console.log('Testing Pesapal connection...');
+    console.log('ENV:', process.env.PESAPAL_ENV);
+    console.log('KEY set:', !!process.env.PESAPAL_CONSUMER_KEY);
+    console.log('SECRET set:', !!process.env.PESAPAL_CONSUMER_SECRET);
+    console.log('BASE URL:', PESAPAL_BASE);
+
+    const tokenRes = await fetch(`${PESAPAL_BASE}/api/Auth/RequestToken`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        consumer_key: process.env.PESAPAL_CONSUMER_KEY,
+        consumer_secret: process.env.PESAPAL_CONSUMER_SECRET
+      })
+    });
+    const tokenText = await tokenRes.text();
+    console.log('Pesapal auth response:', tokenRes.status, tokenText);
+    res.json({ status: tokenRes.status, body: tokenText, env: process.env.PESAPAL_ENV, key_set: !!process.env.PESAPAL_CONSUMER_KEY, secret_set: !!process.env.PESAPAL_CONSUMER_SECRET });
+  } catch(err) {
+    console.error('Pesapal test error:', err);
+    res.json({ error: err.message });
+  }
+});
+
 module.exports = { router, ensureIpnRegistered };
