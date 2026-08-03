@@ -421,7 +421,7 @@ function doLogout(){Auth.logout();window.location.href='login.html';}
 // ── HOME ──────────────────────────────────────────────────────────────────────
 async function loadHome(){
   const hour=new Date().getHours();
-  const greet=hour<12?'Good morning':'hour<17?Good afternoon':'Good evening';
+  const greet=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
   document.getElementById('homeGreeting').innerHTML=`
     <h2 style="font-size:1.6rem;color:var(--charcoal);">Good ${hour<12?'morning':hour<17?'afternoon':'evening'}, <span style="color:var(--gold);">${USER.full_name?.split(' ')[0]||'Trader'}</span> 👋</h2>
     <p style="color:var(--muted);font-size:.88rem;margin-top:4px;">Ready to level up your trading today?</p>`;
