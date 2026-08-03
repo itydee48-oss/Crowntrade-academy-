@@ -52,7 +52,7 @@ router.post('/apply', async (req, res) => {
 
     const appResult = await query(`INSERT INTO mentorship_applications
       (user_id,full_name,email,phone,experience_level,preferred_markets,time_commitment,trading_goals,referral_code,amount)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,3500) RETURNING *`,
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,999) RETURNING *`,
       [user.id, full_name, email.toLowerCase(), phone, experience_level||'', preferred_markets||'', time_commitment||'', trading_goals||'', referredByCode||'']);
 
     const token = generateToken({ id: user.id, email: user.email, type: 'client' });

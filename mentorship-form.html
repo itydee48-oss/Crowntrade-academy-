@@ -128,13 +128,13 @@ body{background:var(--nude-light);}
     <div class="pay-box">
       <h3>Secure Payment</h3>
       <p>Pay via M-Pesa, Visa, or Mastercard. Access unlocks instantly after payment.</p>
-      <div class="pay-amt">KES 3,500</div>
+      <div class="pay-amt">KES 999</div>
       <div class="pay-methods"><div class="pm"><i class="fas fa-mobile-alt"></i> M-Pesa</div><div class="pm"><i class="fab fa-cc-visa"></i> Visa</div><div class="pm"><i class="fab fa-cc-mastercard"></i> Mastercard</div></div>
       <p style="font-size:.72rem;color:rgba(255,255,255,.35);">Powered by Pesapal · PCI DSS Compliant</p>
     </div>
     <div class="fc">
       <p style="color:var(--muted);font-size:.88rem;margin-bottom:16px;">Click below to be redirected to our secure Pesapal checkout. You'll be brought back here automatically after payment.</p>
-      <button class="btn btn-gold" style="width:100%;justify-content:center;" id="payBtn" onclick="submitAndPay()"><i class="fas fa-lock"></i> Pay KES 3,500 Securely</button>
+      <button class="btn btn-gold" style="width:100%;justify-content:center;" id="payBtn" onclick="submitAndPay()"><i class="fas fa-lock"></i> Pay KES 999 Securely</button>
     </div>
     <div class="nav-btns"><button class="btn btn-outline" onclick="goStep(2)"><i class="fas fa-arrow-left"></i> Back</button></div>
   </div>
@@ -175,7 +175,7 @@ function goS2(){
     <div class="srow"><span>Markets</span><span>${mkt}</span></div>
     <div class="srow"><span>Weekly Time</span><span>${time}</span></div>
     ${ref?`<div class="srow"><span>Referral Code</span><span style="color:var(--gold-dark);">${ref}</span></div>`:''}
-    <div class="srow"><span>Total</span><span style="color:var(--gold);font-size:1.1rem;">KES 3,500</span></div>`;
+    <div class="srow"><span>Total</span><span style="color:var(--gold);font-size:1.1rem;">KES 999</span></div>`;
   goStep(2);
 }
 function goStep(n){

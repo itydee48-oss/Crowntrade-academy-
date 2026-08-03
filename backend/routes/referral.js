@@ -51,7 +51,7 @@ router.post('/register', async (req, res) => {
     }
 
     const appResult = await query(`INSERT INTO referral_applications (user_id,full_name,email,phone,motivation,amount)
-      VALUES ($1,$2,$3,$4,$5,500) RETURNING *`,
+      VALUES ($1,$2,$3,$4,$5,499) RETURNING *`,
       [user.id, full_name, email.toLowerCase(), phone, motivation||'']);
 
     const token = generateToken({ id: user.id, email: user.email, type: 'client' });

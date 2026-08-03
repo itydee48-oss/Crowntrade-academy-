@@ -822,7 +822,7 @@ async function loadPartner(){
     c.innerHTML=`<div style="text-align:center;padding:60px 20px;">
       <i class="fas fa-crown" style="font-size:2.5rem;color:var(--gold);display:block;margin-bottom:14px;"></i>
       <h3 style="font-size:1.4rem;margin-bottom:8px;">Become a Crown Partner</h3>
-      <p style="color:var(--muted);font-size:.88rem;margin-bottom:20px;">Earn KES 200–300 per referral. One-time KES 500 registration.</p>
+      <p style="color:var(--muted);font-size:.88rem;margin-bottom:20px;">Earn KES 200–300 per referral. One-time KES 499 registration.</p>
       <a href="referral-register.html" class="btn btn-gold"><i class="fas fa-crown"></i> Join as Partner</a></div>`;
     return;
   }
@@ -865,8 +865,8 @@ function copyRef(){
 }
 
 function openWithdraw(){
-  const amt=prompt('Amount to withdraw (minimum KES 500):');
-  if(!amt||parseInt(amt)<500){showToast('Minimum withdrawal is KES 500','info');return;}
+  const amt=prompt('Amount to withdraw (minimum KES 499):');
+  if(!amt||parseInt(amt)<500){showToast('Minimum withdrawal is KES 499','info');return;}
   const mpesa=prompt('Your M-Pesa number:');
   if(!mpesa){return;}
   const name=prompt('M-Pesa account name:');
